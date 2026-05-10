@@ -1,0 +1,23 @@
+ERROR ReferenceError: localStorage is not defined
+    at e.getSavedLanguage (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:31095)
+    at <instance_members_initializer> (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:30906)
+    at new e (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:30876)
+    at Object.ɵfac [as factory] (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:31179)
+    at yt.hydrate (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:7872)
+    at yt.get (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:7113)
+    at yt.get (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:7185)
+    at Ba.get (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:31:6939)
+    at Vd (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:24029)
+    at Hd (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:24233)
+Wed, 06 May 2026 03:17:40 GMT router deprecated handlers that are Promise-like are deprecated, use a native Promise instead at file:\F:\projects\alochito-songbad\frontend\dist\alochito-songbad-frontend\server\server.mjs:19:585647
+ERROR ReferenceError: localStorage is not defined
+    at e.getSavedLanguage (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:31095)
+    at <instance_members_initializer> (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:30906)
+    at new e (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:30876)
+    at Object.ɵfac [as factory] (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-XR4IU3SY.mjs:2:31179)
+    at yt.hydrate (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:7872)
+    at yt.get (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:7113)
+    at yt.get (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:7185)
+    at Ba.get (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:31:6939)
+    at Vd (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:24029)
+    at Hd (file:///F:/projects/alochito-songbad/frontend/dist/alochito-songbad-frontend/server/chunk-25COIHHT.mjs:5:24233)

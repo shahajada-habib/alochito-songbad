@@ -1,0 +1,60 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('breakingNewsManager') }}</span>
+    <h2>{{ t('breakingNewsManager') }}</h2>
+    <p>{{ t('breakingNewsHelp') }}</p>
+  </div>
+
+  <section class="cms-panel">
+    <form class="inline-form" (ngSubmit)="add()">
+      <input type="text" name="breakingText" [(ngModel)]="text" [placeholder]="t('breakingTickerText')">
+      <button type="submit" class="admin-btn">{{ t('add') }}</button>
+    </form>
+  </section>
+
+  <section class="cms-panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('breakingTickerText') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr>
+            <td [attr.data-label]="t('breakingTickerText')">
+              @if (editingId === item.id) {
+                <input type="text" name="editBreakingText" [(ngModel)]="editText">
+              } @else {
+                {{ item.text }}
+              }
+            </td>
+            <td [attr.data-label]="t('status')"><span class="status" [class.published]="item.active" [class.draft]="!item.active">{{ item.active ? t('active') : t('inactive') }}</span></td>
+            <td [attr.data-label]="t('actions')">
+              <div class="table-actions">
+                @if (editingId === item.id) {
+                  <button type="button" class="admin-btn" (click)="saveEdit(item.id)">{{ t('save') }}</button>
+                } @else {
+                  <button type="button" class="admin-btn secondary" (click)="startEdit(item)">{{ t('edit') }}</button>
+                }
+                <button type="button" class="admin-btn secondary" (click)="toggle(item.id)">{{ t('toggle') }}</button>
+                @if (auth.canDelete()) {
+                  <button type="button" class="admin-btn danger" (click)="delete(item.id)">{{ t('delete') }}</button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (items().length === 0) {
+      <div class="empty-state visible">
+        <span>0</span>
+        <h3>No news available</h3>
+      </div>
+    }
+  </section>
+</section>

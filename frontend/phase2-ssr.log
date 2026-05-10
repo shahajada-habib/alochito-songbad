@@ -1,0 +1,5 @@
+
+> alochito-songbad-frontend@0.1.0 serve:ssr
+> node dist/alochito-songbad-frontend/server/server.mjs
+
+Node Express server listening on http://localhost:4000

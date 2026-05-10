@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;800&family=Hind+Siliguri:wght@300;400;500;600&display=swap');
+@import "quill/dist/quill.snow.css";
+
+:root {
+  color-scheme: light;
+  --font-headline: 'Noto Serif Bengali', serif;
+  --font-body: 'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  --font-ui: 'Hind Siliguri', sans-serif;
+  --color-primary: #c0392b;
+  --color-primary-dark: #8f1c14;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555555;
+  --color-muted: #66727a;
+  --color-border: #e6e0d7;
+  --color-background: #f7f4ef;
+  --color-surface: #ffffff;
+  --color-surface-soft: #fbfaf7;
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --font-public-reading: var(--font-body);
+  --font-public-heading: var(--font-headline);
+  --font-public-body: var(--font-body);
+  --font-public-meta: var(--font-ui);
+  --font-admin: var(--font-ui);
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-headline);
+}
+
+p,
+li {
+  font-family: var(--font-body);
+}
+
+nav {
+  font-family: var(--font-ui);
+}
+
+.upload-error-message {
+  display: inline-block;
+  margin-top: 6px;
+  color: #b42318;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3);
+}
+
+.section-title {
+  margin: 0 0 var(--space-3);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.skeleton-box,
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: #ece5db;
+}
+
+.skeleton-box::after,
+.skeleton-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

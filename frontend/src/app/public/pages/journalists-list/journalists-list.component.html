@@ -1,0 +1,30 @@
+<section class="page journalists-page">
+  <header class="journalists-header">
+    <span>নিউজরুম</span>
+    <h1>আমাদের সাংবাদিক দল</h1>
+  </header>
+
+  @if (journalists().length > 0) {
+    <div class="journalists-grid">
+      @for (journalist of journalists(); track journalist.username) {
+        <article class="journalist-card">
+          @if (journalist.profileImageUrl) {
+            <img [src]="journalist.profileImageUrl" [alt]="displayName(journalist)">
+          } @else {
+            <div class="journalist-initials">{{ initials(journalist) }}</div>
+          }
+          <h2>{{ displayName(journalist) }}</h2>
+          @if (journalist.designation) {
+            <span class="designation">{{ journalist.designation }}</span>
+          }
+          @if (journalist.bio) {
+            <p>{{ bioPreview(journalist) }}</p>
+          }
+          <a [routerLink]="['/journalist', journalist.username]">আরও পড়ুন →</a>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="journalists-empty">শীঘ্রই আসছে</div>
+  }
+</section>

@@ -1,0 +1,58 @@
+<section class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="cms-brand">
+      <span>আ</span>
+      <div>
+        <h1>{{ t('cmsName') }}</h1>
+        <p>{{ t('newsroomControl') }}</p>
+      </div>
+    </div>
+
+    <nav class="admin-menu" aria-label="CMS menu">
+      @for (item of menuItems; track item.link) {
+        @if (canShowMenuItem(item)) {
+          <a [routerLink]="[item.link]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+            <span class="menu-icon">{{ item.icon }}</span>
+            <span>{{ t(item.label) }}</span>
+          </a>
+        }
+      }
+    </nav>
+
+    <p class="cms-version">{{ t('version') }}</p>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div class="topbar-title">
+        <span>{{ t('siteName') }}</span>
+        <h2>{{ pageTitle }}</h2>
+      </div>
+
+      <div class="topbar-actions">
+        <button type="button" class="admin-btn secondary" (click)="openPublicSite()">ওয়েবসাইট দেখুন ↗</button>
+        <form class="topbar-search" (ngSubmit)="submitAdminSearch()">
+          <span>S</span>
+          <input type="search" name="adminTopbarSearch" [(ngModel)]="adminSearchTerm" [placeholder]="t('searchNews')">
+        </form>
+        <div class="language-switch" aria-label="Language switch">
+          <button type="button" [class.active]="i18n.language() === 'bn'" (click)="setLanguage('bn')">{{ t('bangla') }}</button>
+          <button type="button" [class.active]="i18n.language() === 'en'" (click)="setLanguage('en')">{{ t('english') }}</button>
+        </div>
+        <button type="button" class="admin-btn icon-button" [attr.aria-label]="t('notifications')">!</button>
+        <time>{{ t('currentDate') }}</time>
+        <span class="role-badge">{{ roleLabel }}</span>
+        <!-- visible-profile-button -->
+        <button type="button" class="admin-btn profile-button">Profile</button>
+        <button type="button" class="admin-btn secondary" (click)="logout()">{{ t('logout') }}</button>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</section>
+
+<app-toast-container></app-toast-container>
+<app-confirm-dialog></app-confirm-dialog>

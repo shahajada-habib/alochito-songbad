@@ -1,0 +1,59 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('website') }}</span>
+    <h2>{{ t('websiteInfo') }}</h2>
+    <p>{{ t('websiteInfoHelp') }}</p>
+  </div>
+
+  <div class="website-info-grid">
+    <section class="cms-panel logo-preview-card">
+      <div class="panel-heading">
+        <h3>{{ t('logoPreview') }}</h3>
+        <p>{{ t('logoPreviewHelp') }}</p>
+      </div>
+      <div class="logo-preview">
+        <span>আ</span>
+        <div>
+          <strong>{{ t('siteName') }}</strong>
+          <small>সবার আগে সত্য খবর</small>
+        </div>
+      </div>
+    </section>
+
+    <form class="cms-panel cms-form website-form">
+      <label>
+        <span>{{ t('siteName') }}</span>
+        <input type="text" [value]="t('siteName')">
+      </label>
+
+      <label>
+        <span>{{ t('tagline') }}</span>
+        <input type="text" value="সবার আগে সত্য খবর">
+      </label>
+
+      <label class="full-width">
+        <span>{{ t('logoUrl') }}</span>
+        <input type="url" placeholder="/brand/logo.png">
+      </label>
+
+      <div class="social-links-section full-width">
+        <div class="panel-heading">
+          <h3>{{ t('socialLinks') }}</h3>
+          <p>{{ t('socialLinksHelp') }}</p>
+        </div>
+        <label>
+          <span>{{ t('facebookLink') }}</span>
+          <input type="url" placeholder="https://facebook.com/alochitosongbad">
+        </label>
+        <label>
+          <span>{{ t('youtubeLink') }}</span>
+          <input type="url" placeholder="https://youtube.com/@alochitosongbad">
+        </label>
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="button" class="admin-btn">{{ t('save') }}</button>
+      </div>
+    </form>
+  </div>
+</section>

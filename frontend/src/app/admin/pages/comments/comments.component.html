@@ -1,0 +1,46 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('comments') }}</span>
+    <h2>{{ t('comments') }}</h2>
+    <p>{{ t('commentsHelp') }}</p>
+  </div>
+
+  <section class="cms-panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('author') }}</th>
+          <th>{{ t('title') }}</th>
+          <th>{{ t('comment') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (comment of comments(); track comment.id) {
+          <tr>
+            <td [attr.data-label]="t('author')">{{ comment.author }}</td>
+            <td [attr.data-label]="t('title')">{{ comment.articleTitle }}</td>
+            <td [attr.data-label]="t('comment')">{{ comment.content }}</td>
+            <td [attr.data-label]="t('status')"><span class="status" [class.published]="comment.status === 'approved'" [class.review]="comment.status === 'pending'">{{ comment.status === 'approved' ? t('approved') : t('pending') }}</span></td>
+            <td [attr.data-label]="t('actions')">
+              <div class="table-actions">
+                <button type="button" class="admin-btn secondary" (click)="approve(comment.id)">{{ t('approve') }}</button>
+                @if (auth.canDelete()) {
+                  <button type="button" class="admin-btn danger" (click)="delete(comment.id)">{{ t('delete') }}</button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (comments().length === 0) {
+      <div class="empty-state visible">
+        <span>0</span>
+        <h3>No news available</h3>
+      </div>
+    }
+  </section>
+</section>

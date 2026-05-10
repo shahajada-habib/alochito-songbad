@@ -1,0 +1,65 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('categories') }}</span>
+    <h2>{{ t('categories') }}</h2>
+    <p>{{ t('categoriesHelp') }}</p>
+  </div>
+
+  <section class="cms-panel">
+    <div class="panel-heading">
+      <h3>{{ t('addCategory') }}</h3>
+      <p>{{ t('addCategoryHelp') }}</p>
+    </div>
+    <form class="inline-form" (ngSubmit)="create()">
+      <input type="text" name="categoryName" [(ngModel)]="form.name" [placeholder]="t('categoryName')">
+      <input type="text" name="categorySlug" [(ngModel)]="form.slug" [placeholder]="t('slug')">
+      <button type="submit" class="admin-btn">{{ t('add') }}</button>
+    </form>
+  </section>
+
+  <section class="cms-panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('name') }}</th>
+          <th>{{ t('slug') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of categories(); track category.id) {
+        <tr>
+          @if (editingId === category.id) {
+            <td [attr.data-label]="t('name')"><input type="text" name="editCategoryName" [(ngModel)]="editForm.name"></td>
+            <td [attr.data-label]="t('slug')"><input type="text" name="editCategorySlug" [(ngModel)]="editForm.slug"></td>
+            <td [attr.data-label]="t('actions')">
+              <div class="table-actions">
+                <button type="button" class="admin-btn" (click)="saveEdit(category.id)">{{ t('save') }}</button>
+                <button type="button" class="admin-btn secondary" (click)="cancelEdit()">{{ t('backToList') }}</button>
+              </div>
+            </td>
+          } @else {
+            <td [attr.data-label]="t('name')">{{ category.name }}</td>
+            <td [attr.data-label]="t('slug')">{{ category.slug }}</td>
+            <td [attr.data-label]="t('actions')">
+              <div class="table-actions">
+                <button type="button" class="admin-btn secondary" (click)="startEdit(category)">{{ t('edit') }}</button>
+                @if (auth.canDelete()) {
+                  <button type="button" class="admin-btn danger" (click)="deleteCategory(category)">{{ t('delete') }}</button>
+                }
+              </div>
+            </td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (categories().length === 0) {
+      <div class="empty-state visible">
+        <span>0</span>
+        <h3>No news available</h3>
+      </div>
+    }
+  </section>
+</section>

@@ -1,0 +1,314 @@
+<section class="breaking-bar">
+  <div class="page breaking-inner">
+    <strong>ব্রেকিং</strong>
+    <div class="ticker">
+      <div class="ticker-track">
+        @for (item of breakingNews; track $index) {
+          <span>{{ item }}</span>
+        }
+        @for (item of breakingNews; track $index) {
+          <span>{{ item }}</span>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page home-page">
+  <div class="hero-grid">
+    @if (isLoading()) {
+      <article class="lead-card story-card hero-skeleton-card">
+        <div class="skeleton-box skeleton-fill"></div>
+        <div class="story-content skeleton-content">
+          <span class="skeleton-line skeleton-badge-line"></span>
+          <span class="skeleton-line skeleton-title-line"></span>
+          <span class="skeleton-line skeleton-title-line short"></span>
+          <span class="skeleton-line skeleton-meta-line"></span>
+        </div>
+      </article>
+
+      <div class="top-story-grid">
+        @for (_ of heroSkeletonCards; track $index) {
+          <article class="small-card story-card hero-skeleton-card">
+            <div class="skeleton-box skeleton-fill"></div>
+            <div class="story-content skeleton-content">
+              <span class="skeleton-line skeleton-badge-line"></span>
+              <span class="skeleton-line skeleton-card-line"></span>
+              <span class="skeleton-line skeleton-meta-line"></span>
+            </div>
+          </article>
+        }
+      </div>
+    } @else if (leadStory; as story) {
+      <article class="lead-card story-card">
+        <a class="story-image-link" [routerLink]="['/news', story.slug]" [attr.aria-label]="story.title">
+          @if (hasDisplayImage(story)) {
+            <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+          } @else {
+            <div class="story-image-fallback" [style.background]="categoryGradient(story.category)">
+              <strong>{{ story.category }}</strong>
+              <span>{{ story.title }}</span>
+            </div>
+          }
+        </a>
+        <div class="story-content">
+          <a class="badge lead-category-badge" [routerLink]="['/category', story.category]">{{ story.category }}</a>
+          <h1><a [routerLink]="['/news', story.slug]">{{ story.title }}</a></h1>
+          <p>{{ story.summary }}</p>
+          <time>{{ story.time }} | {{ story.readingTime }} | {{ story.viewLabel }}</time>
+        </div>
+      </article>
+    } @else {
+      <div class="lead-card news-empty-state">
+        <span aria-hidden="true"></span>
+        <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
+        <p>নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
+      </div>
+
+      <div class="top-story-grid">
+        <div class="small-card news-empty-state wide-empty">
+          <span aria-hidden="true"></span>
+          <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
+          <p>দ্বিতীয় সারির সংবাদ এখনো প্রকাশ হয়নি।</p>
+        </div>
+      </div>
+    }
+
+    @if (!isLoading() && leadStory) {
+      <div class="top-story-grid">
+        @if (topStories.length > 0) {
+        @for (story of topStories; track story.slug) {
+          <article class="small-card story-card">
+            <a class="story-image-link" [routerLink]="['/news', story.slug]" [attr.aria-label]="story.title">
+              @if (hasDisplayImage(story)) {
+                <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+              } @else {
+                <div class="story-image-fallback" [style.background]="categoryGradient(story.category)">
+                  <strong>{{ story.category }}</strong>
+                  <span>{{ story.title }}</span>
+                </div>
+              }
+            </a>
+            <div class="story-content">
+              <a class="badge lead-category-badge" [routerLink]="['/category', story.category]">{{ story.category }}</a>
+              <h2><a [routerLink]="['/news', story.slug]">{{ story.title }}</a></h2>
+              <p>{{ story.summary }}</p>
+              <time>{{ story.time }} | {{ story.readingTime }} | {{ story.viewLabel }}</time>
+            </div>
+          </article>
+        }
+        } @else {
+        <div class="small-card news-empty-state wide-empty">
+          <span aria-hidden="true"></span>
+          <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
+          <p>নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
+        </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (editorPicks.length > 0) {
+    <section class="content-section editor-picks-section">
+      <div class="section-heading">
+        <h2>সম্পাদকের পছন্দ</h2>
+      </div>
+
+      <div class="editor-picks-grid">
+        @for (story of editorPicks; track story.slug) {
+          <article class="editor-pick-card">
+            <a [routerLink]="['/news', story.slug]">
+              @if (hasDisplayImage(story)) {
+                <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+              } @else {
+                <div class="story-image-fallback" [style.background]="categoryGradient(story.category)">
+                  <strong>{{ story.category }}</strong>
+                  <span>{{ story.title }}</span>
+                </div>
+              }
+              <div>
+                <span class="pick-label">{{ story.category }}</span>
+                <h3>{{ story.title }}</h3>
+                <p>{{ story.summary }}</p>
+                <time>{{ story.time }} | {{ story.readingTime }} | {{ story.viewLabel }}</time>
+              </div>
+            </a>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <section class="content-section">
+    <div class="section-heading">
+      <h2>সর্বশেষ সংবাদ</h2>
+      <a routerLink="/news">সব দেখুন</a>
+    </div>
+
+    <div class="latest-grid">
+      @if (isLoading()) {
+        @for (_ of skeletonCards; track $index) {
+          <article class="news-list-card skeleton-news-card">
+            <div class="skeleton-box skeleton-thumb"></div>
+            <div>
+              <span class="skeleton-line skeleton-badge-line"></span>
+              <span class="skeleton-line skeleton-card-line"></span>
+              <span class="skeleton-line skeleton-card-line short"></span>
+              <span class="skeleton-line skeleton-meta-line"></span>
+            </div>
+          </article>
+        }
+      } @else if (latestNews.length > 0) {
+        @for (story of latestNews; track story.slug) {
+          <article class="news-list-card">
+            @if (hasDisplayImage(story)) {
+              <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+            } @else {
+              <div class="story-image-fallback list-fallback" [style.background]="categoryGradient(story.category)">
+                <strong>{{ story.category }}</strong>
+                <span>{{ story.title }}</span>
+              </div>
+            }
+            <div>
+              <a class="category-link" [routerLink]="['/category', story.category]">{{ story.category }}</a>
+              <h3>
+                <a [routerLink]="['/news', story.slug]">{{ story.title }}</a>
+              </h3>
+              <p>{{ story.summary }}</p>
+              <time>{{ story.time }} | {{ story.readingTime }} | {{ story.viewLabel }}</time>
+            </div>
+          </article>
+        }
+      } @else {
+        <div class="news-empty-state wide-empty">
+          <span aria-hidden="true"></span>
+          <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
+          <p>নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (trendingNews.length > 0) {
+  <section class="content-section">
+    <div class="section-heading">
+      <h2>সর্বাধিক পঠিত</h2>
+    </div>
+
+    <div class="latest-grid">
+      @for (story of trendingNews; track story.slug) {
+        <article class="news-list-card">
+            @if (hasDisplayImage(story)) {
+              <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+            } @else {
+              <div class="story-image-fallback list-fallback" [style.background]="categoryGradient(story.category)">
+                <strong>{{ story.category }}</strong>
+                <span>{{ story.title }}</span>
+              </div>
+            }
+            <div>
+              <a class="category-link" [routerLink]="['/category', story.category]">{{ story.category }}</a>
+              <h3>
+                <a [routerLink]="['/news', story.slug]">{{ story.title }}</a>
+              </h3>
+              <p>{{ story.summary }}</p>
+              <time>{{ story.time }} | {{ story.readingTime }} | {{ story.viewLabel }}</time>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <section class="content-section">
+    <div class="section-heading">
+      <h2>সংবাদ বিভাগ</h2>
+    </div>
+
+    <div class="category-grid">
+      @if (categories.length > 0) {
+        @for (category of categories; track category.name) {
+        <section class="category-block">
+          <h3 class="category-title-bar">
+            <a [routerLink]="['/category', category.name]">{{ category.name }}</a>
+          </h3>
+
+          @if (category.lead) {
+            <article class="category-lead-story">
+              <a class="category-lead-image" [routerLink]="['/news', category.lead.slug]" [attr.aria-label]="category.lead.title">
+                @if (hasDisplayImage(category.lead)) {
+                  <img [src]="category.lead.image" [alt]="category.lead.title" (error)="markImageFailed(category.lead)">
+                } @else {
+                  <div class="story-image-fallback" [style.background]="categoryGradient(category.lead.category)">
+                    <strong>{{ category.lead.category }}</strong>
+                    <span>{{ category.lead.title }}</span>
+                  </div>
+                }
+              </a>
+              <h4>
+                <a [routerLink]="['/news', category.lead.slug]">{{ category.lead.title }}</a>
+              </h4>
+            </article>
+
+            @if (category.stories.length > 0) {
+              <div class="category-sub-story-list">
+                @for (story of category.stories; track story.slug) {
+                  <a class="category-sub-story" [routerLink]="['/news', story.slug]">{{ story.title }}</a>
+                }
+              </div>
+            }
+
+            <a class="category-more-link" [routerLink]="['/category', category.name]">আরও পড়ুন →</a>
+          } @else {
+            <div class="category-empty-card">
+              <strong>{{ category.name }}</strong>
+              <span>এই বিভাগে এখনো সংবাদ নেই</span>
+            </div>
+            <a class="category-more-link" [routerLink]="['/category', category.name]">আরও পড়ুন →</a>
+          }
+        </section>
+        }
+      } @else {
+        <div class="news-empty-state wide-empty">
+          <span aria-hidden="true"></span>
+          <strong>à¦¬à¦¿à¦­à¦¾à¦—à¦­à¦¿à¦¤à§à¦¤à¦¿à¦• à¦¸à¦‚à¦¬à¦¾à¦¦ à¦à¦–à¦¨à§‹ à¦¨à§‡à¦‡</strong>
+          <p>à¦ªà§à¦°à¦•à¦¾à¦¶à¦¿à¦¤ à¦¸à¦‚à¦¬à¦¾à¦¦ à¦¯à§à¦•à§à¦¤ à¦¹à¦²à§‡ à¦¬à¦¿à¦­à¦¾à¦—à¦—à§à¦²à§‹ à¦à¦–à¦¾à¦¨à§‡ à¦¦à§‡à¦–à¦¾à¦¬à§‡à¥¤</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="content-section team-section">
+    <div class="section-heading">
+      <h2>আমাদের টিম</h2>
+    </div>
+
+    <div class="team-grid">
+      @for (member of team; track member.name) {
+        <article class="team-card">
+          <img [src]="member.image" [alt]="member.name">
+          <h3>{{ member.name }}</h3>
+          <p>{{ member.role }}</p>
+        </article>
+      }
+    </div>
+  </section>
+</section>
+
+<footer class="site-footer">
+  <div class="page footer-inner">
+    <div>
+      <h2>আলোচিত সংবাদ</h2>
+      <p>নির্ভরযোগ্য সংবাদ, বিশ্লেষণ ও নাগরিক কণ্ঠের ডিজিটাল প্ল্যাটফর্ম।</p>
+    </div>
+    <div>
+      <h3>যোগাযোগ</h3>
+      <p>ইমেইল: info&#64;alochitosongbad.com</p>
+      <p>ফোন: +৮৮০ ১৭০০ ০০০০০০</p>
+    </div>
+    <div>
+      <h3>সোশ্যাল</h3>
+      <p>Facebook | YouTube | X</p>
+    </div>
+  </div>
+</footer>

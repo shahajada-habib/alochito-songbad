@@ -1,0 +1,46 @@
+<section class="page news-page">
+  <div class="page-heading">
+    <span>সংবাদ বিভাগ</span>
+    <h1>{{ categoryTitle() }}</h1>
+    <p>আলোচিত সংবাদে প্রকাশিত এই বিভাগের সর্বশেষ খবরগুলো দেখুন।</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="news-grid">
+      @for (_ of skeletonCards; track $index) {
+        <article class="news-card skeleton-list-card">
+          <div class="skeleton-box skeleton-list-image"></div>
+          <div>
+            <span class="skeleton-line skeleton-label"></span>
+            <span class="skeleton-line skeleton-heading"></span>
+            <span class="skeleton-line skeleton-heading short"></span>
+            <span class="skeleton-line skeleton-copy"></span>
+            <span class="skeleton-line skeleton-meta"></span>
+          </div>
+        </article>
+      }
+    </div>
+  } @else if (hasNews()) {
+    <div class="news-grid">
+      @for (item of news(); track item.slug) {
+        <article class="news-card">
+          <img [src]="item.image" [alt]="item.title">
+          <div>
+            <a class="category-link" [routerLink]="['/category', item.category]">{{ item.category }}</a>
+            <h2>
+              <a [routerLink]="['/news', item.slug]">{{ item.title }}</a>
+            </h2>
+            <p>{{ item.summary }}</p>
+            <time>{{ item.time }} | {{ item.readingTime }} | {{ item.viewLabel }}</time>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="news-empty-state">
+      <span aria-hidden="true"></span>
+      <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
+      <p>এই বিভাগে নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
+    </div>
+  }
+</section>

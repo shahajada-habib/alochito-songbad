@@ -1,0 +1,26 @@
+<section class="login-page">
+  <form class="login-card" (ngSubmit)="submit()">
+    <div>
+      <span class="brand-mark">আ</span>
+      <h1>আলোচিত সংবাদ CMS</h1>
+      <p>Admin login</p>
+    </div>
+
+    <label>
+      <span>Username</span>
+      <input type="text" name="username" [(ngModel)]="username" autocomplete="username" required>
+    </label>
+
+    <label>
+      <span>Password</span>
+      <input type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required>
+    </label>
+
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+
+    <button type="submit">Sign in</button>
+    <p class="hint">Use <strong>admin</strong>, <strong>editor</strong>, or <strong>reporter</strong> with password <strong>1234</strong></p>
+  </form>
+</section>

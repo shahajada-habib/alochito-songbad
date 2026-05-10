@@ -1,0 +1,60 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('mediaLibrary') }}</span>
+    <h2>{{ t('mediaLibrary') }}</h2>
+    <p>{{ t('mediaLibraryHelp') }}</p>
+  </div>
+
+  <section class="cms-panel cms-form">
+    <label>
+      <span>{{ t('title') }}</span>
+      <input type="text" name="mediaTitle" [(ngModel)]="title" [placeholder]="t('title')">
+    </label>
+    <label>
+      <span>{{ t('chooseImage') }}</span>
+      <input type="file" [accept]="imageAccept" (change)="chooseImage($event)">
+      @if (uploadError) {
+        <small class="upload-error-message">{{ uploadError }}</small>
+      }
+    </label>
+    <div class="form-actions full-width">
+      <button type="button" class="admin-btn" (click)="addMedia()">{{ t('add') }}</button>
+    </div>
+  </section>
+
+  @if (previewUrl) {
+    <section class="cms-panel logo-preview-card">
+      <div class="panel-heading">
+        <h3>{{ t('featureImagePreview') }}</h3>
+      </div>
+      <img class="media-preview-image" [src]="previewUrl" alt="">
+    </section>
+  }
+
+  <section class="cms-panel">
+    @if (media().length > 0) {
+      <div class="media-grid">
+        @for (item of media(); track item.id) {
+          <article class="config-card">
+            <img class="media-card-image" [src]="item.imageUrl" [alt]="item.title">
+            <strong>{{ item.title }}</strong>
+            <small>{{ item.createdAt }}</small>
+            <small class="media-card-url">{{ item.imageUrl }}</small>
+            <div class="table-actions">
+              <button type="button" class="admin-btn secondary" (click)="copyUrl(item)">{{ t('copyUrl') }}</button>
+              <button type="button" class="admin-btn" routerLink="/admin/news/create" (click)="useInArticle(item)">{{ t('useInArticle') }}</button>
+              @if (auth.isAdmin() || auth.isEditor()) {
+                <button type="button" class="admin-btn danger" (click)="deleteImage(item)">{{ t('deleteImage') }}</button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible">
+        <span>0</span>
+        <h3>No news available</h3>
+      </div>
+    }
+  </section>
+</section>

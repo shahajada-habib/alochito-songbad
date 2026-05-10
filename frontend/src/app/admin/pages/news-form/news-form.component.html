@@ -1,0 +1,237 @@
+<section class="cms-page news-editor-page">
+  <form class="writing-workspace" (ngSubmit)="save()" (input)="markDirty()" (change)="markDirty()">
+    <header class="writing-topbar">
+      <button type="button" class="admin-btn editor-back-button" routerLink="/admin/news">
+        <span aria-hidden="true">&larr;</span>
+        {{ t('backToList') }}
+      </button>
+
+      <div class="save-cluster">
+        <span class="autosave-indicator">{{ t('newsEditor') }}</span>
+        <button type="button" class="admin-btn secondary" (click)="preview()">{{ t('preview') }}</button>
+        <button type="button" class="admin-btn secondary" (click)="saveDraft()">{{ t('saveDraft') }}</button>
+        <button type="button" class="admin-btn save-button" (click)="sendToReview()">{{ t('sendToReview') }}</button>
+        @if (canPublish) {
+          <button type="button" class="admin-btn publish-button" (click)="publish()">{{ t('publishNow') }}</button>
+        }
+      </div>
+    </header>
+
+    <div class="editor-grid">
+      <section class="editor-card editor-main-card">
+        <div class="card-heading">
+          <span>{{ t('mainContent') }}</span>
+          <p>{{ t('mainContentHelp') }}</p>
+        </div>
+
+        <label class="title-field">
+          <span>{{ t('title') }}</span>
+          <input type="text" name="title" [(ngModel)]="form.title" [placeholder]="t('titlePlaceholder')">
+        </label>
+
+        <label class="subtitle-field">
+          <span>{{ t('subtitle') }}</span>
+          <input type="text" name="subtitle" [(ngModel)]="form.subtitle" [placeholder]="t('subtitlePlaceholder')">
+        </label>
+
+        <div class="metadata-grid">
+          <label class="premium-field">
+            <span>{{ t('reporterName') }}</span>
+            <select name="authorId" [(ngModel)]="form.authorId" (ngModelChange)="selectReporter($event ? +$event : null)">
+              <option [ngValue]="null">প্রতিবেদক নির্বাচন করুন</option>
+              @for (reporter of reporters(); track reporter.id) {
+                <option [ngValue]="reporter.id">{{ reporterLabel(reporter) }}</option>
+              }
+            </select>
+            <small>প্রতিবেদক নির্বাচন করলে লেখক প্রোফাইল সংবাদে যুক্ত হবে।</small>
+          </label>
+
+        <label class="premium-field">
+          <span>{{ t('source') }}</span>
+          <select name="sourceMode" [(ngModel)]="sourceMode" (ngModelChange)="onSourceModeChange($event)">
+            <option value="">Select source type</option>
+            @for (option of sourceOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+          <small>Choose a desk label or switch to custom attribution.</small>
+        </label>
+
+        @if (showCustomSourceInput()) {
+          <label class="premium-field">
+            <span>{{ sourceMode === 'Reporter Name' ? 'Reporter name' : 'Custom source' }}</span>
+            <input
+              type="text"
+              name="sourceCustomValue"
+              [(ngModel)]="sourceCustomValue"
+              (ngModelChange)="onSourceCustomValueChange($event)"
+              [placeholder]="sourceMode === 'Reporter Name' ? 'Enter reporter name' : 'Enter custom source'"
+            >
+          </label>
+        }
+
+          <label class="premium-field">
+            <span>{{ t('tags') }}</span>
+            <input
+              type="text"
+              name="tagInput"
+              [(ngModel)]="tagInput"
+              (keydown)="onTagInputKeydown($event)"
+              (blur)="addTagFromInput()"
+              [placeholder]="t('tagsPlaceholder')"
+            >
+            @if (form.tagNames.length > 0) {
+              <div class="tag-chip-list" aria-label="Selected tags">
+                @for (tag of form.tagNames; track tag) {
+                  <button type="button" class="tag-chip" (click)="removeTag(tag)">
+                    {{ tag }}
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                }
+              </div>
+            }
+          </label>
+
+          <label class="premium-field">
+            <span>{{ t('slug') }}</span>
+            <input type="text" name="slug" [(ngModel)]="form.slug" placeholder="example-news-slug">
+          </label>
+        </div>
+
+        <div class="premium-editor-shell">
+          <span class="field-label">{{ t('content') }}</span>
+          <input
+            #inlineImageInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
+            hidden
+            (change)="$event.stopPropagation(); uploadInlineImage($event)"
+          >
+          <quill-editor
+            name="content"
+            class="news-rich-editor"
+            [(ngModel)]="form.content"
+            (onEditorCreated)="captureEditor($event)"
+            (onContentChanged)="markDirty()"
+            [modules]="editorModules"
+            [styles]="editorStyles"
+            [placeholder]="t('contentPlaceholder')"
+          ></quill-editor>
+        </div>
+      </section>
+
+      <aside class="editor-card editor-side-card">
+        <div class="card-heading">
+          <span>{{ t('publishingSettings') }}</span>
+          <p>{{ t('publishingSettingsHelp') }}</p>
+        </div>
+
+        <label class="premium-field">
+          <span>{{ t('category') }}</span>
+          <select name="category" [(ngModel)]="form.category">
+            @for (category of categories(); track category.id) {
+              <option [value]="category.name">{{ category.name }}</option>
+            }
+          </select>
+          <small>{{ t('categoryHelp') }}</small>
+        </label>
+
+        <label class="premium-field">
+          <span>{{ t('featureImageUrl') }}</span>
+          <input type="url" name="imageUrl" [(ngModel)]="form.imageUrl" [placeholder]="t('imagePlaceholder')">
+          <small>{{ t('imageHelp') }}</small>
+        </label>
+
+        <label class="upload-field">
+          <span>{{ t('uploadFeatureImage') }}</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif" (change)="uploadFeatureImage($event)">
+        </label>
+
+        <div class="image-preview-box">
+          @if (form.imageUrl.trim()) {
+            <img [src]="form.imageUrl" [alt]="form.imageAlt || t('featureImagePreview')" loading="lazy">
+          } @else {
+            <div class="image-preview-placeholder">
+              <span></span>
+              <strong>{{ t('featureImagePreview') }}</strong>
+            </div>
+          }
+        </div>
+
+        <label class="premium-field">
+          <span>{{ t('imageCaption') }}</span>
+          <textarea name="imageCaption" [(ngModel)]="form.imageCaption" rows="3" [placeholder]="t('imageCaptionPlaceholder')"></textarea>
+        </label>
+
+        <label class="premium-field">
+          <span>{{ t('imageSource') }}</span>
+          <input type="text" name="imageSource" [(ngModel)]="form.imageSource" [placeholder]="t('imageSourcePlaceholder')">
+        </label>
+
+        <label class="premium-field">
+          <span>{{ t('imageAlt') }}</span>
+          <input type="text" name="imageAlt" [(ngModel)]="form.imageAlt" [placeholder]="t('imageAltPlaceholder')">
+          <small>{{ t('imageAltHelp') }}</small>
+        </label>
+
+        <label class="premium-field">
+          <span>{{ t('status') }}</span>
+          <select name="status" [(ngModel)]="form.status" [class.publish-ready-select]="form.status === 'published'">
+            @for (option of statusOptions(); track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+          @if (form.status === 'published') {
+            <span class="publish-ready-badge">প্রকাশের জন্য প্রস্তুত ✓</span>
+          }
+          <small>{{ t('statusHelp') }}</small>
+        </label>
+
+        <label class="premium-field">
+          <span>{{ t('publishDate') }}</span>
+          <input type="datetime-local" name="publishDate" [(ngModel)]="form.publishDate">
+        </label>
+
+        <label class="premium-field">
+          <span>{{ t('scheduledPublish') }}</span>
+          <input type="datetime-local" name="scheduledAt" [(ngModel)]="form.scheduledAt">
+        </label>
+
+        <div class="toggle-grid">
+          <label class="toggle-field">
+            <input type="checkbox" name="breaking" [(ngModel)]="form.breaking">
+            <span>{{ t('breakingNews') }}</span>
+          </label>
+
+          <label class="toggle-field">
+            <input type="checkbox" name="featured" [(ngModel)]="form.featured">
+            <span>{{ t('featuredNews') }}</span>
+          </label>
+        </div>
+
+        <section class="article-checklist">
+          <h3>{{ t('seoSettings') }}</h3>
+          <label class="premium-field">
+            <span>{{ t('seoTitle') }}</span>
+            <input type="text" name="seoTitle" [(ngModel)]="form.seoTitle" [placeholder]="t('seoTitle')">
+          </label>
+          <label class="premium-field">
+            <span>{{ t('seoMetaDescription') }}</span>
+            <textarea name="seoDescription" [(ngModel)]="form.seoDescription" rows="4" [placeholder]="t('seoMetaDescription')"></textarea>
+          </label>
+        </section>
+
+        <section class="article-checklist">
+          <h3>{{ t('articleChecklist') }}</h3>
+          <ul>
+            <li [class.done]="form.title.trim()"><span></span>{{ t('checklistTitle') }}</li>
+            <li [class.done]="form.category"><span></span>{{ t('checklistCategory') }}</li>
+            <li [class.done]="form.imageUrl.trim()"><span></span>{{ t('checklistImage') }}</li>
+            <li [class.done]="hasContent()"><span></span>{{ t('checklistContent') }}</li>
+            <li [class.done]="form.status"><span></span>{{ t('checklistStatus') }}</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </form>
+</section>

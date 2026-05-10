@@ -1,0 +1,325 @@
+.site-header {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 14px rgba(23, 32, 38, 0.035);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-ui);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  transition: box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease, backdrop-filter 180ms ease;
+  will-change: box-shadow, border-color, background-color;
+}
+
+.site-header.scrolled {
+  border-bottom-color: rgba(230, 224, 215, 0.95);
+  box-shadow: 0 14px 34px rgba(23, 32, 38, 0.1);
+  background: rgba(255, 255, 255, 0.985);
+}
+
+.header-top {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 20px var(--space-3) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  transition: padding 180ms ease;
+}
+
+.brand,
+.header-actions,
+.category-nav {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 12px;
+  min-width: 0;
+  padding: 2px 0;
+  transition: transform 180ms ease;
+}
+
+/* Future real logo image support:
+   Add <img class="brand-image" src="/brand/logo.png" alt="আলোচিত সংবাদ"> in the header.
+   Keep .brand-mark and .brand text visible as the fallback until that asset is approved. */
+.brand-image {
+  width: auto;
+  height: 52px;
+  max-width: 220px;
+  object-fit: contain;
+}
+
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #d92d20, var(--color-primary-dark));
+  color: var(--color-surface);
+  box-shadow: 0 10px 22px rgba(180, 35, 24, 0.22);
+  font-size: 29px;
+  font-weight: 700;
+  line-height: 1;
+  transition: width 180ms ease, height 180ms ease, font-size 180ms ease, box-shadow 180ms ease;
+}
+
+.brand strong {
+  display: block;
+  font-family: var(--font-public-heading);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: var(--color-text);
+  transition: font-size 180ms ease, line-height 180ms ease;
+}
+
+.brand small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  font-size: 13.5px;
+  line-height: 1.2;
+  transition: opacity 180ms ease, margin-top 180ms ease;
+}
+
+.header-actions {
+  justify-content: flex-end;
+  gap: var(--space-3);
+  color: var(--color-muted);
+  font-size: 14px;
+  white-space: nowrap;
+  transition: gap 180ms ease;
+}
+
+.site-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: min(320px, 32vw);
+}
+
+.site-search input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 10px var(--space-3);
+  background: var(--color-surface-soft);
+  font: inherit;
+  transition: padding 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.site-search input:focus {
+  outline: 2px solid rgba(180, 35, 24, 0.16);
+  border-color: var(--color-primary);
+}
+
+.site-search button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px var(--space-3);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.site-search button:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.header-actions > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 var(--space-2);
+  border-left: 1px solid var(--color-border);
+  color: var(--color-muted);
+  transition: min-height 180ms ease, padding 180ms ease;
+}
+
+.header-actions .cms-link {
+  padding: 10px var(--space-3);
+  border-radius: 999px;
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 700;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.header-actions .cms-link:hover {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  transform: translateY(-1px);
+}
+
+.header-actions .login-link {
+  padding: 8px 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.header-actions .login-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.category-nav {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+  gap: 2px;
+  overflow-x: auto;
+  border-top: 1px solid var(--color-border);
+  scrollbar-width: thin;
+  transition: padding 180ms ease;
+}
+
+.category-nav a {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 14px var(--space-3) 11px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.site-header.scrolled .header-top {
+  padding-top: 12px;
+  padding-bottom: 10px;
+}
+
+.site-header.scrolled .brand-mark {
+  width: 46px;
+  height: 46px;
+  font-size: 26px;
+  box-shadow: 0 8px 18px rgba(180, 35, 24, 0.18);
+}
+
+.site-header.scrolled .brand strong {
+  font-size: 31px;
+  line-height: 1.02;
+}
+
+.site-header.scrolled .brand small {
+  opacity: 0.92;
+  margin-top: 4px;
+}
+
+.site-header.scrolled .site-search input {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.site-header.scrolled .site-search button {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.site-header.scrolled .header-actions > span {
+  min-height: 34px;
+}
+
+.site-header.scrolled .category-nav {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.site-header.scrolled .category-nav a {
+  padding-top: 12px;
+  padding-bottom: 9px;
+}
+
+.category-nav a::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: transparent;
+  transition: background 160ms ease;
+}
+
+.category-nav a.active,
+.category-nav a:hover {
+  color: var(--color-primary);
+  background: #fff7f5;
+}
+
+.category-nav a.active::after,
+.category-nav a:hover::after {
+  background: var(--color-primary);
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    position: sticky;
+  }
+
+  .header-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .brand strong {
+    font-size: 29px;
+  }
+
+  .brand-mark {
+    width: 46px;
+    height: 46px;
+    font-size: 27px;
+  }
+
+  .header-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    white-space: normal;
+  }
+
+  .site-search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .header-actions > span {
+    min-height: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .category-nav {
+    gap: 2px;
+  }
+
+  .category-nav a {
+    padding-inline: var(--space-2);
+  }
+
+  .site-header.scrolled .header-top {
+    padding-top: 12px;
+    padding-bottom: var(--space-2);
+  }
+
+  .site-header.scrolled .brand strong {
+    font-size: 27px;
+  }
+}

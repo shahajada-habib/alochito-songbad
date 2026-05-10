@@ -1,0 +1,38 @@
+{
+  "name": "alochito-songbad-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "ng serve",
+    "build": "ng build",
+    "build:ssr": "ng build",
+    "test": "ng test",
+    "serve:ssr": "node dist/alochito-songbad-frontend/server/server.mjs",
+    "serve:ssr:alochito-songbad-frontend": "node dist/alochito-songbad-frontend/server/server.mjs"
+  },
+  "dependencies": {
+    "@angular/animations": "^20.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/platform-server": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    "@angular/ssr": "^20.3.24",
+    "express": "^5.1.0",
+    "ngx-quill": "^28.0.2",
+    "quill": "^2.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.8.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.0.0",
+    "@angular/cli": "^20.0.0",
+    "@angular/compiler-cli": "^20.0.0",
+    "@types/express": "^5.0.1",
+    "@types/node": "^20.17.19",
+    "typescript": "~5.8.0"
+  }
+}

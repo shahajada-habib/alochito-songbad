@@ -1,0 +1,137 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('team') }}</span>
+    <h2>{{ t('team') }}</h2>
+    <p>{{ t('teamHelp') }}</p>
+  </div>
+
+  <section class="cms-panel">
+    <div class="panel-heading">
+      <h3>{{ t('addMember') }}</h3>
+      <p>{{ t('addMemberHelp') }}</p>
+    </div>
+    <form class="inline-form" (ngSubmit)="create()">
+      <input type="text" name="memberName" [(ngModel)]="form.name" placeholder="username">
+      <input type="password" name="memberPassword" [(ngModel)]="form.password" placeholder="password">
+      <select name="memberRole" [(ngModel)]="form.role">
+        <option value="Editor">Editor</option>
+        <option value="Reporter">Reporter</option>
+        <option value="Admin">Admin</option>
+      </select>
+      <select name="memberStatus" [(ngModel)]="form.status">
+        <option value="active">active</option>
+        <option value="inactive">inactive</option>
+      </select>
+      <button type="submit" class="admin-btn">{{ t('add') }}</button>
+    </form>
+  </section>
+
+  <section class="cms-panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('name') }}</th>
+          <th>{{ t('role') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (member of members(); track member.id) {
+        <tr>
+          @if (editingId === member.id) {
+            <td [attr.data-label]="t('name')">{{ member.name }}</td>
+            <td [attr.data-label]="t('role')">
+              <select name="editMemberRole" [(ngModel)]="editForm.role">
+                <option value="Editor">Editor</option>
+                <option value="Reporter">Reporter</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </td>
+            <td [attr.data-label]="t('status')">
+              <select name="editMemberStatus" [(ngModel)]="editForm.status">
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+              </select>
+            </td>
+            <td [attr.data-label]="t('actions')">
+              <div class="table-actions">
+                <button type="button" class="admin-btn" (click)="saveEdit(member.id)">{{ t('save') }}</button>
+                <button type="button" class="admin-btn secondary" (click)="cancelEdit()">{{ t('backToList') }}</button>
+              </div>
+            </td>
+          } @else {
+            <td [attr.data-label]="t('name')">{{ member.name }}</td>
+            <td [attr.data-label]="t('role')">{{ member.role }}</td>
+            <td [attr.data-label]="t('status')">{{ member.status }}</td>
+            <td [attr.data-label]="t('actions')">
+              <div class="table-actions">
+                <button type="button" class="admin-btn secondary" (click)="startEdit(member)">{{ t('edit') }}</button>
+                <button type="button" class="admin-btn secondary" (click)="startProfileEdit(member)">প্রোফাইল সম্পাদনা</button>
+                @if (auth.canDelete()) {
+                  <button type="button" class="admin-btn danger" (click)="deleteMember(member)">{{ t('delete') }}</button>
+                }
+              </div>
+            </td>
+          }
+        </tr>
+        @if (profileEditingId === member.id) {
+          <tr>
+            <td colspan="4">
+              <form class="cms-form" (ngSubmit)="saveProfile(member.id)">
+                <label>
+                  <span>বাংলা নাম</span>
+                  <input type="text" name="displayName{{ member.id }}" [(ngModel)]="profileForm.displayName">
+                </label>
+                <label>
+                  <span>পদবি</span>
+                  <select name="designation{{ member.id }}" [(ngModel)]="profileForm.designation">
+                    @for (designation of designationOptions; track designation) {
+                      <option [value]="designation">{{ designation }}</option>
+                    }
+                  </select>
+                </label>
+                <label class="full-width">
+                  <span>জীবনী</span>
+                  <textarea name="bio{{ member.id }}" [(ngModel)]="profileForm.bio" rows="3" maxlength="500"></textarea>
+                </label>
+                <label>
+                  <span>প্রোফাইল ছবি URL</span>
+                  <input type="url" name="profileImageUrl{{ member.id }}" [(ngModel)]="profileForm.profileImageUrl">
+                </label>
+                <label>
+                  <span>Facebook URL</span>
+                  <input type="url" name="facebookUrl{{ member.id }}" [(ngModel)]="profileForm.facebookUrl">
+                </label>
+                <label>
+                  <span>Twitter/X URL</span>
+                  <input type="url" name="twitterUrl{{ member.id }}" [(ngModel)]="profileForm.twitterUrl">
+                </label>
+                <label>
+                  <span>Public Email</span>
+                  <input type="email" name="emailPublic{{ member.id }}" [(ngModel)]="profileForm.emailPublic">
+                </label>
+                <label>
+                  <span>পোর্টালে দেখান</span>
+                  <input type="checkbox" name="isPublic{{ member.id }}" [(ngModel)]="profileForm.isPublic">
+                </label>
+                <div class="table-actions full-width">
+                  <button type="submit" class="admin-btn">{{ t('save') }}</button>
+                  <button type="button" class="admin-btn secondary" (click)="cancelProfileEdit()">{{ t('backToList') }}</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+        }
+        }
+      </tbody>
+    </table>
+
+    @if (members().length === 0) {
+      <div class="empty-state visible">
+        <span>0</span>
+        <h3>টিম সদস্য পাওয়া যায়নি</h3>
+      </div>
+    }
+  </section>
+</section>

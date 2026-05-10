@@ -1,0 +1,207 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('cmsOverview') }}</span>
+    <h2>{{ t('dashboard') }}</h2>
+    <p>{{ t('dashboardIntro') }}</p>
+  </div>
+
+  <div class="cms-stats">
+    @for (stat of stats(); track stat.label || stat.labelKey) {
+      <article>
+        <span class="stat-icon">◼</span>
+        <div>
+          <strong>{{ stat.count }}</strong>
+          <span>{{ stat.label || t(stat.labelKey!) }}</span>
+          <small>{{ t(stat.trendKey) }}</small>
+        </div>
+      </article>
+    }
+  </div>
+
+  <section class="cms-panel">
+    <div class="panel-heading">
+      <h3>{{ t('quickActions') }}</h3>
+      <p>{{ t('quickActionsHelp') }}</p>
+    </div>
+    <div class="cms-actions">
+      @for (action of quickActions(); track action.link) {
+        <button
+          type="button"
+          class="admin-btn"
+          [routerLink]="action.link"
+          [queryParams]="action.queryParams"
+        >
+          {{ t(action.labelKey) }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <div class="dashboard-insight-grid">
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>Recently published</h3>
+        <p>Last 5 published articles.</p>
+      </div>
+
+      @if (recentlyPublished().length > 0) {
+        <div class="dashboard-table">
+          @for (item of recentlyPublished(); track item.id) {
+            <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.publishDate || 'No date' }}</span>
+              <small>{{ item.viewCount }} views | {{ item.likeCount }} likes</small>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible">
+          <span>âˆ…</span>
+          <h3>No published articles</h3>
+          <p>Published articles will appear here.</p>
+        </div>
+      }
+    </section>
+
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>সর্বাধিক পঠিত</h3>
+        <p>প্রকাশিত সংবাদের পাঠকসংখ্যা অনুযায়ী শীর্ষ তালিকা।</p>
+      </div>
+
+      @if (topViewed().length > 0) {
+        <div class="dashboard-ranked-list">
+          @for (item of topViewed(); track item.id) {
+            <article class="dashboard-ranked-item">
+              <span class="rank-number">{{ toBanglaDigits($index + 1) }}</span>
+              <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
+                <strong>{{ item.title }}</strong>
+                <span class="article-metric">{{ toBanglaDigits(item.viewCount) }} বার পড়া হয়েছে</span>
+                <small class="muted-date">{{ item.publishDate || 'তারিখ নেই' }}</small>
+              </a>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible">
+          <span>âˆ…</span>
+          <h3>No viewed articles</h3>
+          <p>View activity will appear here.</p>
+        </div>
+      }
+    </section>
+
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>সর্বাধিক প্রতিক্রিয়া</h3>
+        <p>লাইক ও ডিসলাইক অনুযায়ী শীর্ষ সংবাদ।</p>
+      </div>
+
+      @if (topReacted().length > 0) {
+        <div class="dashboard-ranked-list">
+          @for (item of topReacted(); track item.id) {
+            <article class="dashboard-ranked-item">
+              <span class="rank-number">{{ toBanglaDigits($index + 1) }}</span>
+              <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
+                <strong>{{ item.title }}</strong>
+                <span class="article-metric">{{ toBanglaDigits(item.likeCount) }} লাইক | {{ toBanglaDigits(item.dislikeCount) }} ডিসলাইক</span>
+              </a>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible">
+          <span>∅</span>
+          <h3>এখনো প্রতিক্রিয়া নেই</h3>
+          <p>পাঠকের প্রতিক্রিয়া পাওয়া গেলে এখানে দেখা যাবে।</p>
+        </div>
+      }
+    </section>
+  </div>
+
+  <div class="dashboard-bottom-grid">
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>{{ t('recentActivity') }}</h3>
+        <p>{{ t('recentActivityHelp') }}</p>
+      </div>
+
+      @if (recentActivity().length > 0) {
+        <ul class="activity-list">
+          @for (item of recentActivity(); track item.title + item.time) {
+            <li>
+              <strong>{{ item.title }}</strong>
+              <span>{{ activityLabel(item.actionKey) }} · {{ item.time }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state visible">
+          <span>∅</span>
+          <h3>{{ t('noActivityYet') }}</h3>
+          <p>{{ t('recentActivityHelp') }}</p>
+        </div>
+      }
+    </section>
+
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>{{ t('todayTasks') }}</h3>
+        <p>{{ t('todayTasksHelp') }}</p>
+      </div>
+
+      <ul class="task-list">
+        @for (task of tasks(); track task.link) {
+          <li>
+            <span></span>
+            <button
+              type="button"
+              class="admin-btn secondary"
+              [routerLink]="task.link"
+              [queryParams]="task.queryParams"
+            >
+              {{ task.label }}
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>বিভাগ অনুযায়ী সংবাদ</h3>
+        <p>প্রকাশিত সংবাদ বিভাগভিত্তিক হিসাব।</p>
+      </div>
+
+      @if (categoryBreakdown().length > 0) {
+        <div class="chart-bar-list">
+          @for (item of categoryBreakdown(); track item.categoryName) {
+            <div class="chart-bar-row">
+              <span>{{ item.categoryName }}</span>
+              <div class="chart-bar-bg">
+                <i class="chart-bar-fill" [style.width.%]="categoryWidth(item)"></i>
+              </div>
+              <strong>{{ toBanglaDigits(item.publishedCount) }}</strong>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible">
+          <span>âˆ…</span>
+          <h3>No category data</h3>
+          <p>Published category counts will appear here.</p>
+        </div>
+      }
+    </section>
+
+    <section class="cms-panel region-placeholder-card">
+      <div class="panel-heading">
+        <h3>অঞ্চলভিত্তিক বিশ্লেষণ</h3>
+      </div>
+      <p>
+        এই ফিচারটি পরবর্তী সংস্করণে আসবে। বাস্তবায়নের জন্য ভিজিটরের IP/অবস্থান
+        ট্র্যাকিং প্রয়োজন।
+      </p>
+    </section>
+  </div>
+</section>

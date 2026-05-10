@@ -1,0 +1,226 @@
+<article class="page article-page">
+  <div class="reading-progress-track" aria-hidden="true">
+    <span [style.width.%]="readingProgress()"></span>
+  </div>
+
+  @if (isLoading()) {
+    <div class="article-skeleton">
+      <span class="skeleton-line article-skeleton-category"></span>
+      <span class="skeleton-line article-skeleton-title"></span>
+      <span class="skeleton-line article-skeleton-title short"></span>
+      <span class="skeleton-line article-skeleton-summary"></span>
+      <span class="skeleton-line article-skeleton-meta"></span>
+      <div class="skeleton-box article-skeleton-image"></div>
+      <div class="article-skeleton-body">
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line short"></span>
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line medium"></span>
+      </div>
+    </div>
+  } @else if (article(); as articleData) {
+    <a class="back-link" routerLink="/news">সর্বশেষে ফিরুন</a>
+
+    <div class="article-layout" [class.has-sidebar]="relatedNews().length > 0">
+      <aside class="floating-share-bar" aria-label="Share article">
+        <span class="floating-share-label">শেয়ার</span>
+        <a class="floating-share-button facebook" [href]="facebookShareUrl(articleData)" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a class="floating-share-button x" [href]="twitterShareUrl(articleData)" target="_blank" rel="noopener noreferrer">X</a>
+        <button class="floating-share-button copy" type="button" (click)="copyArticleLink(articleData)">Copy</button>
+      </aside>
+
+      <div class="article-main">
+        <header class="article-header">
+          <a class="article-category" [routerLink]="['/category', articleData.category]">{{ articleData.category }}</a>
+          <h1>{{ articleData.title }}</h1>
+          @if (articleData.summary) {
+            <p>{{ articleData.summary }}</p>
+          }
+          <div class="byline">
+            <span class="byline-reporter">
+              @if (articleData.authorProfileImageUrl) {
+                <img class="byline-avatar image-avatar" [src]="articleData.authorProfileImageUrl" [alt]="articleData.reporter">
+              } @else {
+                <span class="byline-avatar" aria-hidden="true">{{ articleData.authorInitials }}</span>
+              }
+              <span class="byline-copy">
+                <small>{{ articleData.bylineLabel }}</small>
+                @if (articleData.authorUsername) {
+                  <a class="byline-author-link" [routerLink]="['/journalist', articleData.authorUsername]">
+                    <strong>{{ articleData.reporter }}</strong>
+                  </a>
+                  @if (articleData.authorDesignation) {
+                    <small>{{ articleData.authorDesignation }}</small>
+                  }
+                } @else {
+                  <strong>{{ articleData.reporter | deskLabel }}</strong>
+                }
+              </span>
+            </span>
+            <span class="byline-meta">
+              <time>{{ articleData.publishedSource | banglaDate }}</time>
+              <span>{{ articleData.readingTime }}</span>
+              <span>{{ articleData.viewLabel }}</span>
+            </span>
+          </div>
+        </header>
+
+        <div class="share-row" aria-label="Share article">
+          <span>শেয়ার</span>
+          <a class="share-button" [href]="facebookShareUrl(articleData)" target="_blank" rel="noopener noreferrer">Facebook</a>
+          <a class="share-button" [href]="twitterShareUrl(articleData)" target="_blank" rel="noopener noreferrer">X</a>
+          <button class="share-button" type="button" (click)="copyArticleLink(articleData)">Copy link</button>
+        </div>
+
+        @if (articleData.image) {
+          <figure class="article-media">
+            <img class="article-image" [src]="articleData.image" [alt]="articleData.imageAlt || articleData.title">
+            @if (articleData.imageCaption || articleData.imageSource) {
+              <figcaption>
+                @if (articleData.imageCaption) {
+                  <span>{{ articleData.imageCaption }}</span>
+                }
+                @if (articleData.imageSource) {
+                  <small>{{ articleData.imageSource }}</small>
+                }
+              </figcaption>
+            }
+          </figure>
+        }
+
+        <div class="article-body" [innerHTML]="articleData.content"></div>
+
+        @if (articleData.tagNames.length > 0) {
+          <nav class="article-tags" aria-label="Article tags">
+            @for (tag of articleData.tagNames; track tag) {
+              <a class="article-tag" routerLink="/news" [queryParams]="{ q: tag }">{{ tag }}</a>
+            }
+          </nav>
+        }
+
+        @if (!articleData.isPreview) {
+          <div class="article-reactions" aria-label="Article reactions">
+            <span class="article-reactions-label">Article reaction</span>
+            <button
+              class="article-reaction-button"
+              type="button"
+              [class.active]="selectedReaction() === 'like'"
+              [disabled]="isReacting()"
+              (click)="react(articleData, 'like')">
+              Like <strong>{{ articleData.likeCount }}</strong>
+            </button>
+            <button
+              class="article-reaction-button"
+              type="button"
+              [class.active]="selectedReaction() === 'dislike'"
+              [disabled]="isReacting()"
+              (click)="react(articleData, 'dislike')">
+              Dislike <strong>{{ articleData.dislikeCount }}</strong>
+            </button>
+          </div>
+        }
+
+        <div class="post-article-sections">
+          @if (relatedNews().length > 0) {
+            <section class="post-section">
+              <div class="section-heading">
+                <h2>আরও পড়ুন</h2>
+              </div>
+
+              <div class="post-list">
+                @for (item of relatedNews(); track item.slug) {
+                  <article class="post-card">
+                    <img [src]="item.image" [alt]="item.title">
+                    <div class="post-card-content">
+                      <a class="post-card-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
+                      <h3>
+                        <a [routerLink]="['/news', item.slug]">{{ item.title }}</a>
+                      </h3>
+                      <time>{{ item.time }} | {{ item.readingTime }} | {{ item.viewLabel }}</time>
+                    </div>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+
+          @if (latestNews().length > 0) {
+            <section class="post-section">
+              <div class="section-heading">
+                <h2>সর্বশেষ সংবাদ</h2>
+              </div>
+
+              <div class="post-list">
+                @for (item of latestNews(); track item.slug) {
+                  <article class="post-card">
+                    <img [src]="item.image" [alt]="item.title">
+                    <div class="post-card-content">
+                      <a class="post-card-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
+                      <h3>
+                        <a [routerLink]="['/news', item.slug]">{{ item.title }}</a>
+                      </h3>
+                      <time>{{ item.time }} | {{ item.readingTime }}</time>
+                    </div>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+
+          @if (trendingNews().length > 0) {
+            <section class="post-section">
+              <div class="section-heading">
+                <h2>সর্বাধিক পঠিত</h2>
+              </div>
+
+              <div class="post-list">
+                @for (item of trendingNews(); track item.slug) {
+                  <article class="post-card">
+                    <img [src]="item.image" [alt]="item.title">
+                    <div class="post-card-content">
+                      <a class="post-card-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
+                      <h3>
+                        <a [routerLink]="['/news', item.slug]">{{ item.title }}</a>
+                      </h3>
+                      <time>{{ item.time }} | {{ item.viewLabel }}</time>
+                    </div>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+        </div>
+      </div>
+
+      @if (relatedNews().length > 0) {
+        <aside class="related-section" aria-label="আরও পড়ুন">
+          <div class="section-heading">
+            <h2>আরও পড়ুন</h2>
+          </div>
+
+          <div class="related-grid">
+            @for (item of relatedNews(); track item.slug) {
+              <article class="related-card">
+                <img [src]="item.image" [alt]="item.title">
+                <div class="related-card-content">
+                  <a class="related-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
+                  <h3>
+                    <a [routerLink]="['/news', item.slug]">{{ item.title }}</a>
+                  </h3>
+                  <time>{{ item.time }} | {{ item.readingTime }} | {{ item.viewLabel }}</time>
+                </div>
+              </article>
+            }
+          </div>
+        </aside>
+      }
+    </div>
+  } @else {
+    <div class="article-body not-found">
+      <h1>সংবাদ পাওয়া যায়নি</h1>
+      <p>সংবাদটি প্রকাশিত নয় অথবা এই মুহূর্তে পাওয়া যাচ্ছে না।</p>
+    </div>
+  }
+</article>

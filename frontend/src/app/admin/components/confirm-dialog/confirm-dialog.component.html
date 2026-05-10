@@ -1,0 +1,12 @@
+@if (dialog(); as currentDialog) {
+  <div class="confirm-backdrop" (click)="cancel()">
+    <section class="confirm-dialog" role="dialog" aria-modal="true" [attr.aria-label]="currentDialog.title" (click)="$event.stopPropagation()">
+      <h2>{{ currentDialog.title }}</h2>
+      <p>{{ currentDialog.message }}</p>
+      <div class="confirm-actions">
+        <button type="button" class="confirm-cancel" (click)="cancel()">{{ currentDialog.cancelText }}</button>
+        <button type="button" class="confirm-submit" (click)="confirm()">{{ currentDialog.confirmText }}</button>
+      </div>
+    </section>
+  </div>
+}

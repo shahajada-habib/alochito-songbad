@@ -1,0 +1,106 @@
+<section class="cms-page">
+  <div class="cms-heading cms-heading-row">
+    <div>
+      <span>{{ t('newsDesk') }}</span>
+      <h2>{{ t('newsManagement') }}</h2>
+      <p>{{ t('newsListHelp') }}</p>
+    </div>
+    <button type="button" class="admin-btn" routerLink="/admin/news/create">{{ t('createNews') }}</button>
+  </div>
+
+  <section class="cms-panel filter-panel">
+    <input type="search" name="searchTerm" [(ngModel)]="searchTerm" [placeholder]="t('searchByTitle')">
+    <select name="categoryFilter" [(ngModel)]="categoryFilter">
+      <option value="">{{ t('allCategories') }}</option>
+      @for (category of categoryOptions(); track category) {
+        <option [value]="category">{{ category }}</option>
+      }
+    </select>
+    <select name="statusFilter" [(ngModel)]="statusFilter">
+      <option value="">{{ t('allStatuses') }}</option>
+      <option value="published">{{ t('published') }}</option>
+      <option value="review">{{ t('review') }}</option>
+      <option value="draft">{{ t('draft') }}</option>
+      <option value="archived">{{ t('archived') }}</option>
+    </select>
+  </section>
+
+  <section class="cms-panel table-panel">
+    <table class="news-table">
+      <thead>
+        <tr>
+          <th>{{ t('title') }}</th>
+          <th>{{ t('category') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('badges') }}</th>
+          <th>{{ t('publishTime') }}</th>
+          <th>{{ t('publishDate') }}</th>
+          <th>{{ t('viewCount') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of filteredNews(); track item.id) {
+        <tr>
+          <td [attr.data-label]="t('title')">
+            <strong>{{ item.title }}</strong>
+            <small>{{ item.subtitle }}</small>
+          </td>
+          <td [attr.data-label]="t('category')">{{ item.category }}</td>
+          <td [attr.data-label]="t('status')">
+            <span
+              class="status"
+              [class.published]="item.status === 'published'"
+              [class.review]="item.status === 'review'"
+              [class.draft]="item.status === 'draft'"
+              [class.archived]="item.status === 'archived'"
+            >
+              {{ statusLabel(item.status) }}
+            </span>
+          </td>
+          <td [attr.data-label]="t('badges')">
+            <div class="table-actions">
+              @if (item.featured) {
+                <span class="status published">{{ t('featuredNews') }}</span>
+              }
+              @if (item.breaking) {
+                <span class="status review">{{ t('breakingNews') }}</span>
+              }
+            </div>
+          </td>
+          <td [attr.data-label]="t('publishTime')">{{ item.createdAt | banglaDate }}</td>
+          <td [attr.data-label]="t('publishDate')">{{ (item.publishDate || item.scheduledAt) | banglaDate }}</td>
+          <td [attr.data-label]="t('viewCount')">{{ formattedViewCount(item) }}</td>
+          <td [attr.data-label]="t('actions')">
+            <div class="table-actions">
+              <a class="admin-btn secondary" [routerLink]="['/news', publicNewsSlug(item)]" target="_blank" rel="noopener noreferrer">লাইভ দেখুন</a>
+              @if (canEditItem(item)) {
+                <button type="button" class="admin-btn secondary" [routerLink]="['/admin/news/edit', item.id]">{{ t('edit') }}</button>
+              }
+              @if (canPublishItem(item)) {
+                <button type="button" class="admin-btn" (click)="publishNews(item)">{{ t('publishNow') }}</button>
+              }
+              @if (canArchiveItem(item)) {
+                <button type="button" class="admin-btn secondary" (click)="archiveNews(item)">{{ t('archive') }}</button>
+              }
+              @if (canRestoreItem(item)) {
+                <button type="button" class="admin-btn secondary" (click)="restoreNews(item)">{{ t('restore') }}</button>
+              }
+              @if (auth.canDelete()) {
+                <button type="button" class="admin-btn danger" (click)="deleteNews(item)">{{ t('delete') }}</button>
+              }
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (filteredNews().length === 0) {
+    <div class="empty-state visible">
+      <span>0</span>
+      <h3>সংবাদ পাওয়া যায়নি</h3>
+    </div>
+    }
+  </section>
+</section>

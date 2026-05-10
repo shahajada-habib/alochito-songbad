@@ -1,0 +1,926 @@
+.admin-shell {
+  display: grid;
+  grid-template-columns: 292px minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-admin);
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-3);
+  border-right: 1px solid var(--color-border);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-soft) 100%);
+}
+
+.cms-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cms-brand span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #d92d20, var(--color-primary-dark));
+  color: var(--color-surface);
+  box-shadow: 0 10px 22px rgba(180, 35, 24, 0.2);
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.cms-brand h1 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+.cms-brand p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.admin-menu {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+}
+
+.admin-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 42px;
+  padding: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--space-1);
+  color: var(--color-text);
+  font-weight: 700;
+  position: relative;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.admin-menu a:hover,
+.admin-menu a.active {
+  background: #fff2ef;
+  border-color: #ffd8d1;
+  color: var(--color-primary);
+}
+
+.admin-menu a.active {
+  box-shadow: 0 10px 22px rgba(180, 35, 24, 0.09), inset 3px 0 0 var(--color-primary);
+}
+
+.admin-menu a:hover {
+  transform: translateX(2px);
+}
+
+.menu-icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  background: #f4f1eb;
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.admin-menu a.active .menu-icon,
+.admin-menu a:hover .menu-icon {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.cms-version {
+  margin: var(--space-4) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid #eee9e1;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.admin-main {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 8px 22px rgba(23, 32, 38, 0.035);
+}
+
+.admin-topbar span {
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-topbar h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.topbar-search {
+  width: min(320px, 28vw);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-soft);
+}
+
+.topbar-search span {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.topbar-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.topbar-search input:focus {
+  outline: 0;
+}
+
+.language-switch {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-soft);
+}
+
+.language-switch button {
+  min-width: 70px;
+  border: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-muted);
+  box-shadow: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.language-switch button:hover,
+.language-switch button.active {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  transform: none;
+}
+
+.icon-button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.profile-button {
+  min-width: 82px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.admin-content {
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+:host ::ng-deep .cms-page {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+:host ::ng-deep .cms-heading,
+:host ::ng-deep .cms-panel,
+:host ::ng-deep .cms-stats article {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-2);
+  background: var(--color-surface);
+  box-shadow: 0 12px 28px rgba(23, 32, 38, 0.05);
+}
+
+:host ::ng-deep .cms-heading {
+  padding: var(--space-4);
+}
+
+:host ::ng-deep .cms-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+:host ::ng-deep .cms-heading span {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+:host ::ng-deep .cms-heading h2 {
+  margin: 6px 0;
+  font-size: 30px;
+  line-height: 1.25;
+}
+
+:host ::ng-deep .cms-heading p,
+:host ::ng-deep .panel-heading p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+:host ::ng-deep .cms-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+:host ::ng-deep .cms-stats article {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-soft) 100%);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+:host ::ng-deep .cms-stats article:hover {
+  border-color: #d8cfc1;
+  box-shadow: 0 16px 32px rgba(23, 32, 38, 0.08);
+  transform: translateY(-2px);
+}
+
+:host ::ng-deep .stat-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background: #fff2ef;
+  color: var(--color-primary);
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px #ffd8d1;
+}
+
+:host ::ng-deep .cms-stats strong {
+  display: block;
+  color: var(--color-text);
+  font-size: 32px;
+  line-height: 1;
+}
+
+:host ::ng-deep .cms-stats span:not(.stat-icon) {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+:host ::ng-deep .cms-stats small,
+:host ::ng-deep .news-table small,
+:host ::ng-deep label small {
+  display: block;
+  margin-top: 6px;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+:host ::ng-deep .cms-panel {
+  padding: var(--space-4);
+}
+
+:host ::ng-deep .panel-heading {
+  margin-bottom: var(--space-3);
+}
+
+:host ::ng-deep .panel-heading h3 {
+  margin: 0 0 6px;
+  font-size: 20px;
+}
+
+:host ::ng-deep .cms-actions,
+:host ::ng-deep .table-actions,
+:host ::ng-deep .form-actions,
+:host ::ng-deep .inline-form {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep .dashboard-bottom-grid,
+:host ::ng-deep .website-info-grid,
+:host ::ng-deep .news-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+:host ::ng-deep .task-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:host ::ng-deep .task-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid #eee9e1;
+  border-radius: var(--space-2);
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+:host ::ng-deep .task-list span {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+:host ::ng-deep .filter-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(160px, 220px);
+  gap: var(--space-2);
+}
+
+:host ::ng-deep .cms-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+:host ::ng-deep .inline-form {
+  align-items: end;
+}
+
+:host ::ng-deep .cms-form label,
+:host ::ng-deep .inline-form label,
+:host ::ng-deep .config-card label {
+  display: grid;
+  gap: 7px;
+}
+
+:host ::ng-deep .cms-form span,
+:host ::ng-deep .inline-form span,
+:host ::ng-deep .config-card span {
+  color: #4f5b57;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+:host ::ng-deep input,
+:host ::ng-deep select,
+:host ::ng-deep textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+:host ::ng-deep textarea {
+  resize: vertical;
+}
+
+:host ::ng-deep .news-rich-editor {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #dcd6cc;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(23, 32, 38, 0.04);
+}
+
+:host ::ng-deep input:focus,
+:host ::ng-deep select:focus,
+:host ::ng-deep textarea:focus {
+  outline: 0;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.11);
+}
+
+:host ::ng-deep .full-width {
+  grid-column: 1 / -1;
+}
+
+:host ::ng-deep .publish-button {
+  background: var(--color-primary);
+}
+
+:host ::ng-deep .section-config-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+:host ::ng-deep .config-card {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid #eee9e1;
+  border-radius: var(--space-2);
+  background: var(--color-surface-soft);
+}
+
+:host ::ng-deep .premium-config-card {
+  box-shadow: 0 10px 24px rgba(23, 32, 38, 0.055);
+}
+
+:host ::ng-deep .config-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+:host ::ng-deep .preview-badge {
+  display: inline-flex;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 999px;
+  background: #fff2ef;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+:host ::ng-deep pre {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3);
+  border-radius: var(--space-1);
+  background: var(--color-text);
+  color: #f8faf9;
+  font-size: 13px;
+}
+
+:host ::ng-deep .admin-btn {
+  border: 0;
+  border-radius: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+:host ::ng-deep .admin-btn:hover {
+  background: var(--color-primary);
+  box-shadow: 0 10px 20px rgba(180, 35, 24, 0.14);
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .admin-btn.secondary {
+  background: #edf2f0;
+  color: var(--color-text);
+}
+
+:host ::ng-deep .admin-btn.secondary:hover {
+  background: #dfe8e5;
+}
+
+:host ::ng-deep .admin-btn.danger {
+  background: #fff2ef;
+  color: var(--color-primary);
+}
+
+:host ::ng-deep .admin-btn.danger:hover {
+  background: var(--color-primary);
+  color: var(--color-surface);
+}
+
+:host ::ng-deep .admin-btn.publish-button {
+  background: var(--color-primary);
+}
+
+:host ::ng-deep .activity-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:host ::ng-deep .activity-list li {
+  padding: var(--space-3);
+  border: 1px solid #eee9e1;
+  border-radius: var(--space-2);
+  background: var(--color-surface-soft);
+}
+
+:host ::ng-deep .activity-list strong,
+:host ::ng-deep .activity-list span {
+  display: block;
+}
+
+:host ::ng-deep .activity-list span {
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+:host ::ng-deep .table-panel {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: var(--space-3);
+}
+
+:host ::ng-deep table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+:host ::ng-deep .news-table td:first-child {
+  min-width: 280px;
+}
+
+:host ::ng-deep th,
+:host ::ng-deep td {
+  padding: var(--space-3);
+  border-bottom: 1px solid #eee9e1;
+  text-align: left;
+  vertical-align: middle;
+}
+
+:host ::ng-deep th {
+  background: var(--color-surface-soft);
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+:host ::ng-deep th:first-child {
+  border-radius: 9px 0 0 9px;
+}
+
+:host ::ng-deep th:last-child {
+  border-radius: 0 9px 9px 0;
+}
+
+:host ::ng-deep tbody tr:hover {
+  background: var(--color-surface-soft);
+}
+
+:host ::ng-deep .empty-state {
+  display: none;
+  margin-top: var(--space-4);
+  padding: var(--space-5);
+  border: 1px dashed #d8cfc1;
+  border-radius: var(--space-2);
+  text-align: center;
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-soft) 100%);
+}
+
+:host ::ng-deep .empty-state.visible {
+  display: block;
+}
+
+:host ::ng-deep .empty-state span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto var(--space-2);
+  border-radius: 50%;
+  background: #fff2ef;
+  color: var(--color-primary);
+  font-size: 22px;
+}
+
+:host ::ng-deep .empty-state h3,
+:host ::ng-deep .empty-state p {
+  margin: 0;
+}
+
+:host ::ng-deep .empty-state p {
+  margin-top: var(--space-1);
+  color: var(--color-muted);
+}
+
+:host ::ng-deep .logo-preview-card {
+  align-self: start;
+}
+
+:host ::ng-deep .logo-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--space-2);
+  background: var(--color-surface-soft);
+}
+
+:host ::ng-deep .logo-preview > span {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #d92d20, var(--color-primary-dark));
+  color: var(--color-surface);
+  font-size: 32px;
+  font-weight: 800;
+}
+
+:host ::ng-deep .logo-preview strong,
+:host ::ng-deep .logo-preview small {
+  display: block;
+}
+
+:host ::ng-deep .logo-preview small {
+  margin-top: 5px;
+  color: var(--color-muted);
+}
+
+:host ::ng-deep .social-links-section {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid #eee9e1;
+  border-radius: var(--space-1);
+  background: var(--color-surface-soft);
+}
+
+:host ::ng-deep .status {
+  display: inline-flex;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+:host ::ng-deep .published {
+  background: #e7f5ee;
+  color: #137047;
+}
+
+:host ::ng-deep .review {
+  background: #fff3d6;
+  color: #8a5a00;
+}
+
+:host ::ng-deep .draft {
+  background: #eceff3;
+  color: #4b5563;
+}
+
+:host ::ng-deep .archived {
+  background: #f1f1f1;
+  color: #5f6368;
+}
+
+:host ::ng-deep .media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+:host ::ng-deep .media-card-image,
+:host ::ng-deep .media-preview-image {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+:host ::ng-deep .media-card-image {
+  height: 160px;
+}
+
+:host ::ng-deep .media-card-url {
+  display: block;
+  color: var(--color-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+:host ::ng-deep .media-action-feedback {
+  margin: 0 0 var(--space-3);
+  color: #137047;
+  font-weight: 700;
+}
+
+:host ::ng-deep .media-preview-image {
+  max-height: 320px;
+}
+
+@media (max-width: 1100px) {
+  :host ::ng-deep .cms-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :host ::ng-deep .dashboard-bottom-grid,
+  :host ::ng-deep .website-info-grid,
+  :host ::ng-deep .news-editor-layout,
+  :host ::ng-deep .filter-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid #e2ddd3;
+  }
+
+  .admin-menu {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-menu a {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .admin-menu a {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: var(--space-3);
+  }
+
+  .topbar-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    white-space: normal;
+  }
+
+  .topbar-search {
+    width: 100%;
+  }
+
+  .admin-content {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .admin-menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :host ::ng-deep .cms-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .cms-stats {
+    grid-template-columns: 1fr;
+  }
+
+  :host ::ng-deep .cms-form,
+  :host ::ng-deep .section-config-grid,
+  :host ::ng-deep .media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  :host ::ng-deep .table-panel {
+    padding: var(--space-3);
+    overflow-x: visible;
+  }
+
+  :host ::ng-deep table {
+    min-width: 0;
+    border-collapse: separate;
+  }
+
+  :host ::ng-deep thead {
+    display: none;
+  }
+
+  :host ::ng-deep tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  :host ::ng-deep tbody tr {
+    display: grid;
+    gap: 0;
+    padding: var(--space-3);
+    border: 1px solid #eee9e1;
+    border-radius: var(--space-2);
+    background: var(--color-surface);
+    box-shadow: 0 10px 22px rgba(23, 32, 38, 0.055);
+  }
+
+  :host ::ng-deep tbody tr:hover {
+    background: var(--color-surface);
+  }
+
+  :host ::ng-deep td {
+    display: grid;
+    grid-template-columns: minmax(96px, 34%) minmax(0, 1fr);
+    gap: var(--space-2);
+    align-items: start;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid #eee9e1;
+  }
+
+  :host ::ng-deep td:last-child {
+    border-bottom: 0;
+  }
+
+  :host ::ng-deep td::before {
+    content: attr(data-label);
+    color: var(--color-muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+
+  :host ::ng-deep td > * {
+    min-width: 0;
+  }
+
+  :host ::ng-deep .table-actions {
+    justify-content: flex-start;
+  }
+
+  :host ::ng-deep .table-actions .admin-btn {
+    padding: var(--space-1) var(--space-2);
+  }
+}

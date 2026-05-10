@@ -1,0 +1,50 @@
+<section class="page news-page">
+  <div class="page-heading">
+    <span>সর্বশেষ</span>
+    <h1>আজকের গুরুত্বপূর্ণ সংবাদ</h1>
+    @if (searchQuery()) {
+      <p>"{{ searchQuery() }}" দিয়ে খোঁজার ফলাফল</p>
+    } @else {
+      <p>আলোচিত সংবাদের ডেমো নিউজরুম থেকে নির্বাচিত প্রধান খবর।</p>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="news-grid">
+      @for (_ of skeletonCards; track $index) {
+        <article class="news-card skeleton-list-card">
+          <div class="skeleton-box skeleton-list-image"></div>
+          <div>
+            <span class="skeleton-line skeleton-label"></span>
+            <span class="skeleton-line skeleton-heading"></span>
+            <span class="skeleton-line skeleton-heading short"></span>
+            <span class="skeleton-line skeleton-copy"></span>
+            <span class="skeleton-line skeleton-meta"></span>
+          </div>
+        </article>
+      }
+    </div>
+  } @else if (news().length > 0) {
+    <div class="news-grid">
+      @for (item of news(); track item.slug) {
+        <article class="news-card">
+          <img [src]="item.image" [alt]="item.title">
+          <div>
+            <a class="category-link" [routerLink]="['/category', item.category]">{{ item.category }}</a>
+            <h2>
+              <a [routerLink]="['/news', item.slug]">{{ item.title }}</a>
+            </h2>
+            <p>{{ item.summary }}</p>
+            <time>{{ item.time }} | {{ item.readingTime }} | {{ item.viewLabel }}</time>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="news-empty-state">
+      <span aria-hidden="true"></span>
+      <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
+      <p>নতুন সংবাদ প্রকাশ হলে এই তালিকায় দেখা যাবে।</p>
+    </div>
+  }
+</section>

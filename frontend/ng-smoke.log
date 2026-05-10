@@ -1,0 +1,40 @@
+
+> alochito-songbad-frontend@0.1.0 start
+> ng serve --host 127.0.0.1 --port 4200
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m                    [2m | [22m [1mRaw size[22m
+[32mchunk-YRT7VFXM.js[39m  [2m | [22m[2m-[22m                        [2m | [22m [36m34.24 kB[39m[2m | [22m
+[32mmain.js[39m            [2m | [22m[2mmain[22m                     [2m | [22m [36m32.34 kB[39m[2m | [22m
+[32mstyles.css[39m         [2m | [22m[2mstyles[22m                   [2m | [22m [36m29.93 kB[39m[2m | [22m
+[32mchunk-4B3SIMPE.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m7.24 kB[39m[2m | [22m
+[32mchunk-CG5FSZYN.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m6.81 kB[39m[2m | [22m
+[32mchunk-EVSPGG2W.js[39m  [2m | [22m[2m-[22m                        [2m | [22m  [36m1.64 kB[39m[2m | [22m
+[32mpolyfills.js[39m       [2m | [22m[2mpolyfills[22m                [2m | [22m [36m95 bytes[39m[2m | [22m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m            [2m | [22m[1m112.28 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m                    [2m | [22m [1mRaw size[22m
+[32mchunk-SIVWLOZB.js[39m  [2m | [22m[2mhome-component[22m           [2m | [22m [36m94.74 kB[39m[2m | [22m
+[32mchunk-7DU4AXA3.js[39m  [2m | [22m[2mnews-detail-component[22m    [2m | [22m [36m81.36 kB[39m[2m | [22m
+[32mchunk-TU5XPINH.js[39m  [2m | [22m[2mnews-form-component[22m      [2m | [22m [36m80.91 kB[39m[2m | [22m
+[32mchunk-UX6I4IJT.js[39m  [2m | [22m[2madmin-layout-component[22m   [2m | [22m [36m64.11 kB[39m[2m | [22m
+[32mchunk-FQZTA454.js[39m  [2m | [22m[2mnews-management-component[22m[2m | [22m [36m30.03 kB[39m[2m | [22m
+[32mchunk-3LGQ6DFX.js[39m  [2m | [22m[2mteam-component[22m           [2m | [22m [36m25.44 kB[39m[2m | [22m
+[32mchunk-YJHMOX3P.js[39m  [2m | [22m[2mnews-list-component[22m      [2m | [22m [36m24.73 kB[39m[2m | [22m
+[32mchunk-XTO4ZJOT.js[39m  [2m | [22m[2mcategory-component[22m       [2m | [22m [36m24.00 kB[39m[2m | [22m
+[32mchunk-EMY7TE7H.js[39m  [2m | [22m[2mcategories-component[22m     [2m | [22m [36m18.25 kB[39m[2m | [22m
+[32mchunk-VW3YXLCT.js[39m  [2m | [22m[2mbreaking-news-component[22m  [2m | [22m [36m16.59 kB[39m[2m | [22m
+[32mchunk-JUBLQAAC.js[39m  [2m | [22m[2mmedia-library-component[22m  [2m | [22m [36m16.46 kB[39m[2m | [22m
+[32mchunk-MNQJJ3YP.js[39m  [2m | [22m[2mdashboard-component[22m      [2m | [22m [36m16.39 kB[39m[2m | [22m
+[32mchunk-I7RHH2WC.js[39m  [2m | [22m[2mcomments-component[22m       [2m | [22m [36m14.67 kB[39m[2m | [22m
+[32mchunk-YW2DZNMM.js[39m  [2m | [22m[2m-[22m                        [2m | [22m [36m13.90 kB[39m[2m | [22m
+[32mchunk-H2AVA32S.js[39m  [2m | [22m[2mlogin-component[22m          [2m | [22m [36m10.79 kB[39m[2m | [22m
+[2m...and 8 more lazy chunks files. Use "--verbose" to show all the files.[22m
+
+Application bundle generation complete. [28.206 seconds] - 2026-05-06T02:42:53.575Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4200[22m/[39m

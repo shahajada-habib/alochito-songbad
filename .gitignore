@@ -1,0 +1,14 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+.angular/
+
+# Backend
+backend/target/
+
+# IDE and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

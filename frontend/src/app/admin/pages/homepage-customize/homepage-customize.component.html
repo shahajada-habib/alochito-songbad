@@ -1,0 +1,55 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('homepage') }}</span>
+    <h2>{{ t('homepageCustomize') }}</h2>
+    <p>{{ t('homepageHelp') }}</p>
+  </div>
+
+  <section class="cms-panel">
+    <div class="panel-heading">
+      <h3>{{ t('sectionConfig') }}</h3>
+      <p>{{ t('sectionConfigHelp') }}</p>
+    </div>
+
+    <div class="section-config-grid premium-config-grid">
+      @for (section of sectionConfig; track section.category) {
+        <article class="config-card premium-config-card">
+          <div class="config-card-head">
+            <span class="preview-badge">{{ section.layout === 'grid' ? 'Grid' : 'List' }}</span>
+            <strong>{{ section.category }}</strong>
+          </div>
+
+          <label>
+            <span>{{ t('category') }}</span>
+            <select>
+              <option [selected]="section.category === 'জাতীয়'">{{ t('national') }}</option>
+              <option [selected]="section.category === 'রাজনীতি'">{{ t('politics') }}</option>
+              <option [selected]="section.category === 'খেলাধুলা'">{{ t('sports') }}</option>
+              <option [selected]="section.category === 'বিনোদন'">{{ t('entertainment') }}</option>
+            </select>
+          </label>
+          <label>
+            <span>{{ t('postCount') }}</span>
+            <select>
+              <option [selected]="section.postCount === 5">5</option>
+              <option [selected]="section.postCount === 10">10</option>
+            </select>
+          </label>
+          <label>
+            <span>{{ t('layout') }}</span>
+            <select>
+              <option [selected]="section.layout === 'grid'">grid</option>
+              <option [selected]="section.layout === 'list'">list</option>
+            </select>
+          </label>
+          <label>
+            <span>{{ t('sortBy') }}</span>
+            <select>
+              <option>latest</option>
+            </select>
+          </label>
+        </article>
+      }
+    </div>
+  </section>
+</section>

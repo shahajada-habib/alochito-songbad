@@ -1,0 +1,131 @@
+.dashboard-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.dashboard-table {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-table a {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+}
+
+.dashboard-table a:hover {
+  border-color: var(--color-primary);
+}
+
+.dashboard-table span,
+.dashboard-table small {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.dashboard-ranked-list,
+.chart-bar-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-ranked-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-ranked-item:last-child {
+  border-bottom: 0;
+}
+
+.dashboard-ranked-item a {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.dashboard-ranked-item a:hover strong {
+  color: var(--color-primary);
+}
+
+.rank-number {
+  display: inline-grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.article-metric,
+.muted-date {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.chart-bar-row span {
+  flex: 0 0 120px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.chart-bar-row strong {
+  flex: 0 0 34px;
+  color: var(--color-muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.chart-bar-bg {
+  flex: 1;
+  background: #f0f0f0;
+  border-radius: 4px;
+  height: 8px;
+}
+
+.chart-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--color-primary, #c0392b);
+  transition: width 0.4s ease;
+}
+
+.region-placeholder-card {
+  border-style: dashed;
+  background: #f7f7f7;
+  color: var(--color-muted);
+}
+
+.region-placeholder-card p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .dashboard-insight-grid {
+    grid-template-columns: 1fr;
+  }
+}

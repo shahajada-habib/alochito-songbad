@@ -1,0 +1,48 @@
+@if (!isAdminRoute()) {
+<header class="site-header" [class.scrolled]="isHeaderScrolled">
+  <div class="header-top">
+    <a class="brand" [routerLink]="['/']">
+      <!-- Future logo image can go here, for example:
+      <img class="brand-image" src="/brand/logo.png" alt="আলোচিত সংবাদ">
+      Keep the CSS/text logo below as the fallback until the final logo asset is ready. -->
+      <span class="brand-mark">আ</span>
+      <span>
+        <strong>আলোচিত সংবাদ</strong>
+        <small>সবার আগে সত্য খবর</small>
+      </span>
+    </a>
+
+    <div class="header-actions">
+      <form class="site-search" (ngSubmit)="submitSearch()">
+        <input type="search" name="publicSearch" [(ngModel)]="searchTerm" placeholder="সংবাদ খুঁজুন">
+        <button type="submit">খুঁজুন</button>
+      </form>
+      <span>মঙ্গলবার, ২৮ এপ্রিল ২০২৬</span>
+      @if (auth.isAuthenticated()) {
+        <a class="cms-link" routerLink="/admin">CMS →</a>
+      } @else {
+        <a class="login-link" routerLink="/login">লগইন</a>
+      }
+    </div>
+  </div>
+
+  <nav class="category-nav" aria-label="Top news categories">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">প্রচ্ছদ</a>
+    <a routerLink="/news" routerLinkActive="active">সর্বশেষ</a>
+    <a routerLink="/category/জাতীয়" routerLinkActive="active">জাতীয়</a>
+    <a routerLink="/category/রাজনীতি" routerLinkActive="active">রাজনীতি</a>
+    <a routerLink="/category/আন্তর্জাতিক" routerLinkActive="active">আন্তর্জাতিক</a>
+    <a routerLink="/category/খেলাধুলা" routerLinkActive="active">খেলাধুলা</a>
+    <a routerLink="/category/বিনোদন" routerLinkActive="active">বিনোদন</a>
+    <a routerLink="/journalists" routerLinkActive="active">আমাদের টিম</a>
+  </nav>
+</header>
+}
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+@if (!isAdminRoute()) {
+  <app-toast-container></app-toast-container>
+}

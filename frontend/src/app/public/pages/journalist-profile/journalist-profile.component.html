@@ -1,0 +1,54 @@
+<section class="page journalist-profile-page">
+  @if (notFound()) {
+    <div class="profile-empty">সাংবাদিক পাওয়া যায়নি</div>
+  } @else if (profile(); as journalist) {
+    <header class="profile-card">
+      @if (journalist.profileImageUrl) {
+        <img [src]="journalist.profileImageUrl" [alt]="displayName()">
+      } @else {
+        <div class="profile-initials">{{ initials() }}</div>
+      }
+      <div>
+        <h1>{{ displayName() }}</h1>
+        @if (journalist.designation) {
+          <span class="designation">{{ journalist.designation }}</span>
+        }
+        @if (journalist.bio) {
+          <p>{{ journalist.bio }}</p>
+        }
+        <nav class="profile-links" aria-label="Journalist links">
+          @if (journalist.facebookUrl) {
+            <a [href]="journalist.facebookUrl" target="_blank" rel="noopener noreferrer">Facebook</a>
+          }
+          @if (journalist.twitterUrl) {
+            <a [href]="journalist.twitterUrl" target="_blank" rel="noopener noreferrer">X</a>
+          }
+          @if (journalist.emailPublic) {
+            <a [href]="'mailto:' + journalist.emailPublic">Email</a>
+          }
+        </nav>
+      </div>
+    </header>
+
+    <section class="journalist-articles">
+      <h2>এই সাংবাদিকের সংবাদ</h2>
+      @if (articles().length > 0) {
+        <div class="article-list">
+          @for (article of articles(); track article.id) {
+            <article class="article-card">
+              <h3><a [routerLink]="['/news', article.slug]">{{ article.title }}</a></h3>
+              <p>{{ excerpt(article) }}</p>
+              <time>{{ (article.publishDate || article.scheduledAt || article.createdAt) | banglaDate }}</time>
+            </article>
+          }
+        </div>
+        <div class="pagination-row">
+          <button type="button" [disabled]="page === 0" (click)="loadArticles(page - 1)">আগের পাতা</button>
+          <button type="button" [disabled]="last" (click)="loadArticles(page + 1)">পরের পাতা</button>
+        </div>
+      } @else {
+        <div class="profile-empty">এই সাংবাদিকের প্রকাশিত সংবাদ নেই</div>
+      }
+    </section>
+  }
+</section>
