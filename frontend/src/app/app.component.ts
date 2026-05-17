@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ToastContainerComponent } from './admin/components/toast-container/toast-container.component';
 import { AuthService } from './auth/auth.service';
+import { buildBanglaDate } from './shared/bangla-date.util';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent {
   protected searchTerm = '';
   protected isHeaderScrolled = false;
+  protected readonly todayBangla = buildBanglaDate();
 
   constructor(private readonly router: Router, protected readonly auth: AuthService) {}
 

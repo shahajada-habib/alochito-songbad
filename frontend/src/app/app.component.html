@@ -17,7 +17,7 @@
         <input type="search" name="publicSearch" [(ngModel)]="searchTerm" placeholder="সংবাদ খুঁজুন">
         <button type="submit">খুঁজুন</button>
       </form>
-      <span>মঙ্গলবার, ২৮ এপ্রিল ২০২৬</span>
+      <span>{{ todayBangla }}</span>
       @if (auth.isAuthenticated()) {
         <a class="cms-link" routerLink="/admin">CMS →</a>
       } @else {

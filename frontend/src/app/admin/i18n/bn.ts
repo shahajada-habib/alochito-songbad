@@ -157,7 +157,7 @@ export const BN_TRANSLATIONS = {
   reporterName: 'প্রতিবেদকের নাম',
   source: 'সূত্র',
   tags: 'ট্যাগ',
-  tagsPlaceholder: 'কমা দিয়ে ট্যাগ লিখুন',
+  tagsPlaceholder: 'ট্যাগ লিখুন, Enter চাপুন',
   breakingNews: 'ব্রেকিং নিউজ',
   featuredNews: 'ফিচার্ড নিউজ',
   scheduledPublish: 'নির্ধারিত প্রকাশের সময়',

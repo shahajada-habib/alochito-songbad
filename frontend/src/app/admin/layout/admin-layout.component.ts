@@ -7,6 +7,7 @@ import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dia
 import { ToastContainerComponent } from '../components/toast-container/toast-container.component';
 import { AdminLanguage, AdminTranslationService, TranslationKey } from '../i18n/admin-translation.service';
 import { ToastService } from '../services/toast.service';
+import { buildBanglaDate } from '../../shared/bangla-date.util';
 
 type MenuItem = {
   link: string;
@@ -25,6 +26,7 @@ type MenuItem = {
 })
 export class AdminLayoutComponent {
   protected adminSearchTerm = '';
+  protected readonly todayBangla = buildBanglaDate();
 
   protected readonly menuItems: MenuItem[] = [
     { link: '/admin', icon: 'D', label: 'dashboard', roles: ['admin', 'editor', 'reporter'], exact: true },

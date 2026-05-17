@@ -278,21 +278,23 @@
     </div>
   </section>
 
-  <section class="content-section team-section">
-    <div class="section-heading">
-      <h2>আমাদের টিম</h2>
-    </div>
+  @if (meaningfulTeam.length > 0) {
+    <section class="content-section team-section">
+      <div class="section-heading">
+        <h2>আমাদের টিম</h2>
+      </div>
 
-    <div class="team-grid">
-      @for (member of team; track member.name) {
-        <article class="team-card">
-          <img [src]="member.image" [alt]="member.name">
-          <h3>{{ member.name }}</h3>
-          <p>{{ member.role }}</p>
-        </article>
-      }
-    </div>
-  </section>
+      <div class="team-grid">
+        @for (member of meaningfulTeam; track member.name) {
+          <article class="team-card">
+            <img [src]="member.image" [alt]="member.name">
+            <h3>{{ member.name }}</h3>
+            <p>{{ member.role }}</p>
+          </article>
+        }
+      </div>
+    </section>
+  }
 </section>
 
 <footer class="site-footer">

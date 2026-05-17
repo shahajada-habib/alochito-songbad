@@ -157,7 +157,7 @@ export const EN_TRANSLATIONS = {
   reporterName: 'Reporter name',
   source: 'Source',
   tags: 'Tags',
-  tagsPlaceholder: 'Comma separated tags',
+  tagsPlaceholder: 'Type a tag, press Enter',
   breakingNews: 'Breaking News',
   featuredNews: 'Featured News',
   scheduledPublish: 'Scheduled publish date/time',

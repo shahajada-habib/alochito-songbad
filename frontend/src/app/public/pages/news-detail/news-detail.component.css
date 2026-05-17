@@ -329,7 +329,7 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   max-width: none;
-  margin: var(--space-3) 0 28px;
+  margin: 22px 0 34px;
   padding: 0;
   border-bottom: 0;
 }
@@ -394,11 +394,11 @@
   display: grid;
   gap: 4px;
   max-width: none;
-  margin: 9px 0 0;
+  margin: 12px 0 0;
   color: var(--color-muted);
   font-family: var(--font-public-meta);
   font-size: 12.5px;
-  line-height: 1.55;
+  line-height: 1.65;
 }
 
 .article-media figcaption span {
@@ -422,11 +422,12 @@
 }
 
 .article-body p {
-  margin: 0 0 21px;
+  margin: 0 0 1.45rem;
   color: var(--color-text);
   font-size: 1.1rem;
   font-family: var(--font-public-body);
-  line-height: 2;
+  line-height: 2.1;
+  word-spacing: 0.04em;
 }
 
 .article-body p:last-child {
@@ -503,11 +504,12 @@
 }
 
 :host ::ng-deep .article-body p {
-  margin: 0 0 21px;
+  margin: 0 0 1.45rem;
   color: var(--color-text);
   font-size: 1.1rem;
   font-family: var(--font-public-body);
-  line-height: 2;
+  line-height: 2.1;
+  word-spacing: 0.04em;
 }
 
 :host ::ng-deep .article-body p:last-child {
@@ -546,9 +548,9 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 30px;
-  padding-top: 22px;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 24px;
   border-top: 1px solid var(--color-border);
   font-family: var(--font-public-meta);
 }
@@ -968,7 +970,8 @@
   .article-body p,
   :host ::ng-deep .article-body p {
     font-size: 18px;
-    line-height: 1.8;
+    line-height: 1.95;
+    margin-bottom: 1.35rem;
   }
 
   .related-grid {

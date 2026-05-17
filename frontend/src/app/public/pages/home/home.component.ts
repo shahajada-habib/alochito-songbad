@@ -31,6 +31,7 @@ type StaffMember = {
   name: string;
   role: string;
   image: string;
+  bio?: string;
 };
 
 @Component({
@@ -74,6 +75,10 @@ export class HomeComponent {
       image: LOCAL_PLACEHOLDER_IMAGE
     }
   ];
+
+  protected get meaningfulTeam(): StaffMember[] {
+    return this.team.filter((member) => this.hasMeaningfulProfile(member));
+  }
 
   constructor() {
     setTimeout(() => this.isLoading.set(false), 850);
@@ -223,6 +228,14 @@ export class HomeComponent {
   protected categoryGradient(category: string): string {
     const color = this.categoryColor(category);
     return `linear-gradient(135deg, ${color} 0%, #111827 100%)`;
+  }
+
+  private hasMeaningfulProfile(member: StaffMember): boolean {
+    const hasDisplayName = !!member.name.trim();
+    const hasBio = !!member.bio?.trim();
+    const hasProfileImage = !!member.image && member.image !== LOCAL_PLACEHOLDER_IMAGE;
+
+    return hasDisplayName && (hasBio || hasProfileImage);
   }
 
   private categoryColor(category: string): string {
