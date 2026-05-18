@@ -110,6 +110,18 @@ export class AdminLayoutComponent {
       return this.i18n.t('assetEquipmentManagement');
     }
 
+    if (url.includes('/admin/media-operations/departments')) {
+      return this.i18n.t('departmentsDesks');
+    }
+
+    if (url.includes('/admin/media-operations/leave-requests')) {
+      return this.i18n.t('leaveRequests');
+    }
+
+    if (url.includes('/admin/media-operations/staff-documents')) {
+      return this.i18n.t('staffDocumentsHrNotes');
+    }
+
     if (url.includes('/admin/media-operations/reports')) {
       return this.i18n.t('mediaOperationsReports');
     }

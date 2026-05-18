@@ -20,6 +20,9 @@ export class MediaOperationsReportsComponent {
   protected readonly invoices = this.operations.invoices;
   protected readonly attendance = this.operations.attendance;
   protected readonly assets = this.operations.assets;
+  protected readonly departments = this.operations.departments;
+  protected readonly leaveRequests = this.operations.leaveRequests;
+  protected readonly staffDocuments = this.operations.staffDocuments;
   protected readonly loading = this.operations.loading;
 
   protected readonly staffCount = computed(() => this.staff().length);
@@ -65,6 +68,15 @@ export class MediaOperationsReportsComponent {
     this.invoices()
       .filter((item) => ['UNPAID', 'PARTIAL', 'OVERDUE'].includes(item.paymentStatus))
       .reduce((sum, item) => sum + Math.max(item.amount - item.paidAmount, 0), 0)
+  );
+  protected readonly activeDepartments = computed(() =>
+    this.departments().filter((item) => item.status === 'ACTIVE').length
+  );
+  protected readonly pendingLeaveRequests = computed(() =>
+    this.leaveRequests().filter((item) => item.status === 'PENDING').length
+  );
+  protected readonly activeStaffDocuments = computed(() =>
+    this.staffDocuments().filter((item) => item.status === 'ACTIVE').length
   );
 
   constructor(protected readonly i18n: AdminTranslationService) {}

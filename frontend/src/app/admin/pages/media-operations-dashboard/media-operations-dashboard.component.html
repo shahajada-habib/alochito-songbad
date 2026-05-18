@@ -13,6 +13,9 @@
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/invoices">{{ t('invoicePaymentStatus') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/attendance">{{ t('attendanceDutyRoster') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assets">{{ t('assetEquipmentManagement') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/departments">{{ t('departmentsDesks') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/leave-requests">{{ t('leaveRequests') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/staff-documents">{{ t('staffDocumentsHrNotes') }}</button>
         <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/reports">{{ t('reports') }}</button>
       </div>
     </div>
@@ -150,6 +153,30 @@
         <strong>{{ assignedAssetCount() }}</strong>
         <span>{{ t('assignedAssets') }}</span>
         <small>{{ t('assignedAssetsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('departmentStatMark') }}</span>
+      <div>
+        <strong>{{ activeDepartmentCount() }}</strong>
+        <span>{{ t('activeDepartments') }}</span>
+        <small>{{ t('activeDepartmentsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('leaveStatMark') }}</span>
+      <div>
+        <strong>{{ pendingLeaveRequestCount() }}</strong>
+        <span>{{ t('pendingLeaveRequests') }}</span>
+        <small>{{ t('pendingLeaveRequestsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('documentStatMark') }}</span>
+      <div>
+        <strong>{{ activeStaffDocumentCount() }}</strong>
+        <span>{{ t('activeStaffDocuments') }}</span>
+        <small>{{ t('activeStaffDocumentsHint') }}</small>
       </div>
     </article>
   </div>

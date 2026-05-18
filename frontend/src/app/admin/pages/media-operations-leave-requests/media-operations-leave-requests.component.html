@@ -1,0 +1,162 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('leaveRequests') }}</h2>
+      <p>{{ t('leaveRequestsHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addLeaveRequest') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchLeaveRequestsLabel') }}</span>
+      <input type="search" name="leaveSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchLeaveRequests')">
+    </label>
+    <label>
+      <span>{{ t('assignedStaff') }}</span>
+      <select name="leaveStaffFilter" [(ngModel)]="staffFilter">
+        <option value="">{{ t('allStaff') }}</option>
+        @for (member of staff(); track member.id) {
+          <option [value]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('leaveType') }}</span>
+      <select name="leaveTypeFilter" [(ngModel)]="typeFilter">
+        <option value="">{{ t('allLeaveTypes') }}</option>
+        @for (type of leaveTypes; track type) {
+          <option [value]="type">{{ leaveTypeLabel(type) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="leaveStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('hrDesk') }}</span>
+        <h3>{{ t('leaveRequestList') }}</h3>
+      </div>
+      <small>{{ filteredLeaveRequests().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredLeaveRequests().length > 0) {
+      <div class="operations-list">
+        @for (leaveRequest of filteredLeaveRequests(); track leaveRequest.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ staffName(leaveRequest.staffId) }}</strong>
+              <span>{{ leaveTypeLabel(leaveRequest.leaveType) }}</span>
+              <div class="operations-meta">
+                <small>{{ t('dateRange') }}: {{ formatDate(leaveRequest.startDate) }} - {{ formatDate(leaveRequest.endDate) }}</small>
+                <small>{{ t('totalDays') }}: {{ leaveRequest.totalDays }}</small>
+                @if (leaveRequest.reason) {
+                  <small>{{ t('reason') }}: {{ leaveRequest.reason }}</small>
+                }
+              </div>
+            </div>
+            <span class="ops-badge {{ statusClass(leaveRequest.status) }}">{{ statusLabel(leaveRequest.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(leaveRequest)">{{ t('editLeaveRequest') }}</button>
+            @if (leaveRequest.status !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(leaveRequest)">{{ t('cancelRecord') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noLeaveRequestsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editLeaveRequest') : t('addLeaveRequest') }}</span>
+          <h3>{{ isEditing ? t('editLeaveRequest') : t('newLeaveRequest') }}</h3>
+          <p>{{ t('leaveRequestFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (staff().length === 0) {
+        <div class="operations-muted">{{ t('staffRequiredForLeave') }}</div>
+      } @else {
+        <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+          <label>
+            <span>{{ t('assignedStaff') }}</span>
+            <select name="leaveStaff" [(ngModel)]="activeForm.staffId">
+              @for (member of staff(); track member.id) {
+                <option [value]="member.id">{{ member.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('leaveType') }}</span>
+            <select name="leaveType" [(ngModel)]="activeForm.leaveType">
+              @for (type of leaveTypes; track type) {
+                <option [value]="type">{{ leaveTypeLabel(type) }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('startDate') }}</span>
+            <input type="date" name="leaveStart" [(ngModel)]="activeForm.startDate">
+          </label>
+          <label>
+            <span>{{ t('endDate') }}</span>
+            <input type="date" name="leaveEnd" [(ngModel)]="activeForm.endDate">
+          </label>
+          <label>
+            <span>{{ t('totalDays') }}</span>
+            <input type="number" min="0" step="0.5" name="leaveDays" [(ngModel)]="activeForm.totalDays">
+          </label>
+          <label>
+            <span>{{ t('status') }}</span>
+            <select name="leaveStatus" [(ngModel)]="activeForm.status">
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ statusLabel(status) }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('reviewerName') }}</span>
+            <input type="text" name="reviewerName" [(ngModel)]="activeForm.reviewerName" [placeholder]="t('reviewerNamePlaceholder')">
+          </label>
+          <label class="wide-field">
+            <span>{{ t('reason') }}</span>
+            <textarea name="leaveReason" rows="2" [(ngModel)]="activeForm.reason" [placeholder]="t('reasonPlaceholder')"></textarea>
+          </label>
+          <label class="wide-field">
+            <span>{{ t('reviewNote') }}</span>
+            <textarea name="reviewNote" rows="2" [(ngModel)]="activeForm.reviewNote" [placeholder]="t('reviewNotePlaceholder')"></textarea>
+          </label>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveLeaveRequest || isSaving">{{ isSaving ? t('saving') : t('saveLeaveRequest') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</section>

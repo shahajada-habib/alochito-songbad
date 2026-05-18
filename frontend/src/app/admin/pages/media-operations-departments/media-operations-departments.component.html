@@ -1,0 +1,108 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('departmentsDesks') }}</h2>
+      <p>{{ t('departmentsDesksHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addDepartment') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchDepartmentsLabel') }}</span>
+      <input type="search" name="departmentSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchDepartments')">
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="departmentStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('hrDesk') }}</span>
+        <h3>{{ t('departmentList') }}</h3>
+      </div>
+      <small>{{ filteredDepartments().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredDepartments().length > 0) {
+      <div class="operations-list">
+        @for (department of filteredDepartments(); track department.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ department.name }}</strong>
+              <span>{{ department.code }}</span>
+              @if (department.description) {
+                <small>{{ department.description }}</small>
+              }
+            </div>
+            <span class="ops-badge {{ statusClass(department.status) }}">{{ statusLabel(department.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(department)">{{ t('editDepartment') }}</button>
+            @if (department.status === 'ACTIVE') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(department)">{{ t('markInactive') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noDepartmentsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editDepartment') : t('addDepartment') }}</span>
+          <h3>{{ isEditing ? t('editDepartment') : t('newDepartment') }}</h3>
+          <p>{{ t('departmentFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+        <label>
+          <span>{{ t('name') }}</span>
+          <input type="text" name="departmentName" [(ngModel)]="activeForm.name" [placeholder]="t('departmentNamePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('code') }}</span>
+          <input type="text" name="departmentCode" [(ngModel)]="activeForm.code" [placeholder]="t('departmentCodePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('status') }}</span>
+          <select name="departmentStatus" [(ngModel)]="activeForm.status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('description') }}</span>
+          <textarea name="departmentDescription" rows="2" [(ngModel)]="activeForm.description" [placeholder]="t('departmentDescriptionPlaceholder')"></textarea>
+        </label>
+        <div class="form-actions full-width">
+          <button type="submit" class="operations-btn primary" [disabled]="!canSaveDepartment || isSaving">{{ isSaving ? t('saving') : t('saveDepartment') }}</button>
+          <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+        </div>
+      </form>
+    </section>
+  }
+</section>

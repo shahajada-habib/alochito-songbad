@@ -30,6 +30,9 @@ export class MediaOperationsDashboardComponent {
   protected readonly invoices = this.operations.invoices;
   protected readonly attendance = this.operations.attendance;
   protected readonly assets = this.operations.assets;
+  protected readonly departments = this.operations.departments;
+  protected readonly leaveRequests = this.operations.leaveRequests;
+  protected readonly staffDocuments = this.operations.staffDocuments;
   protected readonly activityLog = this.operations.activityLog;
   protected readonly loading = this.operations.loading;
   protected readonly error = this.operations.error;
@@ -90,6 +93,15 @@ export class MediaOperationsDashboardComponent {
   );
   protected readonly assignedAssetCount = computed(() =>
     this.assets().filter((item) => item.availabilityStatus === 'ASSIGNED').length
+  );
+  protected readonly activeDepartmentCount = computed(() =>
+    this.departments().filter((item) => item.status === 'ACTIVE').length
+  );
+  protected readonly pendingLeaveRequestCount = computed(() =>
+    this.leaveRequests().filter((item) => item.status === 'PENDING').length
+  );
+  protected readonly activeStaffDocumentCount = computed(() =>
+    this.staffDocuments().filter((item) => item.status === 'ACTIVE').length
   );
   protected readonly recentAssignments = computed(() => this.assignments().slice(0, 5));
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));

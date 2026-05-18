@@ -21,8 +21,13 @@ export type AttendanceStatus = 'SCHEDULED' | 'PRESENT' | 'ABSENT' | 'LATE' | 'LE
 export type AssetType = 'CAMERA' | 'LAPTOP' | 'MICROPHONE' | 'MOBILE' | 'TRIPOD' | 'LIGHTING' | 'VEHICLE' | 'OFFICE_EQUIPMENT' | 'OTHER';
 export type AssetConditionStatus = 'NEW' | 'GOOD' | 'NEEDS_REPAIR' | 'DAMAGED' | 'RETIRED';
 export type AssetAvailabilityStatus = 'AVAILABLE' | 'ASSIGNED' | 'UNDER_MAINTENANCE' | 'LOST' | 'RETIRED';
+export type DepartmentStatus = 'ACTIVE' | 'INACTIVE';
+export type LeaveType = 'CASUAL' | 'SICK' | 'EARNED' | 'UNPAID' | 'OTHER';
+export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+export type StaffDocumentType = 'CONTRACT' | 'ID_PROOF' | 'CERTIFICATE' | 'WARNING' | 'NOTE' | 'OTHER';
+export type StaffDocumentStatus = 'ACTIVE' | 'ARCHIVED';
 export type ActivityActionType = 'CREATED' | 'UPDATED' | 'ARCHIVED' | 'CANCELLED' | 'STATUS_CHANGED' | 'RETIRED';
-export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'activityLog';
+export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'departments' | 'leaveRequests' | 'staffDocuments' | 'activityLog';
 
 export interface MediaOperationsStaff {
   id: number;
@@ -141,6 +146,43 @@ export interface MediaOperationsAsset {
   updatedAt: string;
 }
 
+export interface MediaOperationsDepartment {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  status: DepartmentStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaOperationsLeaveRequest {
+  id: number;
+  staffId: number;
+  leaveType: LeaveType;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  reason: string;
+  status: LeaveStatus;
+  reviewerName: string;
+  reviewNote: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaOperationsStaffDocument {
+  id: number;
+  staffId: number;
+  title: string;
+  documentType: StaffDocumentType;
+  fileUrl: string;
+  note: string;
+  status: StaffDocumentStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface MediaOperationsActivityLog {
   id: number;
   moduleName: string;
@@ -160,6 +202,9 @@ export type ExpenseFormValue = Omit<MediaOperationsExpense, 'id' | 'createdAt' |
 export type InvoiceFormValue = Omit<MediaOperationsInvoice, 'id' | 'createdAt' | 'updatedAt'>;
 export type AttendanceFormValue = Omit<MediaOperationsAttendance, 'id' | 'createdAt' | 'updatedAt'>;
 export type AssetFormValue = Omit<MediaOperationsAsset, 'id' | 'createdAt' | 'updatedAt'>;
+export type DepartmentFormValue = Omit<MediaOperationsDepartment, 'id' | 'createdAt' | 'updatedAt'>;
+export type LeaveRequestFormValue = Omit<MediaOperationsLeaveRequest, 'id' | 'createdAt' | 'updatedAt'>;
+export type StaffDocumentFormValue = Omit<MediaOperationsStaffDocument, 'id' | 'createdAt' | 'updatedAt'>;
 
 const OPERATIONS_API_URL = `${environment.apiBaseUrl}/api/admin/operations`;
 
@@ -175,6 +220,9 @@ export class MediaOperationsService {
   private readonly invoicesSignal = signal<MediaOperationsInvoice[]>([]);
   private readonly attendanceSignal = signal<MediaOperationsAttendance[]>([]);
   private readonly assetsSignal = signal<MediaOperationsAsset[]>([]);
+  private readonly departmentsSignal = signal<MediaOperationsDepartment[]>([]);
+  private readonly leaveRequestsSignal = signal<MediaOperationsLeaveRequest[]>([]);
+  private readonly staffDocumentsSignal = signal<MediaOperationsStaffDocument[]>([]);
   private readonly activityLogSignal = signal<MediaOperationsActivityLog[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal('');
@@ -188,6 +236,9 @@ export class MediaOperationsService {
   readonly invoices = this.invoicesSignal.asReadonly();
   readonly attendance = this.attendanceSignal.asReadonly();
   readonly assets = this.assetsSignal.asReadonly();
+  readonly departments = this.departmentsSignal.asReadonly();
+  readonly leaveRequests = this.leaveRequestsSignal.asReadonly();
+  readonly staffDocuments = this.staffDocumentsSignal.asReadonly();
   readonly activityLog = this.activityLogSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
@@ -207,6 +258,9 @@ export class MediaOperationsService {
         this.invoicesSignal.set([]);
         this.attendanceSignal.set([]);
         this.assetsSignal.set([]);
+        this.departmentsSignal.set([]);
+        this.leaveRequestsSignal.set([]);
+        this.staffDocumentsSignal.set([]);
         this.activityLogSignal.set([]);
         this.endpointErrorsSignal.set({});
       }
@@ -232,9 +286,12 @@ export class MediaOperationsService {
       invoices: this.http.get<MediaOperationsInvoice[]>(`${OPERATIONS_API_URL}/invoices`).pipe(catchError(() => recover<MediaOperationsInvoice>('invoices'))),
       attendance: this.http.get<MediaOperationsAttendance[]>(`${OPERATIONS_API_URL}/attendance`).pipe(catchError(() => recover<MediaOperationsAttendance>('attendance'))),
       assets: this.http.get<MediaOperationsAsset[]>(`${OPERATIONS_API_URL}/assets`).pipe(catchError(() => recover<MediaOperationsAsset>('assets'))),
+      departments: this.http.get<MediaOperationsDepartment[]>(`${OPERATIONS_API_URL}/departments`).pipe(catchError(() => recover<MediaOperationsDepartment>('departments'))),
+      leaveRequests: this.http.get<MediaOperationsLeaveRequest[]>(`${OPERATIONS_API_URL}/leave-requests`).pipe(catchError(() => recover<MediaOperationsLeaveRequest>('leaveRequests'))),
+      staffDocuments: this.http.get<MediaOperationsStaffDocument[]>(`${OPERATIONS_API_URL}/staff-documents`).pipe(catchError(() => recover<MediaOperationsStaffDocument>('staffDocuments'))),
       activityLog: this.http.get<MediaOperationsActivityLog[]>(`${OPERATIONS_API_URL}/activity-log`).pipe(catchError(() => recover<MediaOperationsActivityLog>('activityLog')))
     }).pipe(
-      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, activityLog }) => ({
+      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, activityLog }) => ({
         staff: staff.map((item) => this.normalizeStaff(item)),
         assignments: assignments.map((item) => this.normalizeAssignment(item)),
         adClients: adClients.map((item) => this.normalizeAdClient(item)),
@@ -243,10 +300,13 @@ export class MediaOperationsService {
         invoices: invoices.map((item) => this.normalizeInvoice(item)),
         attendance: attendance.map((item) => this.normalizeAttendance(item)),
         assets: assets.map((item) => this.normalizeAsset(item)),
+        departments: departments.map((item) => this.normalizeDepartment(item)),
+        leaveRequests: leaveRequests.map((item) => this.normalizeLeaveRequest(item)),
+        staffDocuments: staffDocuments.map((item) => this.normalizeStaffDocument(item)),
         activityLog: activityLog.map((item) => this.normalizeActivityLog(item))
       }))
     ).subscribe({
-      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, activityLog }) => {
+      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, activityLog }) => {
         this.staffSignal.set(staff);
         this.assignmentsSignal.set(assignments);
         this.adClientsSignal.set(adClients);
@@ -255,6 +315,9 @@ export class MediaOperationsService {
         this.invoicesSignal.set(invoices);
         this.attendanceSignal.set(attendance);
         this.assetsSignal.set(assets);
+        this.departmentsSignal.set(departments);
+        this.leaveRequestsSignal.set(leaveRequests);
+        this.staffDocumentsSignal.set(staffDocuments);
         this.activityLogSignal.set(activityLog);
         this.endpointErrorsSignal.set(endpointErrors);
         this.errorSignal.set('');
@@ -543,6 +606,87 @@ export class MediaOperationsService {
     );
   }
 
+  createDepartment(value: DepartmentFormValue): Observable<MediaOperationsDepartment> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsDepartment>(`${OPERATIONS_API_URL}/departments`, value).pipe(
+      map((created) => this.normalizeDepartment(created)),
+      tap((created) => this.departmentsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  updateDepartment(id: number, value: DepartmentFormValue): Observable<MediaOperationsDepartment> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsDepartment>(`${OPERATIONS_API_URL}/departments/${id}`, value).pipe(
+      map((updated) => this.normalizeDepartment(updated)),
+      tap((updated) => this.departmentsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  archiveDepartment(id: number): Observable<MediaOperationsDepartment> {
+    this.errorSignal.set('');
+    return this.http.delete<MediaOperationsDepartment>(`${OPERATIONS_API_URL}/departments/${id}`).pipe(
+      map((updated) => this.normalizeDepartment(updated)),
+      tap((updated) => this.departmentsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  createLeaveRequest(value: LeaveRequestFormValue): Observable<MediaOperationsLeaveRequest> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsLeaveRequest>(`${OPERATIONS_API_URL}/leave-requests`, value).pipe(
+      map((created) => this.normalizeLeaveRequest(created)),
+      tap((created) => this.leaveRequestsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  updateLeaveRequest(id: number, value: LeaveRequestFormValue): Observable<MediaOperationsLeaveRequest> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsLeaveRequest>(`${OPERATIONS_API_URL}/leave-requests/${id}`, value).pipe(
+      map((updated) => this.normalizeLeaveRequest(updated)),
+      tap((updated) => this.leaveRequestsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  archiveLeaveRequest(id: number): Observable<MediaOperationsLeaveRequest> {
+    this.errorSignal.set('');
+    return this.http.delete<MediaOperationsLeaveRequest>(`${OPERATIONS_API_URL}/leave-requests/${id}`).pipe(
+      map((updated) => this.normalizeLeaveRequest(updated)),
+      tap((updated) => this.leaveRequestsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  createStaffDocument(value: StaffDocumentFormValue): Observable<MediaOperationsStaffDocument> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsStaffDocument>(`${OPERATIONS_API_URL}/staff-documents`, value).pipe(
+      map((created) => this.normalizeStaffDocument(created)),
+      tap((created) => this.staffDocumentsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  updateStaffDocument(id: number, value: StaffDocumentFormValue): Observable<MediaOperationsStaffDocument> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsStaffDocument>(`${OPERATIONS_API_URL}/staff-documents/${id}`, value).pipe(
+      map((updated) => this.normalizeStaffDocument(updated)),
+      tap((updated) => this.staffDocumentsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  archiveStaffDocument(id: number): Observable<MediaOperationsStaffDocument> {
+    this.errorSignal.set('');
+    return this.http.delete<MediaOperationsStaffDocument>(`${OPERATIONS_API_URL}/staff-documents/${id}`).pipe(
+      map((updated) => this.normalizeStaffDocument(updated)),
+      tap((updated) => this.staffDocumentsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
   staffName(id: number): string {
     return this.staffSignal().find((item) => item.id === id)?.name || 'Unassigned';
   }
@@ -684,6 +828,49 @@ export class MediaOperationsService {
       notes: asset.notes || '',
       createdAt: asset.createdAt || '',
       updatedAt: asset.updatedAt || ''
+    };
+  }
+
+  private normalizeDepartment(department: MediaOperationsDepartment): MediaOperationsDepartment {
+    return {
+      ...department,
+      name: department.name || '',
+      code: department.code || '',
+      description: department.description || '',
+      status: department.status || 'ACTIVE',
+      createdAt: department.createdAt || '',
+      updatedAt: department.updatedAt || ''
+    };
+  }
+
+  private normalizeLeaveRequest(leaveRequest: MediaOperationsLeaveRequest): MediaOperationsLeaveRequest {
+    return {
+      ...leaveRequest,
+      staffId: leaveRequest.staffId || 0,
+      leaveType: leaveRequest.leaveType || 'CASUAL',
+      startDate: leaveRequest.startDate || '',
+      endDate: leaveRequest.endDate || '',
+      totalDays: Number(leaveRequest.totalDays || 0),
+      reason: leaveRequest.reason || '',
+      status: leaveRequest.status || 'PENDING',
+      reviewerName: leaveRequest.reviewerName || '',
+      reviewNote: leaveRequest.reviewNote || '',
+      createdAt: leaveRequest.createdAt || '',
+      updatedAt: leaveRequest.updatedAt || ''
+    };
+  }
+
+  private normalizeStaffDocument(document: MediaOperationsStaffDocument): MediaOperationsStaffDocument {
+    return {
+      ...document,
+      staffId: document.staffId || 0,
+      title: document.title || '',
+      documentType: document.documentType || 'NOTE',
+      fileUrl: document.fileUrl || '',
+      note: document.note || '',
+      status: document.status || 'ACTIVE',
+      createdAt: document.createdAt || '',
+      updatedAt: document.updatedAt || ''
     };
   }
 

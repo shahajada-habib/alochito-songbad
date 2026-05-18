@@ -1,0 +1,151 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('staffDocumentsHrNotes') }}</h2>
+      <p>{{ t('staffDocumentsHrNotesHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addStaffDocument') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchStaffDocumentsLabel') }}</span>
+      <input type="search" name="staffDocumentSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchStaffDocuments')">
+    </label>
+    <label>
+      <span>{{ t('assignedStaff') }}</span>
+      <select name="staffDocumentStaffFilter" [(ngModel)]="staffFilter">
+        <option value="">{{ t('allStaff') }}</option>
+        @for (member of staff(); track member.id) {
+          <option [value]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('documentType') }}</span>
+      <select name="staffDocumentTypeFilter" [(ngModel)]="typeFilter">
+        <option value="">{{ t('allDocumentTypes') }}</option>
+        @for (type of documentTypes; track type) {
+          <option [value]="type">{{ documentTypeLabel(type) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="staffDocumentStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('hrDesk') }}</span>
+        <h3>{{ t('staffDocumentList') }}</h3>
+      </div>
+      <small>{{ filteredStaffDocuments().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredStaffDocuments().length > 0) {
+      <div class="operations-list">
+        @for (document of filteredStaffDocuments(); track document.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ document.title }}</strong>
+              <span>{{ staffName(document.staffId) }} &middot; {{ documentTypeLabel(document.documentType) }}</span>
+              <div class="operations-meta">
+                @if (document.fileUrl) {
+                  <small>{{ t('fileUrl') }}: {{ document.fileUrl }}</small>
+                }
+                @if (document.note) {
+                  <small>{{ t('hrNote') }}: {{ document.note }}</small>
+                }
+              </div>
+            </div>
+            <span class="ops-badge {{ statusClass(document.status) }}">{{ statusLabel(document.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(document)">{{ t('editStaffDocument') }}</button>
+            @if (document.status === 'ACTIVE') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(document)">{{ t('archive') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noStaffDocumentsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editStaffDocument') : t('addStaffDocument') }}</span>
+          <h3>{{ isEditing ? t('editStaffDocument') : t('newStaffDocument') }}</h3>
+          <p>{{ t('staffDocumentFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (staff().length === 0) {
+        <div class="operations-muted">{{ t('staffRequiredForDocument') }}</div>
+      } @else {
+        <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+          <label>
+            <span>{{ t('assignedStaff') }}</span>
+            <select name="staffDocumentStaff" [(ngModel)]="activeForm.staffId">
+              @for (member of staff(); track member.id) {
+                <option [value]="member.id">{{ member.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('title') }}</span>
+            <input type="text" name="staffDocumentTitle" [(ngModel)]="activeForm.title" [placeholder]="t('documentTitlePlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('documentType') }}</span>
+            <select name="staffDocumentType" [(ngModel)]="activeForm.documentType">
+              @for (type of documentTypes; track type) {
+                <option [value]="type">{{ documentTypeLabel(type) }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('status') }}</span>
+            <select name="staffDocumentStatus" [(ngModel)]="activeForm.status">
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ statusLabel(status) }}</option>
+              }
+            </select>
+          </label>
+          <label class="wide-field">
+            <span>{{ t('fileUrl') }}</span>
+            <input type="text" name="staffDocumentFileUrl" [(ngModel)]="activeForm.fileUrl" [placeholder]="t('fileUrlPlaceholder')">
+          </label>
+          <label class="wide-field">
+            <span>{{ t('hrNote') }}</span>
+            <textarea name="staffDocumentNote" rows="2" [(ngModel)]="activeForm.note" [placeholder]="t('hrNotePlaceholder')"></textarea>
+          </label>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveStaffDocument || isSaving">{{ isSaving ? t('saving') : t('saveStaffDocument') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</section>

@@ -42,6 +42,24 @@
         <small class="report-hint">{{ t('presentTodayHint') }}</small>
         @if (sectionError('attendance')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
+      <article class="report-card">
+        <span>{{ t('activeDepartments') }}</span>
+        <strong>{{ activeDepartments() }}</strong>
+        <small class="report-hint">{{ t('activeDepartmentsHint') }}</small>
+        @if (sectionError('departments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('pendingLeaveRequests') }}</span>
+        <strong>{{ pendingLeaveRequests() }}</strong>
+        <small class="report-hint">{{ t('pendingLeaveRequestsHint') }}</small>
+        @if (sectionError('leaveRequests')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('activeStaffDocuments') }}</span>
+        <strong>{{ activeStaffDocuments() }}</strong>
+        <small class="report-hint">{{ t('activeStaffDocumentsHint') }}</small>
+        @if (sectionError('staffDocuments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
     </div>
   </section>
 
