@@ -21,22 +21,26 @@
       <article class="report-card">
         <span>{{ t('staffCount') }}</span>
         <strong>{{ staffCount() }}</strong>
-        @if (sectionError('staff')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('staffCoverageHint') }}</small>
+        @if (sectionError('staff')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('activeAssignments') }}</span>
         <strong>{{ activeAssignments() }}</strong>
-        @if (sectionError('assignments')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('assignmentQueueHint') }}</small>
+        @if (sectionError('assignments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('todayScheduledDuties') }}</span>
         <strong>{{ todayScheduledDuties() }}</strong>
-        @if (sectionError('attendance')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('todayScheduledDutiesHint') }}</small>
+        @if (sectionError('attendance')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('presentToday') }}</span>
         <strong>{{ presentToday() }}</strong>
-        @if (sectionError('attendance')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('presentTodayHint') }}</small>
+        @if (sectionError('attendance')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
     </div>
   </section>
@@ -50,22 +54,26 @@
       <article class="report-card">
         <span>{{ t('runningAdBookings') }}</span>
         <strong>{{ runningAdBookings() }}</strong>
-        @if (sectionError('adBookings')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('runningAdBookingsHint') }}</small>
+        @if (sectionError('adBookings')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card urgent">
         <span>{{ t('unpaidInvoices') }}</span>
         <strong>{{ unpaidInvoices() }}</strong>
-        @if (sectionError('invoices')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('unpaidInvoicesHint') }}</small>
+        @if (sectionError('invoices')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('totalInvoiceAmount') }}</span>
         <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
-        @if (sectionError('invoices')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('totalInvoiceAmountHint') }}</small>
+        @if (sectionError('invoices')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card urgent">
         <span>{{ t('pendingPaymentAmount') }}</span>
         <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
-        @if (sectionError('invoices')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('pendingPaymentAmountHint') }}</small>
+        @if (sectionError('invoices')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
     </div>
   </section>
@@ -79,17 +87,20 @@
       <article class="report-card">
         <span>{{ t('monthlyExpenses') }}</span>
         <strong>{{ formatMoney(monthlyExpenses()) }}</strong>
-        @if (sectionError('expenses')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('monthlyExpensesHint') }}</small>
+        @if (sectionError('expenses')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('availableAssets') }}</span>
         <strong>{{ availableAssets() }}</strong>
-        @if (sectionError('assets')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('availableAssetsHint') }}</small>
+        @if (sectionError('assets')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('assignedAssets') }}</span>
         <strong>{{ assignedAssets() }}</strong>
-        @if (sectionError('assets')) { <small>{{ t('sectionLoadError') }}</small> }
+        <small class="report-hint">{{ t('assignedAssetsHint') }}</small>
+        @if (sectionError('assets')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
     </div>
   </section>

@@ -164,7 +164,7 @@
     </div>
 
     @if (activityLoadError()) {
-      <div class="operations-alert">{{ t('sectionLoadError') }}</div>
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
     } @else if (loading()) {
       <div class="operations-muted">{{ t('operationsLoading') }}</div>
     } @else if (recentActivity().length > 0) {
@@ -174,7 +174,7 @@
             <span class="ops-badge {{ activityActionClass(item.actionType) }}">{{ activityActionLabel(item.actionType) }}</span>
             <div class="activity-main">
               <strong>{{ item.title }}</strong>
-              <span>{{ item.moduleName }} · {{ item.description || '-' }}</span>
+              <span>{{ item.moduleName }} &middot; {{ item.description || '-' }}</span>
             </div>
             <small>{{ formatActivityTime(item.createdAt) }}</small>
           </article>
@@ -259,7 +259,7 @@
               <span>{{ adClientName(adBooking.adClientId) }}</span>
               <div class="assignment-meta">
                 <small>{{ t('placement') }}: {{ placementLabel(adBooking.placement) }}</small>
-                <small>{{ t('campaignDates') }}: {{ formatDateOnly(adBooking.startDate) }} - {{ formatDateOnly(adBooking.endDate) }}</small>
+                <small>{{ t('campaignDates') }}: {{ formatDateOnly(adBooking.startDate) }} &middot; {{ formatDateOnly(adBooking.endDate) }}</small>
                 <small>{{ t('salesOwner') }}: {{ adBooking.salesOwner || '-' }}</small>
               </div>
             </div>

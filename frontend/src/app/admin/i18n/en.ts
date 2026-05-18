@@ -471,6 +471,7 @@ export const EN_TRANSLATIONS = {
   confirmRetireMessage: 'This asset will stay in Media Operations, but it will be marked retired.',
   operationsLoading: 'Loading Media Operations data...',
   operationsLoadError: 'Media Operations data could not be loaded. Please check the backend connection.',
+  operationsSectionLoadError: 'This section could not be loaded, but the rest of Media Operations is still available.',
   saving: 'Saving...',
 
   homepage: 'Homepage',
