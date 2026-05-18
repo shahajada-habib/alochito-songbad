@@ -1,0 +1,117 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('mediaOperations') }}</span>
+    <h2>{{ t('staffManagement') }}</h2>
+    <p>{{ t('staffManagementHelp') }}</p>
+  </div>
+
+  <section class="cms-panel">
+    <div class="panel-heading">
+      <h3>{{ t('addStaff') }}</h3>
+      <p>{{ t('staffManagementHelp') }}</p>
+    </div>
+    <form class="cms-form" (ngSubmit)="create()">
+      <label>
+        <span>{{ t('name') }}</span>
+        <input type="text" name="staffName" [(ngModel)]="form.name">
+      </label>
+      <label>
+        <span>{{ t('designation') }}</span>
+        <input type="text" name="staffDesignation" [(ngModel)]="form.designation">
+      </label>
+      <label>
+        <span>{{ t('department') }}</span>
+        <input type="text" name="staffDepartment" [(ngModel)]="form.department">
+      </label>
+      <label>
+        <span>{{ t('phone') }}</span>
+        <input type="tel" name="staffPhone" [(ngModel)]="form.phone">
+      </label>
+      <label>
+        <span>{{ t('email') }}</span>
+        <input type="email" name="staffEmail" [(ngModel)]="form.email">
+      </label>
+      <label>
+        <span>{{ t('joiningDate') }}</span>
+        <input type="date" name="staffJoiningDate" [(ngModel)]="form.joiningDate">
+      </label>
+      <label>
+        <span>{{ t('status') }}</span>
+        <select name="staffStatus" [(ngModel)]="form.status">
+          <option value="ACTIVE">{{ t('active') }}</option>
+          <option value="INACTIVE">{{ t('inactive') }}</option>
+        </select>
+      </label>
+      <div class="form-actions full-width">
+        <button type="submit" class="admin-btn">{{ t('add') }}</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="cms-panel filter-panel">
+    <input type="search" name="staffSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchStaff')">
+    <select name="staffStatusFilter" [(ngModel)]="statusFilter">
+      <option value="">{{ t('allStatuses') }}</option>
+      <option value="ACTIVE">{{ t('active') }}</option>
+      <option value="INACTIVE">{{ t('inactive') }}</option>
+    </select>
+  </section>
+
+  <section class="cms-panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('name') }}</th>
+          <th>{{ t('designation') }}</th>
+          <th>{{ t('department') }}</th>
+          <th>{{ t('phone') }}</th>
+          <th>{{ t('email') }}</th>
+          <th>{{ t('joiningDate') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (member of filteredStaff(); track member.id) {
+          <tr>
+            @if (editingId === member.id) {
+              <td [attr.data-label]="t('name')"><input type="text" name="editStaffName{{ member.id }}" [(ngModel)]="editForm.name"></td>
+              <td [attr.data-label]="t('designation')"><input type="text" name="editStaffDesignation{{ member.id }}" [(ngModel)]="editForm.designation"></td>
+              <td [attr.data-label]="t('department')"><input type="text" name="editStaffDepartment{{ member.id }}" [(ngModel)]="editForm.department"></td>
+              <td [attr.data-label]="t('phone')"><input type="tel" name="editStaffPhone{{ member.id }}" [(ngModel)]="editForm.phone"></td>
+              <td [attr.data-label]="t('email')"><input type="email" name="editStaffEmail{{ member.id }}" [(ngModel)]="editForm.email"></td>
+              <td [attr.data-label]="t('joiningDate')"><input type="date" name="editStaffJoiningDate{{ member.id }}" [(ngModel)]="editForm.joiningDate"></td>
+              <td [attr.data-label]="t('status')">
+                <select name="editStaffStatus{{ member.id }}" [(ngModel)]="editForm.status">
+                  <option value="ACTIVE">{{ t('active') }}</option>
+                  <option value="INACTIVE">{{ t('inactive') }}</option>
+                </select>
+              </td>
+              <td [attr.data-label]="t('actions')">
+                <div class="table-actions">
+                  <button type="button" class="admin-btn" (click)="saveEdit(member.id)">{{ t('save') }}</button>
+                  <button type="button" class="admin-btn secondary" (click)="cancelEdit()">{{ t('cancel') }}</button>
+                </div>
+              </td>
+            } @else {
+              <td [attr.data-label]="t('name')"><strong>{{ member.name }}</strong></td>
+              <td [attr.data-label]="t('designation')">{{ member.designation }}</td>
+              <td [attr.data-label]="t('department')">{{ member.department }}</td>
+              <td [attr.data-label]="t('phone')">{{ member.phone }}</td>
+              <td [attr.data-label]="t('email')">{{ member.email }}</td>
+              <td [attr.data-label]="t('joiningDate')">{{ member.joiningDate }}</td>
+              <td [attr.data-label]="t('status')">
+                <span class="status" [class.published]="member.status === 'ACTIVE'" [class.archived]="member.status === 'INACTIVE'">
+                  {{ member.status === 'ACTIVE' ? t('active') : t('inactive') }}
+                </span>
+              </td>
+              <td [attr.data-label]="t('actions')">
+                <button type="button" class="admin-btn secondary" (click)="startEdit(member)">{{ t('edit') }}</button>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</section>

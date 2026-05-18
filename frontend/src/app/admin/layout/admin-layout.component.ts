@@ -36,7 +36,8 @@ export class AdminLayoutComponent {
     { link: '/admin/comments', icon: 'C', label: 'comments', roles: ['admin', 'editor'], exact: true },
     { link: '/admin/breaking-news', icon: '!', label: 'breakingNews', roles: ['admin', 'editor'], exact: true },
     { link: '/admin/profile', icon: 'P', label: 'myProfile', roles: ['admin', 'editor', 'reporter'], exact: true },
-    { link: '/admin/team', icon: 'T', label: 'team', roles: ['admin'], exact: true }
+    { link: '/admin/team', icon: 'T', label: 'team', roles: ['admin'], exact: true },
+    { link: '/admin/media-operations', icon: 'O', label: 'mediaOperations', roles: ['admin', 'editor'] }
   ];
 
   constructor(
@@ -65,10 +66,6 @@ export class AdminLayoutComponent {
       return this.i18n.t('categories');
     }
 
-    if (url.includes('/admin/media')) {
-      return this.i18n.t('mediaLibrary');
-    }
-
     if (url.includes('/admin/comments')) {
       return this.i18n.t('comments');
     }
@@ -79,6 +76,22 @@ export class AdminLayoutComponent {
 
     if (url.includes('/admin/team')) {
       return this.i18n.t('team');
+    }
+
+    if (url.includes('/admin/media-operations/staff')) {
+      return this.i18n.t('staffManagement');
+    }
+
+    if (url.includes('/admin/media-operations/assignments')) {
+      return this.i18n.t('assignmentManagement');
+    }
+
+    if (url.includes('/admin/media-operations')) {
+      return this.i18n.t('mediaOperations');
+    }
+
+    if (url.includes('/admin/media')) {
+      return this.i18n.t('mediaLibrary');
     }
 
     if (url.includes('/admin/profile')) {

@@ -1,0 +1,147 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('mediaOperations') }}</span>
+    <h2>{{ t('assignmentManagement') }}</h2>
+    <p>{{ t('assignmentManagementHelp') }}</p>
+  </div>
+
+  <section class="cms-panel">
+    <div class="panel-heading">
+      <h3>{{ t('addAssignment') }}</h3>
+      <p>{{ t('assignmentManagementHelp') }}</p>
+    </div>
+    <form class="cms-form" (ngSubmit)="create()">
+      <label>
+        <span>{{ t('title') }}</span>
+        <input type="text" name="assignmentTitle" [(ngModel)]="form.title">
+      </label>
+      <label>
+        <span>{{ t('assignedStaff') }}</span>
+        <select name="assignmentStaff" [(ngModel)]="form.assignedStaffId">
+          @for (member of staff(); track member.id) {
+            <option [ngValue]="member.id">{{ member.name }}</option>
+          }
+        </select>
+      </label>
+      <label class="full-width">
+        <span>{{ t('description') }}</span>
+        <textarea name="assignmentDescription" rows="3" [(ngModel)]="form.description"></textarea>
+      </label>
+      <label>
+        <span>{{ t('category') }}</span>
+        <input type="text" name="assignmentCategory" [(ngModel)]="form.category">
+      </label>
+      <label>
+        <span>{{ t('location') }}</span>
+        <input type="text" name="assignmentLocation" [(ngModel)]="form.location">
+      </label>
+      <label>
+        <span>{{ t('deadline') }}</span>
+        <input type="datetime-local" name="assignmentDeadline" [(ngModel)]="form.deadline">
+      </label>
+      <label>
+        <span>{{ t('priority') }}</span>
+        <select name="assignmentPriority" [(ngModel)]="form.priority">
+          @for (priority of priorities; track priority) {
+            <option [value]="priority">{{ priority }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span>{{ t('status') }}</span>
+        <select name="assignmentStatus" [(ngModel)]="form.status">
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </label>
+      <label class="full-width">
+        <span>{{ t('notes') }}</span>
+        <textarea name="assignmentNotes" rows="2" [(ngModel)]="form.notes"></textarea>
+      </label>
+      <div class="form-actions full-width">
+        <button type="submit" class="admin-btn">{{ t('add') }}</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="cms-panel filter-panel">
+    <input type="search" name="assignmentSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAssignments')">
+    <select name="assignmentStatusFilter" [(ngModel)]="statusFilter">
+      <option value="">{{ t('allStatuses') }}</option>
+      @for (status of statuses; track status) {
+        <option [value]="status">{{ status }}</option>
+      }
+    </select>
+  </section>
+
+  <section class="cms-panel table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('title') }}</th>
+          <th>{{ t('assignedStaff') }}</th>
+          <th>{{ t('category') }}</th>
+          <th>{{ t('location') }}</th>
+          <th>{{ t('deadline') }}</th>
+          <th>{{ t('priority') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (assignment of filteredAssignments(); track assignment.id) {
+          <tr>
+            @if (editingId === assignment.id) {
+              <td [attr.data-label]="t('title')"><input type="text" name="editAssignmentTitle{{ assignment.id }}" [(ngModel)]="editForm.title"></td>
+              <td [attr.data-label]="t('assignedStaff')">
+                <select name="editAssignmentStaff{{ assignment.id }}" [(ngModel)]="editForm.assignedStaffId">
+                  @for (member of staff(); track member.id) {
+                    <option [ngValue]="member.id">{{ member.name }}</option>
+                  }
+                </select>
+              </td>
+              <td [attr.data-label]="t('category')"><input type="text" name="editAssignmentCategory{{ assignment.id }}" [(ngModel)]="editForm.category"></td>
+              <td [attr.data-label]="t('location')"><input type="text" name="editAssignmentLocation{{ assignment.id }}" [(ngModel)]="editForm.location"></td>
+              <td [attr.data-label]="t('deadline')"><input type="datetime-local" name="editAssignmentDeadline{{ assignment.id }}" [(ngModel)]="editForm.deadline"></td>
+              <td [attr.data-label]="t('priority')">
+                <select name="editAssignmentPriority{{ assignment.id }}" [(ngModel)]="editForm.priority">
+                  @for (priority of priorities; track priority) {
+                    <option [value]="priority">{{ priority }}</option>
+                  }
+                </select>
+              </td>
+              <td [attr.data-label]="t('status')">
+                <select name="editAssignmentStatus{{ assignment.id }}" [(ngModel)]="editForm.status">
+                  @for (status of statuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                  }
+                </select>
+              </td>
+              <td [attr.data-label]="t('actions')">
+                <div class="table-actions">
+                  <button type="button" class="admin-btn" (click)="saveEdit(assignment.id)">{{ t('save') }}</button>
+                  <button type="button" class="admin-btn secondary" (click)="cancelEdit()">{{ t('cancel') }}</button>
+                </div>
+              </td>
+            } @else {
+              <td [attr.data-label]="t('title')">
+                <strong>{{ assignment.title }}</strong>
+                <small>{{ assignment.description }}</small>
+              </td>
+              <td [attr.data-label]="t('assignedStaff')">{{ staffName(assignment.assignedStaffId) }}</td>
+              <td [attr.data-label]="t('category')">{{ assignment.category }}</td>
+              <td [attr.data-label]="t('location')">{{ assignment.location }}</td>
+              <td [attr.data-label]="t('deadline')">{{ assignment.deadline }}</td>
+              <td [attr.data-label]="t('priority')"><span class="status review">{{ assignment.priority }}</span></td>
+              <td [attr.data-label]="t('status')"><span class="status draft">{{ assignment.status }}</span></td>
+              <td [attr.data-label]="t('actions')">
+                <button type="button" class="admin-btn secondary" (click)="startEdit(assignment)">{{ t('edit') }}</button>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</section>

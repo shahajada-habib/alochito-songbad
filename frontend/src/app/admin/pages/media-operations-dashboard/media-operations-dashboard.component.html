@@ -1,0 +1,82 @@
+<section class="cms-page">
+  <div class="cms-heading cms-heading-row">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('mediaOperationsDashboard') }}</h2>
+      <p>{{ t('mediaOperationsHelp') }}</p>
+    </div>
+    <div class="cms-actions">
+      <button type="button" class="admin-btn secondary" routerLink="/admin/media-operations/staff">{{ t('staffManagement') }}</button>
+      <button type="button" class="admin-btn" routerLink="/admin/media-operations/assignments">{{ t('assignmentManagement') }}</button>
+    </div>
+  </div>
+
+  <div class="cms-stats">
+    <article>
+      <span class="stat-icon">S</span>
+      <div>
+        <strong>{{ activeStaffCount() }}</strong>
+        <span>{{ t('activeStaff') }}</span>
+        <small>{{ t('staffManagement') }}</small>
+      </div>
+    </article>
+    <article>
+      <span class="stat-icon">A</span>
+      <div>
+        <strong>{{ activeAssignmentCount() }}</strong>
+        <span>{{ t('activeAssignments') }}</span>
+        <small>{{ t('assignmentManagement') }}</small>
+      </div>
+    </article>
+    <article>
+      <span class="stat-icon">U</span>
+      <div>
+        <strong>{{ urgentAssignmentCount() }}</strong>
+        <span>{{ t('urgentAssignments') }}</span>
+        <small>{{ t('priority') }}</small>
+      </div>
+    </article>
+    <article>
+      <span class="stat-icon">C</span>
+      <div>
+        <strong>{{ completedAssignmentCount() }}</strong>
+        <span>{{ t('completedAssignments') }}</span>
+        <small>{{ t('status') }}</small>
+      </div>
+    </article>
+  </div>
+
+  <section class="cms-panel table-panel">
+    <div class="panel-heading">
+      <h3>{{ t('recentAssignments') }}</h3>
+      <p>{{ t('assignmentManagementHelp') }}</p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>{{ t('title') }}</th>
+          <th>{{ t('assignedStaff') }}</th>
+          <th>{{ t('category') }}</th>
+          <th>{{ t('deadline') }}</th>
+          <th>{{ t('priority') }}</th>
+          <th>{{ t('status') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (assignment of assignments().slice(0, 5); track assignment.id) {
+          <tr>
+            <td [attr.data-label]="t('title')">
+              <strong>{{ assignment.title }}</strong>
+              <small>{{ assignment.location }}</small>
+            </td>
+            <td [attr.data-label]="t('assignedStaff')">{{ staffName(assignment.assignedStaffId) }}</td>
+            <td [attr.data-label]="t('category')">{{ assignment.category }}</td>
+            <td [attr.data-label]="t('deadline')">{{ assignment.deadline }}</td>
+            <td [attr.data-label]="t('priority')"><span class="status review">{{ assignment.priority }}</span></td>
+            <td [attr.data-label]="t('status')"><span class="status draft">{{ assignment.status }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</section>

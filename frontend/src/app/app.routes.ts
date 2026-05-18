@@ -107,6 +107,21 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/team/team.component').then((m) => m.TeamComponent)
       },
       {
+        path: 'media-operations',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-dashboard/media-operations-dashboard.component').then((m) => m.MediaOperationsDashboardComponent)
+      },
+      {
+        path: 'media-operations/staff',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-staff/media-operations-staff.component').then((m) => m.MediaOperationsStaffComponent)
+      },
+      {
+        path: 'media-operations/assignments',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-assignments/media-operations-assignments.component').then((m) => m.MediaOperationsAssignmentsComponent)
+      },
+      {
         path: 'homepage-customize',
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/pages/homepage-customize/homepage-customize.component').then((m) => m.HomepageCustomizeComponent)
