@@ -1,0 +1,177 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('purchaseRequests') }}</h2>
+      <p>{{ t('purchaseRequestsHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addPurchaseRequest') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchPurchaseRequestsLabel') }}</span>
+      <input type="search" name="purchaseRequestSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchPurchaseRequests')">
+    </label>
+    <label>
+      <span>{{ t('assignedStaff') }}</span>
+      <select name="purchaseRequestStaffFilter" [(ngModel)]="staffFilter">
+        <option value="">{{ t('allStaff') }}</option>
+        @for (member of staff(); track member.id) {
+          <option [value]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('department') }}</span>
+      <select name="purchaseRequestDepartmentFilter" [(ngModel)]="departmentFilter">
+        <option value="">{{ t('allDepartments') }}</option>
+        @for (department of departments(); track department.id) {
+          <option [value]="department.id">{{ department.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('priority') }}</span>
+      <select name="purchaseRequestPriorityFilter" [(ngModel)]="priorityFilter">
+        <option value="">{{ t('allPriorities') }}</option>
+        @for (priority of priorities; track priority) {
+          <option [value]="priority">{{ priorityLabel(priority) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="purchaseRequestStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('procurementDesk') }}</span>
+        <h3>{{ t('purchaseRequestList') }}</h3>
+      </div>
+      <small>{{ filteredPurchaseRequests().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredPurchaseRequests().length > 0) {
+      <div class="operations-list">
+        @for (request of filteredPurchaseRequests(); track request.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ request.title }}</strong>
+              <span>{{ departmentName(request.departmentId) }} &middot; {{ request.itemDescription }}</span>
+              <div class="operations-meta">
+                <small>{{ t('requestedBy') }}: {{ staffName(request.requestedByStaffId) }}</small>
+                <small>{{ t('requestDate') }}: {{ formatDate(request.requestDate) }}</small>
+                @if (request.neededByDate) { <small>{{ t('neededByDate') }}: {{ formatDate(request.neededByDate) }}</small> }
+                <small>{{ t('estimatedAmount') }}: {{ request.estimatedAmount }}</small>
+              </div>
+            </div>
+            <span class="ops-badge {{ statusClass(request.status) }}">{{ statusLabel(request.status) }}</span>
+            <span class="ops-badge priority-{{ request.priority.toLowerCase() }}">{{ priorityLabel(request.priority) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(request)">{{ t('editPurchaseRequest') }}</button>
+            @if (request.status !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(request)">{{ t('cancelRecord') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noPurchaseRequestsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editPurchaseRequest') : t('addPurchaseRequest') }}</span>
+          <h3>{{ isEditing ? t('editPurchaseRequest') : t('newPurchaseRequest') }}</h3>
+          <p>{{ t('purchaseRequestFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+        <label>
+          <span>{{ t('title') }}</span>
+          <input type="text" name="purchaseRequestTitle" [(ngModel)]="activeForm.title" [placeholder]="t('purchaseRequestTitlePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('requestedBy') }}</span>
+          <select name="purchaseRequestStaff" [(ngModel)]="activeForm.requestedByStaffId">
+            <option [ngValue]="null">{{ t('unassigned') }}</option>
+            @for (member of staff(); track member.id) {
+              <option [ngValue]="member.id">{{ member.name }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('department') }}</span>
+          <select name="purchaseRequestDepartment" [(ngModel)]="activeForm.departmentId">
+            <option [ngValue]="null">{{ t('unassigned') }}</option>
+            @for (department of departments(); track department.id) {
+              <option [ngValue]="department.id">{{ department.name }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('estimatedAmount') }}</span>
+          <input type="number" min="0" step="0.01" name="purchaseRequestAmount" [(ngModel)]="activeForm.estimatedAmount">
+        </label>
+        <label>
+          <span>{{ t('requestDate') }}</span>
+          <input type="date" name="purchaseRequestDate" [(ngModel)]="activeForm.requestDate">
+        </label>
+        <label>
+          <span>{{ t('neededByDate') }}</span>
+          <input type="date" name="purchaseRequestNeededBy" [(ngModel)]="activeForm.neededByDate">
+        </label>
+        <label>
+          <span>{{ t('priority') }}</span>
+          <select name="purchaseRequestPriority" [(ngModel)]="activeForm.priority">
+            @for (priority of priorities; track priority) {
+              <option [value]="priority">{{ priorityLabel(priority) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('status') }}</span>
+          <select name="purchaseRequestStatus" [(ngModel)]="activeForm.status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('itemDescription') }}</span>
+          <textarea name="purchaseRequestItem" rows="2" [(ngModel)]="activeForm.itemDescription" [placeholder]="t('itemDescriptionPlaceholder')"></textarea>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('notes') }}</span>
+          <textarea name="purchaseRequestNotes" rows="2" [(ngModel)]="activeForm.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+        </label>
+        <div class="form-actions full-width">
+          <button type="submit" class="operations-btn primary" [disabled]="!canSavePurchaseRequest || isSaving">{{ isSaving ? t('saving') : t('savePurchaseRequest') }}</button>
+          <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+        </div>
+      </form>
+    </section>
+  }
+</section>

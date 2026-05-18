@@ -60,6 +60,24 @@
         <small class="report-hint">{{ t('activeStaffDocumentsHint') }}</small>
         @if (sectionError('staffDocuments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
+      <article class="report-card">
+        <span>{{ t('activeVendors') }}</span>
+        <strong>{{ activeVendors() }}</strong>
+        <small class="report-hint">{{ t('activeVendorsHint') }}</small>
+        @if (sectionError('vendors')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('openPurchaseRequests') }}</span>
+        <strong>{{ openPurchaseRequests() }}</strong>
+        <small class="report-hint">{{ t('openPurchaseRequestsHint') }}</small>
+        @if (sectionError('purchaseRequests')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('placedPurchaseOrders') }}</span>
+        <strong>{{ placedPurchaseOrders() }}</strong>
+        <small class="report-hint">{{ t('placedPurchaseOrdersHint') }}</small>
+        @if (sectionError('purchaseOrders')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
     </div>
   </section>
 

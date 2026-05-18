@@ -1,0 +1,170 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('purchaseOrders') }}</h2>
+      <p>{{ t('purchaseOrdersHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addPurchaseOrder') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchPurchaseOrdersLabel') }}</span>
+      <input type="search" name="purchaseOrderSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchPurchaseOrders')">
+    </label>
+    <label>
+      <span>{{ t('vendor') }}</span>
+      <select name="purchaseOrderVendorFilter" [(ngModel)]="vendorFilter">
+        <option value="">{{ t('allVendors') }}</option>
+        @for (vendor of vendors(); track vendor.id) {
+          <option [value]="vendor.id">{{ vendor.vendorName }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('paymentStatus') }}</span>
+      <select name="purchaseOrderPaymentFilter" [(ngModel)]="paymentStatusFilter">
+        <option value="">{{ t('allPaymentStatuses') }}</option>
+        @for (status of paymentStatuses; track status) {
+          <option [value]="status">{{ paymentStatusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('orderStatus') }}</span>
+      <select name="purchaseOrderStatusFilter" [(ngModel)]="orderStatusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of orderStatuses; track status) {
+          <option [value]="status">{{ orderStatusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('procurementDesk') }}</span>
+        <h3>{{ t('purchaseOrderList') }}</h3>
+      </div>
+      <small>{{ filteredPurchaseOrders().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredPurchaseOrders().length > 0) {
+      <div class="operations-list">
+        @for (order of filteredPurchaseOrders(); track order.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ order.orderNumber }} &middot; {{ order.title }}</strong>
+              <span>{{ vendorName(order.vendorId) }} &middot; {{ purchaseRequestTitle(order.purchaseRequestId) }}</span>
+              <div class="operations-meta">
+                <small>{{ t('orderDate') }}: {{ formatDate(order.orderDate) }}</small>
+                @if (order.expectedDeliveryDate) { <small>{{ t('expectedDeliveryDate') }}: {{ formatDate(order.expectedDeliveryDate) }}</small> }
+                <small>{{ t('totalAmount') }}: {{ order.totalAmount }}</small>
+                <small>{{ t('paymentStatus') }}: {{ paymentStatusLabel(order.paymentStatus) }}</small>
+              </div>
+            </div>
+            <span class="ops-badge {{ statusClass(order.orderStatus) }}">{{ orderStatusLabel(order.orderStatus) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(order)">{{ t('editPurchaseOrder') }}</button>
+            @if (order.orderStatus !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(order)">{{ t('cancelRecord') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noPurchaseOrdersFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editPurchaseOrder') : t('addPurchaseOrder') }}</span>
+          <h3>{{ isEditing ? t('editPurchaseOrder') : t('newPurchaseOrder') }}</h3>
+          <p>{{ t('purchaseOrderFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (vendors().length === 0) {
+        <div class="operations-muted">{{ t('vendorRequiredForPurchaseOrder') }}</div>
+      } @else {
+        <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+          <label>
+            <span>{{ t('vendor') }}</span>
+            <select name="purchaseOrderVendor" [(ngModel)]="activeForm.vendorId">
+              @for (vendor of vendors(); track vendor.id) {
+                <option [ngValue]="vendor.id">{{ vendor.vendorName }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('purchaseRequest') }}</span>
+            <select name="purchaseOrderRequest" [(ngModel)]="activeForm.purchaseRequestId">
+              <option [ngValue]="null">{{ t('noLinkedRequest') }}</option>
+              @for (request of purchaseRequests(); track request.id) {
+                <option [ngValue]="request.id">{{ request.title }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('orderNumber') }}</span>
+            <input type="text" name="purchaseOrderNumber" [(ngModel)]="activeForm.orderNumber" [placeholder]="t('orderNumberPlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('title') }}</span>
+            <input type="text" name="purchaseOrderTitle" [(ngModel)]="activeForm.title" [placeholder]="t('purchaseOrderTitlePlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('orderDate') }}</span>
+            <input type="date" name="purchaseOrderDate" [(ngModel)]="activeForm.orderDate">
+          </label>
+          <label>
+            <span>{{ t('expectedDeliveryDate') }}</span>
+            <input type="date" name="purchaseOrderDelivery" [(ngModel)]="activeForm.expectedDeliveryDate">
+          </label>
+          <label>
+            <span>{{ t('totalAmount') }}</span>
+            <input type="number" min="0" step="0.01" name="purchaseOrderTotal" [(ngModel)]="activeForm.totalAmount">
+          </label>
+          <label>
+            <span>{{ t('paymentStatus') }}</span>
+            <select name="purchaseOrderPaymentStatus" [(ngModel)]="activeForm.paymentStatus">
+              @for (status of paymentStatuses; track status) {
+                <option [value]="status">{{ paymentStatusLabel(status) }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('orderStatus') }}</span>
+            <select name="purchaseOrderStatus" [(ngModel)]="activeForm.orderStatus">
+              @for (status of orderStatuses; track status) {
+                <option [value]="status">{{ orderStatusLabel(status) }}</option>
+              }
+            </select>
+          </label>
+          <label class="wide-field">
+            <span>{{ t('notes') }}</span>
+            <textarea name="purchaseOrderNotes" rows="2" [(ngModel)]="activeForm.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+          </label>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSavePurchaseOrder || isSaving">{{ isSaving ? t('saving') : t('savePurchaseOrder') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</section>

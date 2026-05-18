@@ -23,6 +23,9 @@ export class MediaOperationsReportsComponent {
   protected readonly departments = this.operations.departments;
   protected readonly leaveRequests = this.operations.leaveRequests;
   protected readonly staffDocuments = this.operations.staffDocuments;
+  protected readonly vendors = this.operations.vendors;
+  protected readonly purchaseRequests = this.operations.purchaseRequests;
+  protected readonly purchaseOrders = this.operations.purchaseOrders;
   protected readonly loading = this.operations.loading;
 
   protected readonly staffCount = computed(() => this.staff().length);
@@ -77,6 +80,15 @@ export class MediaOperationsReportsComponent {
   );
   protected readonly activeStaffDocuments = computed(() =>
     this.staffDocuments().filter((item) => item.status === 'ACTIVE').length
+  );
+  protected readonly activeVendors = computed(() =>
+    this.vendors().filter((item) => item.status === 'ACTIVE').length
+  );
+  protected readonly openPurchaseRequests = computed(() =>
+    this.purchaseRequests().filter((item) => !['APPROVED', 'REJECTED', 'CANCELLED'].includes(item.status)).length
+  );
+  protected readonly placedPurchaseOrders = computed(() =>
+    this.purchaseOrders().filter((item) => ['PLACED', 'RECEIVED'].includes(item.orderStatus)).length
   );
 
   constructor(protected readonly i18n: AdminTranslationService) {}

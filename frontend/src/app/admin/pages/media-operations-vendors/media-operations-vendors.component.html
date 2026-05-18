@@ -1,0 +1,143 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('vendorsSuppliers') }}</h2>
+      <p>{{ t('vendorsSuppliersHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addVendor') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchVendorsLabel') }}</span>
+      <input type="search" name="vendorSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchVendors')">
+    </label>
+    <label>
+      <span>{{ t('vendorType') }}</span>
+      <select name="vendorTypeFilter" [(ngModel)]="typeFilter">
+        <option value="">{{ t('allVendorTypes') }}</option>
+        @for (type of vendorTypes; track type) {
+          <option [value]="type">{{ vendorTypeLabel(type) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="vendorStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('procurementDesk') }}</span>
+        <h3>{{ t('vendorList') }}</h3>
+      </div>
+      <small>{{ filteredVendors().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredVendors().length > 0) {
+      <div class="operations-list">
+        @for (vendor of filteredVendors(); track vendor.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ vendor.vendorName }}</strong>
+              <span>{{ vendor.companyName || '-' }} &middot; {{ vendorTypeLabel(vendor.vendorType) }}</span>
+              <div class="operations-meta">
+                @if (vendor.contactPerson) { <small>{{ t('contactPerson') }}: {{ vendor.contactPerson }}</small> }
+                @if (vendor.phone) { <small>{{ t('phone') }}: {{ vendor.phone }}</small> }
+                @if (vendor.email) { <small>{{ t('email') }}: {{ vendor.email }}</small> }
+              </div>
+            </div>
+            <span class="ops-badge {{ statusClass(vendor.status) }}">{{ statusLabel(vendor.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(vendor)">{{ t('editVendor') }}</button>
+            @if (vendor.status === 'ACTIVE') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(vendor)">{{ t('markInactive') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noVendorsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editVendor') : t('addVendor') }}</span>
+          <h3>{{ isEditing ? t('editVendor') : t('newVendor') }}</h3>
+          <p>{{ t('vendorFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+        <label>
+          <span>{{ t('vendorName') }}</span>
+          <input type="text" name="vendorName" [(ngModel)]="activeForm.vendorName" [placeholder]="t('vendorNamePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('companyName') }}</span>
+          <input type="text" name="vendorCompany" [(ngModel)]="activeForm.companyName" [placeholder]="t('companyNamePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('contactPerson') }}</span>
+          <input type="text" name="vendorContact" [(ngModel)]="activeForm.contactPerson" [placeholder]="t('contactPersonPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('phone') }}</span>
+          <input type="text" name="vendorPhone" [(ngModel)]="activeForm.phone" [placeholder]="t('phonePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('email') }}</span>
+          <input type="email" name="vendorEmail" [(ngModel)]="activeForm.email" [placeholder]="t('emailPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('vendorType') }}</span>
+          <select name="vendorType" [(ngModel)]="activeForm.vendorType">
+            @for (type of vendorTypes; track type) {
+              <option [value]="type">{{ vendorTypeLabel(type) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('status') }}</span>
+          <select name="vendorStatus" [(ngModel)]="activeForm.status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('address') }}</span>
+          <textarea name="vendorAddress" rows="2" [(ngModel)]="activeForm.address" [placeholder]="t('addressPlaceholder')"></textarea>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('notes') }}</span>
+          <textarea name="vendorNotes" rows="2" [(ngModel)]="activeForm.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+        </label>
+        <div class="form-actions full-width">
+          <button type="submit" class="operations-btn primary" [disabled]="!canSaveVendor || isSaving">{{ isSaving ? t('saving') : t('saveVendor') }}</button>
+          <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+        </div>
+      </form>
+    </section>
+  }
+</section>

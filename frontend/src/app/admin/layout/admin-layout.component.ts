@@ -122,6 +122,18 @@ export class AdminLayoutComponent {
       return this.i18n.t('staffDocumentsHrNotes');
     }
 
+    if (url.includes('/admin/media-operations/vendors')) {
+      return this.i18n.t('vendorsSuppliers');
+    }
+
+    if (url.includes('/admin/media-operations/purchase-requests')) {
+      return this.i18n.t('purchaseRequests');
+    }
+
+    if (url.includes('/admin/media-operations/purchase-orders')) {
+      return this.i18n.t('purchaseOrders');
+    }
+
     if (url.includes('/admin/media-operations/reports')) {
       return this.i18n.t('mediaOperationsReports');
     }

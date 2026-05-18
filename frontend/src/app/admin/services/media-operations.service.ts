@@ -26,8 +26,14 @@ export type LeaveType = 'CASUAL' | 'SICK' | 'EARNED' | 'UNPAID' | 'OTHER';
 export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 export type StaffDocumentType = 'CONTRACT' | 'ID_PROOF' | 'CERTIFICATE' | 'WARNING' | 'NOTE' | 'OTHER';
 export type StaffDocumentStatus = 'ACTIVE' | 'ARCHIVED';
+export type VendorType = 'EQUIPMENT' | 'PRINTING' | 'TRANSPORT' | 'OFFICE_SUPPLIES' | 'INTERNET_TECH' | 'FOOD' | 'OTHER';
+export type VendorStatus = 'ACTIVE' | 'INACTIVE';
+export type PurchaseRequestPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type PurchaseRequestStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+export type PurchaseOrderPaymentStatus = 'UNPAID' | 'PARTIAL' | 'PAID' | 'CANCELLED';
+export type PurchaseOrderStatus = 'DRAFT' | 'PLACED' | 'RECEIVED' | 'CANCELLED';
 export type ActivityActionType = 'CREATED' | 'UPDATED' | 'ARCHIVED' | 'CANCELLED' | 'STATUS_CHANGED' | 'RETIRED';
-export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'departments' | 'leaveRequests' | 'staffDocuments' | 'activityLog';
+export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'departments' | 'leaveRequests' | 'staffDocuments' | 'vendors' | 'purchaseRequests' | 'purchaseOrders' | 'activityLog';
 
 export interface MediaOperationsStaff {
   id: number;
@@ -183,6 +189,53 @@ export interface MediaOperationsStaffDocument {
   updatedAt: string;
 }
 
+export interface MediaOperationsVendor {
+  id: number;
+  vendorName: string;
+  companyName: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  address: string;
+  vendorType: VendorType;
+  status: VendorStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaOperationsPurchaseRequest {
+  id: number;
+  title: string;
+  requestedByStaffId: number | null;
+  departmentId: number | null;
+  itemDescription: string;
+  estimatedAmount: number;
+  requestDate: string;
+  neededByDate: string | null;
+  priority: PurchaseRequestPriority;
+  status: PurchaseRequestStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaOperationsPurchaseOrder {
+  id: number;
+  purchaseRequestId: number | null;
+  vendorId: number;
+  orderNumber: string;
+  title: string;
+  orderDate: string;
+  expectedDeliveryDate: string | null;
+  totalAmount: number;
+  paymentStatus: PurchaseOrderPaymentStatus;
+  orderStatus: PurchaseOrderStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface MediaOperationsActivityLog {
   id: number;
   moduleName: string;
@@ -205,6 +258,9 @@ export type AssetFormValue = Omit<MediaOperationsAsset, 'id' | 'createdAt' | 'up
 export type DepartmentFormValue = Omit<MediaOperationsDepartment, 'id' | 'createdAt' | 'updatedAt'>;
 export type LeaveRequestFormValue = Omit<MediaOperationsLeaveRequest, 'id' | 'createdAt' | 'updatedAt'>;
 export type StaffDocumentFormValue = Omit<MediaOperationsStaffDocument, 'id' | 'createdAt' | 'updatedAt'>;
+export type VendorFormValue = Omit<MediaOperationsVendor, 'id' | 'createdAt' | 'updatedAt'>;
+export type PurchaseRequestFormValue = Omit<MediaOperationsPurchaseRequest, 'id' | 'createdAt' | 'updatedAt'>;
+export type PurchaseOrderFormValue = Omit<MediaOperationsPurchaseOrder, 'id' | 'createdAt' | 'updatedAt'>;
 
 const OPERATIONS_API_URL = `${environment.apiBaseUrl}/api/admin/operations`;
 
@@ -223,6 +279,9 @@ export class MediaOperationsService {
   private readonly departmentsSignal = signal<MediaOperationsDepartment[]>([]);
   private readonly leaveRequestsSignal = signal<MediaOperationsLeaveRequest[]>([]);
   private readonly staffDocumentsSignal = signal<MediaOperationsStaffDocument[]>([]);
+  private readonly vendorsSignal = signal<MediaOperationsVendor[]>([]);
+  private readonly purchaseRequestsSignal = signal<MediaOperationsPurchaseRequest[]>([]);
+  private readonly purchaseOrdersSignal = signal<MediaOperationsPurchaseOrder[]>([]);
   private readonly activityLogSignal = signal<MediaOperationsActivityLog[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal('');
@@ -239,6 +298,9 @@ export class MediaOperationsService {
   readonly departments = this.departmentsSignal.asReadonly();
   readonly leaveRequests = this.leaveRequestsSignal.asReadonly();
   readonly staffDocuments = this.staffDocumentsSignal.asReadonly();
+  readonly vendors = this.vendorsSignal.asReadonly();
+  readonly purchaseRequests = this.purchaseRequestsSignal.asReadonly();
+  readonly purchaseOrders = this.purchaseOrdersSignal.asReadonly();
   readonly activityLog = this.activityLogSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
@@ -261,6 +323,9 @@ export class MediaOperationsService {
         this.departmentsSignal.set([]);
         this.leaveRequestsSignal.set([]);
         this.staffDocumentsSignal.set([]);
+        this.vendorsSignal.set([]);
+        this.purchaseRequestsSignal.set([]);
+        this.purchaseOrdersSignal.set([]);
         this.activityLogSignal.set([]);
         this.endpointErrorsSignal.set({});
       }
@@ -289,9 +354,12 @@ export class MediaOperationsService {
       departments: this.http.get<MediaOperationsDepartment[]>(`${OPERATIONS_API_URL}/departments`).pipe(catchError(() => recover<MediaOperationsDepartment>('departments'))),
       leaveRequests: this.http.get<MediaOperationsLeaveRequest[]>(`${OPERATIONS_API_URL}/leave-requests`).pipe(catchError(() => recover<MediaOperationsLeaveRequest>('leaveRequests'))),
       staffDocuments: this.http.get<MediaOperationsStaffDocument[]>(`${OPERATIONS_API_URL}/staff-documents`).pipe(catchError(() => recover<MediaOperationsStaffDocument>('staffDocuments'))),
+      vendors: this.http.get<MediaOperationsVendor[]>(`${OPERATIONS_API_URL}/vendors`).pipe(catchError(() => recover<MediaOperationsVendor>('vendors'))),
+      purchaseRequests: this.http.get<MediaOperationsPurchaseRequest[]>(`${OPERATIONS_API_URL}/purchase-requests`).pipe(catchError(() => recover<MediaOperationsPurchaseRequest>('purchaseRequests'))),
+      purchaseOrders: this.http.get<MediaOperationsPurchaseOrder[]>(`${OPERATIONS_API_URL}/purchase-orders`).pipe(catchError(() => recover<MediaOperationsPurchaseOrder>('purchaseOrders'))),
       activityLog: this.http.get<MediaOperationsActivityLog[]>(`${OPERATIONS_API_URL}/activity-log`).pipe(catchError(() => recover<MediaOperationsActivityLog>('activityLog')))
     }).pipe(
-      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, activityLog }) => ({
+      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, vendors, purchaseRequests, purchaseOrders, activityLog }) => ({
         staff: staff.map((item) => this.normalizeStaff(item)),
         assignments: assignments.map((item) => this.normalizeAssignment(item)),
         adClients: adClients.map((item) => this.normalizeAdClient(item)),
@@ -303,10 +371,13 @@ export class MediaOperationsService {
         departments: departments.map((item) => this.normalizeDepartment(item)),
         leaveRequests: leaveRequests.map((item) => this.normalizeLeaveRequest(item)),
         staffDocuments: staffDocuments.map((item) => this.normalizeStaffDocument(item)),
+        vendors: vendors.map((item) => this.normalizeVendor(item)),
+        purchaseRequests: purchaseRequests.map((item) => this.normalizePurchaseRequest(item)),
+        purchaseOrders: purchaseOrders.map((item) => this.normalizePurchaseOrder(item)),
         activityLog: activityLog.map((item) => this.normalizeActivityLog(item))
       }))
     ).subscribe({
-      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, activityLog }) => {
+      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, vendors, purchaseRequests, purchaseOrders, activityLog }) => {
         this.staffSignal.set(staff);
         this.assignmentsSignal.set(assignments);
         this.adClientsSignal.set(adClients);
@@ -318,6 +389,9 @@ export class MediaOperationsService {
         this.departmentsSignal.set(departments);
         this.leaveRequestsSignal.set(leaveRequests);
         this.staffDocumentsSignal.set(staffDocuments);
+        this.vendorsSignal.set(vendors);
+        this.purchaseRequestsSignal.set(purchaseRequests);
+        this.purchaseOrdersSignal.set(purchaseOrders);
         this.activityLogSignal.set(activityLog);
         this.endpointErrorsSignal.set(endpointErrors);
         this.errorSignal.set('');
@@ -687,8 +761,107 @@ export class MediaOperationsService {
     );
   }
 
+  createVendor(value: VendorFormValue): Observable<MediaOperationsVendor> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsVendor>(`${OPERATIONS_API_URL}/vendors`, value).pipe(
+      map((created) => this.normalizeVendor(created)),
+      tap((created) => this.vendorsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  updateVendor(id: number, value: VendorFormValue): Observable<MediaOperationsVendor> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsVendor>(`${OPERATIONS_API_URL}/vendors/${id}`, value).pipe(
+      map((updated) => this.normalizeVendor(updated)),
+      tap((updated) => this.vendorsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  archiveVendor(id: number): Observable<MediaOperationsVendor> {
+    this.errorSignal.set('');
+    return this.http.delete<MediaOperationsVendor>(`${OPERATIONS_API_URL}/vendors/${id}`).pipe(
+      map((updated) => this.normalizeVendor(updated)),
+      tap((updated) => this.vendorsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  createPurchaseRequest(value: PurchaseRequestFormValue): Observable<MediaOperationsPurchaseRequest> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsPurchaseRequest>(`${OPERATIONS_API_URL}/purchase-requests`, value).pipe(
+      map((created) => this.normalizePurchaseRequest(created)),
+      tap((created) => this.purchaseRequestsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  updatePurchaseRequest(id: number, value: PurchaseRequestFormValue): Observable<MediaOperationsPurchaseRequest> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsPurchaseRequest>(`${OPERATIONS_API_URL}/purchase-requests/${id}`, value).pipe(
+      map((updated) => this.normalizePurchaseRequest(updated)),
+      tap((updated) => this.purchaseRequestsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  archivePurchaseRequest(id: number): Observable<MediaOperationsPurchaseRequest> {
+    this.errorSignal.set('');
+    return this.http.delete<MediaOperationsPurchaseRequest>(`${OPERATIONS_API_URL}/purchase-requests/${id}`).pipe(
+      map((updated) => this.normalizePurchaseRequest(updated)),
+      tap((updated) => this.purchaseRequestsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  createPurchaseOrder(value: PurchaseOrderFormValue): Observable<MediaOperationsPurchaseOrder> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsPurchaseOrder>(`${OPERATIONS_API_URL}/purchase-orders`, value).pipe(
+      map((created) => this.normalizePurchaseOrder(created)),
+      tap((created) => this.purchaseOrdersSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  updatePurchaseOrder(id: number, value: PurchaseOrderFormValue): Observable<MediaOperationsPurchaseOrder> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsPurchaseOrder>(`${OPERATIONS_API_URL}/purchase-orders/${id}`, value).pipe(
+      map((updated) => this.normalizePurchaseOrder(updated)),
+      tap((updated) => this.purchaseOrdersSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  archivePurchaseOrder(id: number): Observable<MediaOperationsPurchaseOrder> {
+    this.errorSignal.set('');
+    return this.http.delete<MediaOperationsPurchaseOrder>(`${OPERATIONS_API_URL}/purchase-orders/${id}`).pipe(
+      map((updated) => this.normalizePurchaseOrder(updated)),
+      tap((updated) => this.purchaseOrdersSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
   staffName(id: number): string {
     return this.staffSignal().find((item) => item.id === id)?.name || 'Unassigned';
+  }
+
+  departmentName(id: number | null): string {
+    if (!id) {
+      return '-';
+    }
+    return this.departmentsSignal().find((item) => item.id === id)?.name || '-';
+  }
+
+  vendorName(id: number): string {
+    return this.vendorsSignal().find((item) => item.id === id)?.vendorName || 'Unassigned';
+  }
+
+  purchaseRequestTitle(id: number | null): string {
+    if (!id) {
+      return '-';
+    }
+    return this.purchaseRequestsSignal().find((item) => item.id === id)?.title || '-';
   }
 
   adClientName(id: number): string {
@@ -871,6 +1044,59 @@ export class MediaOperationsService {
       status: document.status || 'ACTIVE',
       createdAt: document.createdAt || '',
       updatedAt: document.updatedAt || ''
+    };
+  }
+
+  private normalizeVendor(vendor: MediaOperationsVendor): MediaOperationsVendor {
+    return {
+      ...vendor,
+      vendorName: vendor.vendorName || '',
+      companyName: vendor.companyName || '',
+      contactPerson: vendor.contactPerson || '',
+      phone: vendor.phone || '',
+      email: vendor.email || '',
+      address: vendor.address || '',
+      vendorType: vendor.vendorType || 'OTHER',
+      status: vendor.status || 'ACTIVE',
+      notes: vendor.notes || '',
+      createdAt: vendor.createdAt || '',
+      updatedAt: vendor.updatedAt || ''
+    };
+  }
+
+  private normalizePurchaseRequest(purchaseRequest: MediaOperationsPurchaseRequest): MediaOperationsPurchaseRequest {
+    return {
+      ...purchaseRequest,
+      title: purchaseRequest.title || '',
+      requestedByStaffId: purchaseRequest.requestedByStaffId || null,
+      departmentId: purchaseRequest.departmentId || null,
+      itemDescription: purchaseRequest.itemDescription || '',
+      estimatedAmount: Number(purchaseRequest.estimatedAmount || 0),
+      requestDate: purchaseRequest.requestDate || '',
+      neededByDate: purchaseRequest.neededByDate || null,
+      priority: purchaseRequest.priority || 'MEDIUM',
+      status: purchaseRequest.status || 'DRAFT',
+      notes: purchaseRequest.notes || '',
+      createdAt: purchaseRequest.createdAt || '',
+      updatedAt: purchaseRequest.updatedAt || ''
+    };
+  }
+
+  private normalizePurchaseOrder(purchaseOrder: MediaOperationsPurchaseOrder): MediaOperationsPurchaseOrder {
+    return {
+      ...purchaseOrder,
+      purchaseRequestId: purchaseOrder.purchaseRequestId || null,
+      vendorId: purchaseOrder.vendorId || 0,
+      orderNumber: purchaseOrder.orderNumber || '',
+      title: purchaseOrder.title || '',
+      orderDate: purchaseOrder.orderDate || '',
+      expectedDeliveryDate: purchaseOrder.expectedDeliveryDate || null,
+      totalAmount: Number(purchaseOrder.totalAmount || 0),
+      paymentStatus: purchaseOrder.paymentStatus || 'UNPAID',
+      orderStatus: purchaseOrder.orderStatus || 'DRAFT',
+      notes: purchaseOrder.notes || '',
+      createdAt: purchaseOrder.createdAt || '',
+      updatedAt: purchaseOrder.updatedAt || ''
     };
   }
 

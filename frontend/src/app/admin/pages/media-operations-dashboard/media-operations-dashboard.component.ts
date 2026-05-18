@@ -33,6 +33,9 @@ export class MediaOperationsDashboardComponent {
   protected readonly departments = this.operations.departments;
   protected readonly leaveRequests = this.operations.leaveRequests;
   protected readonly staffDocuments = this.operations.staffDocuments;
+  protected readonly vendors = this.operations.vendors;
+  protected readonly purchaseRequests = this.operations.purchaseRequests;
+  protected readonly purchaseOrders = this.operations.purchaseOrders;
   protected readonly activityLog = this.operations.activityLog;
   protected readonly loading = this.operations.loading;
   protected readonly error = this.operations.error;
@@ -102,6 +105,15 @@ export class MediaOperationsDashboardComponent {
   );
   protected readonly activeStaffDocumentCount = computed(() =>
     this.staffDocuments().filter((item) => item.status === 'ACTIVE').length
+  );
+  protected readonly activeVendorCount = computed(() =>
+    this.vendors().filter((item) => item.status === 'ACTIVE').length
+  );
+  protected readonly openPurchaseRequestCount = computed(() =>
+    this.purchaseRequests().filter((item) => !['APPROVED', 'REJECTED', 'CANCELLED'].includes(item.status)).length
+  );
+  protected readonly placedPurchaseOrderCount = computed(() =>
+    this.purchaseOrders().filter((item) => ['PLACED', 'RECEIVED'].includes(item.orderStatus)).length
   );
   protected readonly recentAssignments = computed(() => this.assignments().slice(0, 5));
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));

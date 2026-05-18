@@ -16,6 +16,9 @@
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/departments">{{ t('departmentsDesks') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/leave-requests">{{ t('leaveRequests') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/staff-documents">{{ t('staffDocumentsHrNotes') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/vendors">{{ t('vendorsSuppliers') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/purchase-requests">{{ t('purchaseRequests') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/purchase-orders">{{ t('purchaseOrders') }}</button>
         <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/reports">{{ t('reports') }}</button>
       </div>
     </div>
@@ -177,6 +180,30 @@
         <strong>{{ activeStaffDocumentCount() }}</strong>
         <span>{{ t('activeStaffDocuments') }}</span>
         <small>{{ t('activeStaffDocumentsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('vendorStatMark') }}</span>
+      <div>
+        <strong>{{ activeVendorCount() }}</strong>
+        <span>{{ t('activeVendors') }}</span>
+        <small>{{ t('activeVendorsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('purchaseRequestStatMark') }}</span>
+      <div>
+        <strong>{{ openPurchaseRequestCount() }}</strong>
+        <span>{{ t('openPurchaseRequests') }}</span>
+        <small>{{ t('openPurchaseRequestsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('purchaseOrderStatMark') }}</span>
+      <div>
+        <strong>{{ placedPurchaseOrderCount() }}</strong>
+        <span>{{ t('placedPurchaseOrders') }}</span>
+        <small>{{ t('placedPurchaseOrdersHint') }}</small>
       </div>
     </article>
   </div>

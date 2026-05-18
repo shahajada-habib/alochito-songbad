@@ -172,6 +172,21 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/media-operations-staff-documents/media-operations-staff-documents.component').then((m) => m.MediaOperationsStaffDocumentsComponent)
       },
       {
+        path: 'media-operations/vendors',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-vendors/media-operations-vendors.component').then((m) => m.MediaOperationsVendorsComponent)
+      },
+      {
+        path: 'media-operations/purchase-requests',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-purchase-requests/media-operations-purchase-requests.component').then((m) => m.MediaOperationsPurchaseRequestsComponent)
+      },
+      {
+        path: 'media-operations/purchase-orders',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-purchase-orders/media-operations-purchase-orders.component').then((m) => m.MediaOperationsPurchaseOrdersComponent)
+      },
+      {
         path: 'homepage-customize',
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/pages/homepage-customize/homepage-customize.component').then((m) => m.HomepageCustomizeComponent)
