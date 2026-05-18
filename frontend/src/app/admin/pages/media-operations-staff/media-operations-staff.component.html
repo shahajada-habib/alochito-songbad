@@ -14,6 +14,15 @@
       <input type="search" name="staffSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchStaff')">
     </label>
     <label>
+      <span>{{ t('department') }}</span>
+      <select name="staffDepartmentFilter" [(ngModel)]="departmentFilter">
+        <option value="">{{ t('allDepartments') }}</option>
+        @for (department of departments(); track department) {
+          <option [value]="department">{{ department }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('status') }}</span>
       <select name="staffStatusFilter" [(ngModel)]="statusFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -21,6 +30,7 @@
         <option value="INACTIVE">{{ t('inactive') }}</option>
       </select>
     </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

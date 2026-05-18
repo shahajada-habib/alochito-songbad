@@ -14,6 +14,24 @@
       <input type="search" name="expenseSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchExpenses')">
     </label>
     <label>
+      <span>{{ t('category') }}</span>
+      <select name="expenseCategoryFilter" [(ngModel)]="categoryFilter">
+        <option value="">{{ t('allCategories') }}</option>
+        @for (category of categories; track category) {
+          <option [value]="category">{{ categoryLabel(category) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('paymentMethod') }}</span>
+      <select name="expenseMethodFilter" [(ngModel)]="paymentMethodFilter">
+        <option value="">{{ t('allPaymentMethods') }}</option>
+        @for (method of methods; track method) {
+          <option [value]="method">{{ paymentMethodLabel(method) }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('status') }}</span>
       <select name="expenseStatusFilter" [(ngModel)]="statusFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -22,6 +40,15 @@
         }
       </select>
     </label>
+    <label>
+      <span>{{ t('fromDate') }}</span>
+      <input type="date" name="expenseFrom" [(ngModel)]="expenseDateFrom">
+    </label>
+    <label>
+      <span>{{ t('toDate') }}</span>
+      <input type="date" name="expenseTo" [(ngModel)]="expenseDateTo">
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

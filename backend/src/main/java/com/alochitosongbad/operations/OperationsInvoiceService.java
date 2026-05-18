@@ -17,6 +17,7 @@ public class OperationsInvoiceService {
     private final OperationsInvoiceRepository invoiceRepository;
     private final OperationsAdClientRepository adClientRepository;
     private final OperationsAdBookingRepository adBookingRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
@@ -24,11 +25,13 @@ public class OperationsInvoiceService {
             OperationsInvoiceRepository invoiceRepository,
             OperationsAdClientRepository adClientRepository,
             OperationsAdBookingRepository adBookingRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.invoiceRepository = invoiceRepository;
         this.adClientRepository = adClientRepository;
         this.adBookingRepository = adBookingRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -45,7 +48,9 @@ public class OperationsInvoiceService {
 
         OperationsInvoice invoice = new OperationsInvoice();
         applyRequest(invoice, request, null);
-        return toResponse(invoiceRepository.save(invoice));
+        OperationsInvoice saved = invoiceRepository.save(invoice);
+        activityLogService.record("Invoices", saved.getId(), OperationsActivityActionType.CREATED, saved.getInvoiceNumber(), "Invoice created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsInvoiceResponseDto> update(Long id, OperationsInvoiceRequestDto request) {
@@ -54,7 +59,9 @@ public class OperationsInvoiceService {
         return invoiceRepository.findById(id)
                 .map((invoice) -> {
                     applyRequest(invoice, request, id);
-                    return toResponse(invoiceRepository.save(invoice));
+                    OperationsInvoice saved = invoiceRepository.save(invoice);
+                    activityLogService.record("Invoices", saved.getId(), OperationsActivityActionType.UPDATED, saved.getInvoiceNumber(), "Invoice updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -64,7 +71,9 @@ public class OperationsInvoiceService {
         return invoiceRepository.findById(id)
                 .map((invoice) -> {
                     invoice.setPaymentStatus(OperationsInvoicePaymentStatus.CANCELLED);
-                    return toResponse(invoiceRepository.save(invoice));
+                    OperationsInvoice saved = invoiceRepository.save(invoice);
+                    activityLogService.record("Invoices", saved.getId(), OperationsActivityActionType.CANCELLED, saved.getInvoiceNumber(), "Invoice cancelled");
+                    return toResponse(saved);
                 });
     }
 

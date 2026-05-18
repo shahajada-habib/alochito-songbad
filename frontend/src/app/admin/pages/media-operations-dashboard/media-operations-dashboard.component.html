@@ -157,6 +157,41 @@
   <section class="cms-panel operations-panel">
     <div class="operations-section-head">
       <div>
+        <span>{{ t('operationsTimeline') }}</span>
+        <h3>{{ t('recentOperationsActivity') }}</h3>
+        <p>{{ t('operationsTimelineHelp') }}</p>
+      </div>
+    </div>
+
+    @if (activityLoadError()) {
+      <div class="operations-alert">{{ t('sectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (recentActivity().length > 0) {
+      <div class="activity-list">
+        @for (item of recentActivity(); track item.id) {
+          <article class="activity-row">
+            <span class="ops-badge {{ activityActionClass(item.actionType) }}">{{ activityActionLabel(item.actionType) }}</span>
+            <div class="activity-main">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.moduleName }} · {{ item.description || '-' }}</span>
+            </div>
+            <small>{{ formatActivityTime(item.createdAt) }}</small>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noOperationsActivity') }}</h3>
+        <p>{{ t('operationsTimelineHelp') }}</p>
+      </div>
+    }
+  </section>
+
+  <section class="cms-panel operations-panel">
+    <div class="operations-section-head">
+      <div>
         <span>{{ t('assignmentDesk') }}</span>
         <h3>{{ t('recentAssignments') }}</h3>
         <p>{{ t('assignmentManagementHelp') }}</p>

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   AttendanceFormValue,
   AttendanceShift,
@@ -23,12 +24,17 @@ export class MediaOperationsAttendanceComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly staff = this.operations.staff;
   protected readonly attendance = this.operations.attendance;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('attendance');
   protected searchTerm = '';
+  protected staffFilter: number | '' = '';
+  protected shiftFilter: AttendanceShift | '' = '';
   protected statusFilter: AttendanceStatus | '' = '';
+  protected dutyDateFrom = '';
+  protected dutyDateTo = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -47,7 +53,12 @@ export class MediaOperationsAttendanceComponent implements OnInit {
         item.dutyDate,
         item.dutyNote
       ].join(' ').toLowerCase().includes(search);
-      return matchesSearch && (!this.statusFilter || item.status === this.statusFilter);
+      const matchesStaff = !this.staffFilter || item.staffId === Number(this.staffFilter);
+      const matchesShift = !this.shiftFilter || item.shift === this.shiftFilter;
+      const matchesStatus = !this.statusFilter || item.status === this.statusFilter;
+      const matchesFrom = !this.dutyDateFrom || item.dutyDate >= this.dutyDateFrom;
+      const matchesTo = !this.dutyDateTo || item.dutyDate <= this.dutyDateTo;
+      return matchesSearch && matchesStaff && matchesShift && matchesStatus && matchesFrom && matchesTo;
     });
   }
 
@@ -171,6 +182,27 @@ export class MediaOperationsAttendanceComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-attendance.csv', [
+      this.t('assignedStaff'),
+      this.t('dutyDate'),
+      this.t('shift'),
+      this.t('checkInTime'),
+      this.t('checkOutTime'),
+      this.t('status'),
+      this.t('dutyNote')
+    ], this.filteredAttendance().map((record) => [
+      this.staffName(record.staffId),
+      this.formatDate(record.dutyDate),
+      this.shiftLabel(record.shift),
+      this.formatTime(record.checkInTime),
+      this.formatTime(record.checkOutTime),
+      this.statusLabel(record.status),
+      record.dutyNote
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected formatDate(value: string): string {

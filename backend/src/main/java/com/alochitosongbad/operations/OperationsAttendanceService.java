@@ -15,16 +15,19 @@ public class OperationsAttendanceService {
 
     private final OperationsAttendanceRepository attendanceRepository;
     private final OperationsStaffRepository staffRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsAttendanceService(
             OperationsAttendanceRepository attendanceRepository,
             OperationsStaffRepository staffRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.attendanceRepository = attendanceRepository;
         this.staffRepository = staffRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -41,7 +44,9 @@ public class OperationsAttendanceService {
 
         OperationsAttendance attendance = new OperationsAttendance();
         applyRequest(attendance, request);
-        return toResponse(attendanceRepository.save(attendance));
+        OperationsAttendance saved = attendanceRepository.save(attendance);
+        activityLogService.record("Attendance", saved.getId(), OperationsActivityActionType.CREATED, "Duty " + saved.getDutyDate(), "Attendance record created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsAttendanceResponseDto> update(Long id, OperationsAttendanceRequestDto request) {
@@ -50,7 +55,9 @@ public class OperationsAttendanceService {
         return attendanceRepository.findById(id)
                 .map((attendance) -> {
                     applyRequest(attendance, request);
-                    return toResponse(attendanceRepository.save(attendance));
+                    OperationsAttendance saved = attendanceRepository.save(attendance);
+                    activityLogService.record("Attendance", saved.getId(), OperationsActivityActionType.UPDATED, "Duty " + saved.getDutyDate(), "Attendance record updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -60,7 +67,9 @@ public class OperationsAttendanceService {
         return attendanceRepository.findById(id)
                 .map((attendance) -> {
                     attendance.setStatus(OperationsAttendanceStatus.CANCELLED);
-                    return toResponse(attendanceRepository.save(attendance));
+                    OperationsAttendance saved = attendanceRepository.save(attendance);
+                    activityLogService.record("Attendance", saved.getId(), OperationsActivityActionType.CANCELLED, "Duty " + saved.getDutyDate(), "Attendance record cancelled");
+                    return toResponse(saved);
                 });
     }
 

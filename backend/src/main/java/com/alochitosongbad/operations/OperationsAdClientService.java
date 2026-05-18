@@ -14,14 +14,17 @@ import org.springframework.web.server.ResponseStatusException;
 public class OperationsAdClientService {
 
     private final OperationsAdClientRepository adClientRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsAdClientService(
             OperationsAdClientRepository adClientRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.adClientRepository = adClientRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -38,7 +41,9 @@ public class OperationsAdClientService {
 
         OperationsAdClient adClient = new OperationsAdClient();
         applyRequest(adClient, request);
-        return toResponse(adClientRepository.save(adClient));
+        OperationsAdClient saved = adClientRepository.save(adClient);
+        activityLogService.record("Ad Clients", saved.getId(), OperationsActivityActionType.CREATED, saved.getClientName(), "Advertisement client created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsAdClientResponseDto> update(Long id, OperationsAdClientRequestDto request) {
@@ -47,7 +52,9 @@ public class OperationsAdClientService {
         return adClientRepository.findById(id)
                 .map((adClient) -> {
                     applyRequest(adClient, request);
-                    return toResponse(adClientRepository.save(adClient));
+                    OperationsAdClient saved = adClientRepository.save(adClient);
+                    activityLogService.record("Ad Clients", saved.getId(), OperationsActivityActionType.UPDATED, saved.getClientName(), "Advertisement client updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -57,7 +64,9 @@ public class OperationsAdClientService {
         return adClientRepository.findById(id)
                 .map((adClient) -> {
                     adClient.setStatus(OperationsAdClientStatus.INACTIVE);
-                    return toResponse(adClientRepository.save(adClient));
+                    OperationsAdClient saved = adClientRepository.save(adClient);
+                    activityLogService.record("Ad Clients", saved.getId(), OperationsActivityActionType.ARCHIVED, saved.getClientName(), "Advertisement client marked inactive");
+                    return toResponse(saved);
                 });
     }
 

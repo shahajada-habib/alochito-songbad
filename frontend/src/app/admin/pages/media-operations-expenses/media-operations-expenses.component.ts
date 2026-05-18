@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   ExpenseCategory,
   ExpenseFormValue,
@@ -24,11 +25,16 @@ export class MediaOperationsExpensesComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly expenses = this.operations.expenses;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('expenses');
   protected searchTerm = '';
+  protected categoryFilter: ExpenseCategory | '' = '';
+  protected paymentMethodFilter: ExpensePaymentMethod | '' = '';
   protected statusFilter: ExpenseStatus | '' = '';
+  protected expenseDateFrom = '';
+  protected expenseDateTo = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -48,7 +54,12 @@ export class MediaOperationsExpensesComponent implements OnInit {
         this.paymentMethodLabel(item.paymentMethod),
         item.notes
       ].join(' ').toLowerCase().includes(search);
-      return matchesSearch && (!this.statusFilter || item.status === this.statusFilter);
+      const matchesCategory = !this.categoryFilter || item.category === this.categoryFilter;
+      const matchesMethod = !this.paymentMethodFilter || item.paymentMethod === this.paymentMethodFilter;
+      const matchesStatus = !this.statusFilter || item.status === this.statusFilter;
+      const matchesFrom = !this.expenseDateFrom || item.expenseDate >= this.expenseDateFrom;
+      const matchesTo = !this.expenseDateTo || item.expenseDate <= this.expenseDateTo;
+      return matchesSearch && matchesCategory && matchesMethod && matchesStatus && matchesFrom && matchesTo;
     });
   }
 
@@ -172,6 +183,29 @@ export class MediaOperationsExpensesComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-expenses.csv', [
+      this.t('title'),
+      this.t('category'),
+      this.t('amount'),
+      this.t('expenseDate'),
+      this.t('paidBy'),
+      this.t('paymentMethod'),
+      this.t('status'),
+      this.t('notes')
+    ], this.filteredExpenses().map((expense) => [
+      expense.title,
+      this.categoryLabel(expense.category),
+      this.formatMoney(expense.amount),
+      this.formatDate(expense.expenseDate),
+      expense.paidBy,
+      this.paymentMethodLabel(expense.paymentMethod),
+      this.statusLabel(expense.status),
+      expense.notes
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected formatDate(value: string): string {

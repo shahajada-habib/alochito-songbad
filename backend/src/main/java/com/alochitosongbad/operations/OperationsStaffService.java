@@ -14,14 +14,17 @@ import org.springframework.web.server.ResponseStatusException;
 public class OperationsStaffService {
 
     private final OperationsStaffRepository staffRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsStaffService(
             OperationsStaffRepository staffRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.staffRepository = staffRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -38,7 +41,9 @@ public class OperationsStaffService {
 
         OperationsStaff staff = new OperationsStaff();
         applyRequest(staff, request);
-        return toResponse(staffRepository.save(staff));
+        OperationsStaff saved = staffRepository.save(staff);
+        activityLogService.record("Staff", saved.getId(), OperationsActivityActionType.CREATED, saved.getName(), "Staff record created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsStaffResponseDto> update(Long id, OperationsStaffRequestDto request) {
@@ -47,7 +52,9 @@ public class OperationsStaffService {
         return staffRepository.findById(id)
                 .map((staff) -> {
                     applyRequest(staff, request);
-                    return toResponse(staffRepository.save(staff));
+                    OperationsStaff saved = staffRepository.save(staff);
+                    activityLogService.record("Staff", saved.getId(), OperationsActivityActionType.UPDATED, saved.getName(), "Staff record updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -57,7 +64,9 @@ public class OperationsStaffService {
         return staffRepository.findById(id)
                 .map((staff) -> {
                     staff.setStatus(OperationsStaffStatus.INACTIVE);
-                    return toResponse(staffRepository.save(staff));
+                    OperationsStaff saved = staffRepository.save(staff);
+                    activityLogService.record("Staff", saved.getId(), OperationsActivityActionType.ARCHIVED, saved.getName(), "Staff marked inactive");
+                    return toResponse(saved);
                 });
     }
 

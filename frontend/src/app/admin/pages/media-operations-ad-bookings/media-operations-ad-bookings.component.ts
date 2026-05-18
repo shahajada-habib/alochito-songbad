@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   AdBookingFormValue,
   AdPaymentStatus,
@@ -25,12 +26,17 @@ export class MediaOperationsAdBookingsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly adClients = this.operations.adClients;
   protected readonly adBookings = this.operations.adBookings;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('adBookings');
   protected searchTerm = '';
+  protected placementFilter: AdPlacement | '' = '';
+  protected paymentStatusFilter: AdPaymentStatus | '' = '';
   protected publishStatusFilter: AdPublishStatus | '' = '';
+  protected startDateFrom = '';
+  protected startDateTo = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -51,7 +57,11 @@ export class MediaOperationsAdBookingsComponent implements OnInit {
         item.notes
       ].join(' ').toLowerCase().includes(search);
       const matchesStatus = !this.publishStatusFilter || item.publishStatus === this.publishStatusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesPlacement = !this.placementFilter || item.placement === this.placementFilter;
+      const matchesPayment = !this.paymentStatusFilter || item.paymentStatus === this.paymentStatusFilter;
+      const matchesFrom = !this.startDateFrom || item.startDate >= this.startDateFrom;
+      const matchesTo = !this.startDateTo || item.startDate <= this.startDateTo;
+      return matchesSearch && matchesStatus && matchesPlacement && matchesPayment && matchesFrom && matchesTo;
     });
   }
 
@@ -183,6 +193,31 @@ export class MediaOperationsAdBookingsComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-ad-bookings.csv', [
+      this.t('title'),
+      this.t('advertisementClient'),
+      this.t('placement'),
+      this.t('startDate'),
+      this.t('endDate'),
+      this.t('price'),
+      this.t('paymentStatus'),
+      this.t('publishStatus'),
+      this.t('salesOwner')
+    ], this.filteredAdBookings().map((booking) => [
+      booking.title,
+      this.adClientName(booking.adClientId),
+      this.placementLabel(booking.placement),
+      this.formatDate(booking.startDate),
+      this.formatDate(booking.endDate),
+      this.formatPrice(booking.price),
+      this.paymentStatusLabel(booking.paymentStatus),
+      this.publishStatusLabel(booking.publishStatus),
+      booking.salesOwner
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected adClientName(id: number): string {

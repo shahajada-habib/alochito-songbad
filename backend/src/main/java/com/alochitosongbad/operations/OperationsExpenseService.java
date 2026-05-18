@@ -15,14 +15,17 @@ import org.springframework.web.server.ResponseStatusException;
 public class OperationsExpenseService {
 
     private final OperationsExpenseRepository expenseRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsExpenseService(
             OperationsExpenseRepository expenseRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.expenseRepository = expenseRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -39,7 +42,9 @@ public class OperationsExpenseService {
 
         OperationsExpense expense = new OperationsExpense();
         applyRequest(expense, request);
-        return toResponse(expenseRepository.save(expense));
+        OperationsExpense saved = expenseRepository.save(expense);
+        activityLogService.record("Expenses", saved.getId(), OperationsActivityActionType.CREATED, saved.getTitle(), "Expense created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsExpenseResponseDto> update(Long id, OperationsExpenseRequestDto request) {
@@ -48,7 +53,9 @@ public class OperationsExpenseService {
         return expenseRepository.findById(id)
                 .map((expense) -> {
                     applyRequest(expense, request);
-                    return toResponse(expenseRepository.save(expense));
+                    OperationsExpense saved = expenseRepository.save(expense);
+                    activityLogService.record("Expenses", saved.getId(), OperationsActivityActionType.UPDATED, saved.getTitle(), "Expense updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -58,7 +65,9 @@ public class OperationsExpenseService {
         return expenseRepository.findById(id)
                 .map((expense) -> {
                     expense.setStatus(OperationsExpenseStatus.CANCELLED);
-                    return toResponse(expenseRepository.save(expense));
+                    OperationsExpense saved = expenseRepository.save(expense);
+                    activityLogService.record("Expenses", saved.getId(), OperationsActivityActionType.CANCELLED, saved.getTitle(), "Expense cancelled");
+                    return toResponse(saved);
                 });
     }
 

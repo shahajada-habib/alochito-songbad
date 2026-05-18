@@ -15,16 +15,19 @@ public class OperationsAssignmentService {
 
     private final OperationsAssignmentRepository assignmentRepository;
     private final OperationsStaffRepository staffRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsAssignmentService(
             OperationsAssignmentRepository assignmentRepository,
             OperationsStaffRepository staffRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.assignmentRepository = assignmentRepository;
         this.staffRepository = staffRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -41,7 +44,9 @@ public class OperationsAssignmentService {
 
         OperationsAssignment assignment = new OperationsAssignment();
         applyRequest(assignment, request);
-        return toResponse(assignmentRepository.save(assignment));
+        OperationsAssignment saved = assignmentRepository.save(assignment);
+        activityLogService.record("Assignments", saved.getId(), OperationsActivityActionType.CREATED, saved.getTitle(), "Assignment created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsAssignmentResponseDto> update(Long id, OperationsAssignmentRequestDto request) {
@@ -50,7 +55,9 @@ public class OperationsAssignmentService {
         return assignmentRepository.findById(id)
                 .map((assignment) -> {
                     applyRequest(assignment, request);
-                    return toResponse(assignmentRepository.save(assignment));
+                    OperationsAssignment saved = assignmentRepository.save(assignment);
+                    activityLogService.record("Assignments", saved.getId(), OperationsActivityActionType.UPDATED, saved.getTitle(), "Assignment updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -60,7 +67,9 @@ public class OperationsAssignmentService {
         return assignmentRepository.findById(id)
                 .map((assignment) -> {
                     assignment.setStatus(OperationsAssignmentStatus.CANCELLED);
-                    return toResponse(assignmentRepository.save(assignment));
+                    OperationsAssignment saved = assignmentRepository.save(assignment);
+                    activityLogService.record("Assignments", saved.getId(), OperationsActivityActionType.CANCELLED, saved.getTitle(), "Assignment cancelled");
+                    return toResponse(saved);
                 });
     }
 

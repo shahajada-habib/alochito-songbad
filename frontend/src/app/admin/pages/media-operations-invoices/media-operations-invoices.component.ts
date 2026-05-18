@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   InvoiceFormValue,
   InvoicePaymentStatus,
@@ -22,6 +23,7 @@ export class MediaOperationsInvoicesComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly adClients = this.operations.adClients;
   protected readonly adBookings = this.operations.adBookings;
   protected readonly invoices = this.operations.invoices;
@@ -29,6 +31,9 @@ export class MediaOperationsInvoicesComponent implements OnInit {
   protected readonly error = () => this.operations.errorFor('invoices');
   protected searchTerm = '';
   protected paymentStatusFilter: InvoicePaymentStatus | '' = '';
+  protected adClientFilter: number | '' = '';
+  protected dueDateFrom = '';
+  protected dueDateTo = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -46,7 +51,11 @@ export class MediaOperationsInvoicesComponent implements OnInit {
         this.adBookingTitle(item.adBookingId),
         item.notes
       ].join(' ').toLowerCase().includes(search);
-      return matchesSearch && (!this.paymentStatusFilter || item.paymentStatus === this.paymentStatusFilter);
+      const matchesStatus = !this.paymentStatusFilter || item.paymentStatus === this.paymentStatusFilter;
+      const matchesClient = !this.adClientFilter || item.adClientId === Number(this.adClientFilter);
+      const matchesFrom = !this.dueDateFrom || item.dueDate >= this.dueDateFrom;
+      const matchesTo = !this.dueDateTo || item.dueDate <= this.dueDateTo;
+      return matchesSearch && matchesStatus && matchesClient && matchesFrom && matchesTo;
     });
   }
 
@@ -172,6 +181,29 @@ export class MediaOperationsInvoicesComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-invoices.csv', [
+      this.t('invoiceNumber'),
+      this.t('title'),
+      this.t('advertisementClient'),
+      this.t('amount'),
+      this.t('paidAmount'),
+      this.t('issueDate'),
+      this.t('dueDate'),
+      this.t('paymentStatus')
+    ], this.filteredInvoices().map((invoice) => [
+      invoice.invoiceNumber,
+      invoice.title,
+      this.adClientName(invoice.adClientId),
+      this.formatMoney(invoice.amount),
+      this.formatMoney(invoice.paidAmount),
+      this.formatDate(invoice.issueDate),
+      this.formatDate(invoice.dueDate),
+      this.paymentStatusLabel(invoice.paymentStatus)
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected adClientName(id: number): string {

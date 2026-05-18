@@ -16,16 +16,19 @@ public class OperationsAdBookingService {
 
     private final OperationsAdBookingRepository adBookingRepository;
     private final OperationsAdClientRepository adClientRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsAdBookingService(
             OperationsAdBookingRepository adBookingRepository,
             OperationsAdClientRepository adClientRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.adBookingRepository = adBookingRepository;
         this.adClientRepository = adClientRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -42,7 +45,9 @@ public class OperationsAdBookingService {
 
         OperationsAdBooking adBooking = new OperationsAdBooking();
         applyRequest(adBooking, request);
-        return toResponse(adBookingRepository.save(adBooking));
+        OperationsAdBooking saved = adBookingRepository.save(adBooking);
+        activityLogService.record("Ad Bookings", saved.getId(), OperationsActivityActionType.CREATED, saved.getTitle(), "Ad booking created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsAdBookingResponseDto> update(Long id, OperationsAdBookingRequestDto request) {
@@ -51,7 +56,9 @@ public class OperationsAdBookingService {
         return adBookingRepository.findById(id)
                 .map((adBooking) -> {
                     applyRequest(adBooking, request);
-                    return toResponse(adBookingRepository.save(adBooking));
+                    OperationsAdBooking saved = adBookingRepository.save(adBooking);
+                    activityLogService.record("Ad Bookings", saved.getId(), OperationsActivityActionType.UPDATED, saved.getTitle(), "Ad booking updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -61,7 +68,9 @@ public class OperationsAdBookingService {
         return adBookingRepository.findById(id)
                 .map((adBooking) -> {
                     adBooking.setPublishStatus(OperationsAdPublishStatus.CANCELLED);
-                    return toResponse(adBookingRepository.save(adBooking));
+                    OperationsAdBooking saved = adBookingRepository.save(adBooking);
+                    activityLogService.record("Ad Bookings", saved.getId(), OperationsActivityActionType.CANCELLED, saved.getTitle(), "Ad booking cancelled");
+                    return toResponse(saved);
                 });
     }
 

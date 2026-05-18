@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   AssetAvailabilityStatus,
   AssetConditionStatus,
@@ -24,12 +25,16 @@ export class MediaOperationsAssetsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly staff = this.operations.staff;
   protected readonly assets = this.operations.assets;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('assets');
   protected searchTerm = '';
+  protected assetTypeFilter: AssetType | '' = '';
+  protected conditionFilter: AssetConditionStatus | '' = '';
   protected availabilityFilter: AssetAvailabilityStatus | '' = '';
+  protected assignedStaffFilter: number | '' = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -51,7 +56,11 @@ export class MediaOperationsAssetsComponent implements OnInit {
         this.availabilityLabel(item.availabilityStatus),
         item.notes
       ].join(' ').toLowerCase().includes(search);
-      return matchesSearch && (!this.availabilityFilter || item.availabilityStatus === this.availabilityFilter);
+      const matchesType = !this.assetTypeFilter || item.assetType === this.assetTypeFilter;
+      const matchesCondition = !this.conditionFilter || item.conditionStatus === this.conditionFilter;
+      const matchesAvailability = !this.availabilityFilter || item.availabilityStatus === this.availabilityFilter;
+      const matchesStaff = !this.assignedStaffFilter || item.assignedStaffId === Number(this.assignedStaffFilter);
+      return matchesSearch && matchesType && matchesCondition && matchesAvailability && matchesStaff;
     });
   }
 
@@ -180,6 +189,31 @@ export class MediaOperationsAssetsComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-assets.csv', [
+      this.t('assetName'),
+      this.t('assetType'),
+      this.t('serialNumber'),
+      this.t('assignedStaff'),
+      this.t('purchaseDate'),
+      this.t('purchasePrice'),
+      this.t('conditionStatus'),
+      this.t('availabilityStatus'),
+      this.t('notes')
+    ], this.filteredAssets().map((asset) => [
+      asset.assetName,
+      this.assetTypeLabel(asset.assetType),
+      asset.serialNumber,
+      this.staffName(asset.assignedStaffId),
+      this.formatDate(asset.purchaseDate),
+      this.formatMoney(asset.purchasePrice),
+      this.conditionLabel(asset.conditionStatus),
+      this.availabilityLabel(asset.availabilityStatus),
+      asset.notes
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected formatDate(value: string): string {

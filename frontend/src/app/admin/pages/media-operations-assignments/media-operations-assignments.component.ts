@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   AssignmentFormValue,
   AssignmentPriority,
@@ -23,12 +24,17 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly staff = this.operations.staff;
   protected readonly assignments = this.operations.assignments;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('assignments');
   protected searchTerm = '';
   protected statusFilter: AssignmentStatus | '' = '';
+  protected priorityFilter: AssignmentPriority | '' = '';
+  protected assignedStaffFilter: number | '' = '';
+  protected deadlineFrom = '';
+  protected deadlineTo = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -52,7 +58,12 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
         .toLowerCase()
         .includes(search);
       const matchesStatus = !this.statusFilter || item.status === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesPriority = !this.priorityFilter || item.priority === this.priorityFilter;
+      const matchesStaff = !this.assignedStaffFilter || item.assignedStaffId === Number(this.assignedStaffFilter);
+      const dateOnly = item.deadline ? item.deadline.slice(0, 10) : '';
+      const matchesFrom = !this.deadlineFrom || (!!dateOnly && dateOnly >= this.deadlineFrom);
+      const matchesTo = !this.deadlineTo || (!!dateOnly && dateOnly <= this.deadlineTo);
+      return matchesSearch && matchesStatus && matchesPriority && matchesStaff && matchesFrom && matchesTo;
     });
   }
 
@@ -180,6 +191,29 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-assignments.csv', [
+      this.t('title'),
+      this.t('assignedStaff'),
+      this.t('category'),
+      this.t('location'),
+      this.t('deadline'),
+      this.t('priority'),
+      this.t('status'),
+      this.t('notes')
+    ], this.filteredAssignments().map((assignment) => [
+      assignment.title,
+      this.staffName(assignment.assignedStaffId),
+      assignment.category,
+      assignment.location,
+      this.formatDeadline(assignment.deadline),
+      this.priorityLabel(assignment.priority),
+      this.statusLabel(assignment.status),
+      assignment.notes
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected staffName(id: number): string {

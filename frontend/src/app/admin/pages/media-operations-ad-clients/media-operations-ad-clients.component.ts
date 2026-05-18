@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import {
   AdClientFormValue,
   AdClientStatus,
@@ -23,11 +24,13 @@ export class MediaOperationsAdClientsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly adClients = this.operations.adClients;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('adClients');
   protected searchTerm = '';
   protected statusFilter: AdClientStatus | '' = '';
+  protected industryFilter = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -47,8 +50,13 @@ export class MediaOperationsAdClientsComponent implements OnInit {
         item.notes
       ].join(' ').toLowerCase().includes(search);
       const matchesStatus = !this.statusFilter || item.status === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesIndustry = !this.industryFilter || item.industry === this.industryFilter;
+      return matchesSearch && matchesStatus && matchesIndustry;
     });
+  }
+
+  protected industries(): string[] {
+    return [...new Set(this.adClients().map((item) => item.industry).filter(Boolean))].sort();
   }
 
   constructor(protected readonly i18n: AdminTranslationService) {}
@@ -161,6 +169,29 @@ export class MediaOperationsAdClientsComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-ad-clients.csv', [
+      this.t('clientName'),
+      this.t('companyName'),
+      this.t('contactPerson'),
+      this.t('phone'),
+      this.t('email'),
+      this.t('industry'),
+      this.t('status'),
+      this.t('notes')
+    ], this.filteredAdClients().map((client) => [
+      client.clientName,
+      client.companyName,
+      client.contactPerson,
+      client.phone,
+      client.email,
+      client.industry,
+      this.statusLabel(client.status),
+      client.notes
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   private emptyForm(): AdClientFormValue {

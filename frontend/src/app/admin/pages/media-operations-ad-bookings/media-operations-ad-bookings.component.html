@@ -14,6 +14,24 @@
       <input type="search" name="adBookingSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAdBookings')">
     </label>
     <label>
+      <span>{{ t('placement') }}</span>
+      <select name="adBookingPlacementFilter" [(ngModel)]="placementFilter">
+        <option value="">{{ t('allPlacements') }}</option>
+        @for (placement of placements; track placement) {
+          <option [value]="placement">{{ placementLabel(placement) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('paymentStatus') }}</span>
+      <select name="adBookingPaymentFilter" [(ngModel)]="paymentStatusFilter">
+        <option value="">{{ t('allPaymentStatuses') }}</option>
+        @for (status of paymentStatuses; track status) {
+          <option [value]="status">{{ paymentStatusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('publishStatus') }}</span>
       <select name="adBookingStatusFilter" [(ngModel)]="publishStatusFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -22,6 +40,15 @@
         }
       </select>
     </label>
+    <label>
+      <span>{{ t('fromDate') }}</span>
+      <input type="date" name="adBookingStartFrom" [(ngModel)]="startDateFrom">
+    </label>
+    <label>
+      <span>{{ t('toDate') }}</span>
+      <input type="date" name="adBookingStartTo" [(ngModel)]="startDateTo">
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

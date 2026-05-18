@@ -21,7 +21,8 @@ export type AttendanceStatus = 'SCHEDULED' | 'PRESENT' | 'ABSENT' | 'LATE' | 'LE
 export type AssetType = 'CAMERA' | 'LAPTOP' | 'MICROPHONE' | 'MOBILE' | 'TRIPOD' | 'LIGHTING' | 'VEHICLE' | 'OFFICE_EQUIPMENT' | 'OTHER';
 export type AssetConditionStatus = 'NEW' | 'GOOD' | 'NEEDS_REPAIR' | 'DAMAGED' | 'RETIRED';
 export type AssetAvailabilityStatus = 'AVAILABLE' | 'ASSIGNED' | 'UNDER_MAINTENANCE' | 'LOST' | 'RETIRED';
-export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets';
+export type ActivityActionType = 'CREATED' | 'UPDATED' | 'ARCHIVED' | 'CANCELLED' | 'STATUS_CHANGED' | 'RETIRED';
+export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'activityLog';
 
 export interface MediaOperationsStaff {
   id: number;
@@ -140,6 +141,17 @@ export interface MediaOperationsAsset {
   updatedAt: string;
 }
 
+export interface MediaOperationsActivityLog {
+  id: number;
+  moduleName: string;
+  entityId: number | null;
+  actionType: ActivityActionType;
+  title: string;
+  description: string;
+  actorName: string;
+  createdAt: string;
+}
+
 export type StaffFormValue = Omit<MediaOperationsStaff, 'id' | 'createdAt' | 'updatedAt'>;
 export type AssignmentFormValue = Omit<MediaOperationsAssignment, 'id' | 'createdAt' | 'updatedAt'>;
 export type AdClientFormValue = Omit<MediaOperationsAdClient, 'id' | 'createdAt' | 'updatedAt'>;
@@ -163,6 +175,7 @@ export class MediaOperationsService {
   private readonly invoicesSignal = signal<MediaOperationsInvoice[]>([]);
   private readonly attendanceSignal = signal<MediaOperationsAttendance[]>([]);
   private readonly assetsSignal = signal<MediaOperationsAsset[]>([]);
+  private readonly activityLogSignal = signal<MediaOperationsActivityLog[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal('');
   private readonly endpointErrorsSignal = signal<Partial<Record<MediaOperationsEndpointKey, string>>>({});
@@ -175,6 +188,7 @@ export class MediaOperationsService {
   readonly invoices = this.invoicesSignal.asReadonly();
   readonly attendance = this.attendanceSignal.asReadonly();
   readonly assets = this.assetsSignal.asReadonly();
+  readonly activityLog = this.activityLogSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
   readonly endpointErrors = this.endpointErrorsSignal.asReadonly();
@@ -193,6 +207,7 @@ export class MediaOperationsService {
         this.invoicesSignal.set([]);
         this.attendanceSignal.set([]);
         this.assetsSignal.set([]);
+        this.activityLogSignal.set([]);
         this.endpointErrorsSignal.set({});
       }
     });
@@ -216,9 +231,10 @@ export class MediaOperationsService {
       expenses: this.http.get<MediaOperationsExpense[]>(`${OPERATIONS_API_URL}/expenses`).pipe(catchError(() => recover<MediaOperationsExpense>('expenses'))),
       invoices: this.http.get<MediaOperationsInvoice[]>(`${OPERATIONS_API_URL}/invoices`).pipe(catchError(() => recover<MediaOperationsInvoice>('invoices'))),
       attendance: this.http.get<MediaOperationsAttendance[]>(`${OPERATIONS_API_URL}/attendance`).pipe(catchError(() => recover<MediaOperationsAttendance>('attendance'))),
-      assets: this.http.get<MediaOperationsAsset[]>(`${OPERATIONS_API_URL}/assets`).pipe(catchError(() => recover<MediaOperationsAsset>('assets')))
+      assets: this.http.get<MediaOperationsAsset[]>(`${OPERATIONS_API_URL}/assets`).pipe(catchError(() => recover<MediaOperationsAsset>('assets'))),
+      activityLog: this.http.get<MediaOperationsActivityLog[]>(`${OPERATIONS_API_URL}/activity-log`).pipe(catchError(() => recover<MediaOperationsActivityLog>('activityLog')))
     }).pipe(
-      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets }) => ({
+      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, activityLog }) => ({
         staff: staff.map((item) => this.normalizeStaff(item)),
         assignments: assignments.map((item) => this.normalizeAssignment(item)),
         adClients: adClients.map((item) => this.normalizeAdClient(item)),
@@ -226,10 +242,11 @@ export class MediaOperationsService {
         expenses: expenses.map((item) => this.normalizeExpense(item)),
         invoices: invoices.map((item) => this.normalizeInvoice(item)),
         attendance: attendance.map((item) => this.normalizeAttendance(item)),
-        assets: assets.map((item) => this.normalizeAsset(item))
+        assets: assets.map((item) => this.normalizeAsset(item)),
+        activityLog: activityLog.map((item) => this.normalizeActivityLog(item))
       }))
     ).subscribe({
-      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets }) => {
+      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, activityLog }) => {
         this.staffSignal.set(staff);
         this.assignmentsSignal.set(assignments);
         this.adClientsSignal.set(adClients);
@@ -238,6 +255,7 @@ export class MediaOperationsService {
         this.invoicesSignal.set(invoices);
         this.attendanceSignal.set(attendance);
         this.assetsSignal.set(assets);
+        this.activityLogSignal.set(activityLog);
         this.endpointErrorsSignal.set(endpointErrors);
         this.errorSignal.set('');
         this.loadingSignal.set(false);
@@ -258,7 +276,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsStaff>(`${OPERATIONS_API_URL}/staff`, value).pipe(
       map((created) => this.normalizeStaff(created)),
-      tap((created) => this.staffSignal.update((items) => [created, ...items]))
+      tap((created) => this.staffSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -269,7 +288,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeStaff(updated)),
       tap((updated) => this.staffSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -280,7 +300,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeStaff(updated)),
       tap((updated) => this.staffSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -289,7 +310,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsAssignment>(`${OPERATIONS_API_URL}/assignments`, value).pipe(
       map((created) => this.normalizeAssignment(created)),
-      tap((created) => this.assignmentsSignal.update((items) => [created, ...items]))
+      tap((created) => this.assignmentsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -300,7 +322,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAssignment(updated)),
       tap((updated) => this.assignmentsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -311,7 +334,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAssignment(updated)),
       tap((updated) => this.assignmentsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -320,7 +344,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsAdClient>(`${OPERATIONS_API_URL}/ad-clients`, value).pipe(
       map((created) => this.normalizeAdClient(created)),
-      tap((created) => this.adClientsSignal.update((items) => [created, ...items]))
+      tap((created) => this.adClientsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -331,7 +356,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAdClient(updated)),
       tap((updated) => this.adClientsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -342,7 +368,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAdClient(updated)),
       tap((updated) => this.adClientsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -351,7 +378,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsAdBooking>(`${OPERATIONS_API_URL}/ad-bookings`, value).pipe(
       map((created) => this.normalizeAdBooking(created)),
-      tap((created) => this.adBookingsSignal.update((items) => [created, ...items]))
+      tap((created) => this.adBookingsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -362,7 +390,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAdBooking(updated)),
       tap((updated) => this.adBookingsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -373,7 +402,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAdBooking(updated)),
       tap((updated) => this.adBookingsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -382,7 +412,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsExpense>(`${OPERATIONS_API_URL}/expenses`, value).pipe(
       map((created) => this.normalizeExpense(created)),
-      tap((created) => this.expensesSignal.update((items) => [created, ...items]))
+      tap((created) => this.expensesSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -393,7 +424,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeExpense(updated)),
       tap((updated) => this.expensesSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -404,7 +436,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeExpense(updated)),
       tap((updated) => this.expensesSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -413,7 +446,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsInvoice>(`${OPERATIONS_API_URL}/invoices`, value).pipe(
       map((created) => this.normalizeInvoice(created)),
-      tap((created) => this.invoicesSignal.update((items) => [created, ...items]))
+      tap((created) => this.invoicesSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -424,7 +458,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeInvoice(updated)),
       tap((updated) => this.invoicesSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -435,7 +470,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeInvoice(updated)),
       tap((updated) => this.invoicesSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -444,7 +480,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsAttendance>(`${OPERATIONS_API_URL}/attendance`, value).pipe(
       map((created) => this.normalizeAttendance(created)),
-      tap((created) => this.attendanceSignal.update((items) => [created, ...items]))
+      tap((created) => this.attendanceSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -455,7 +492,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAttendance(updated)),
       tap((updated) => this.attendanceSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -466,7 +504,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAttendance(updated)),
       tap((updated) => this.attendanceSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -475,7 +514,8 @@ export class MediaOperationsService {
 
     return this.http.post<MediaOperationsAsset>(`${OPERATIONS_API_URL}/assets`, value).pipe(
       map((created) => this.normalizeAsset(created)),
-      tap((created) => this.assetsSignal.update((items) => [created, ...items]))
+      tap((created) => this.assetsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -486,7 +526,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAsset(updated)),
       tap((updated) => this.assetsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -497,7 +538,8 @@ export class MediaOperationsService {
       map((updated) => this.normalizeAsset(updated)),
       tap((updated) => this.assetsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
-      ))
+      )),
+      tap(() => this.refreshActivityLog())
     );
   }
 
@@ -642,6 +684,34 @@ export class MediaOperationsService {
       notes: asset.notes || '',
       createdAt: asset.createdAt || '',
       updatedAt: asset.updatedAt || ''
+    };
+  }
+
+  private refreshActivityLog(): void {
+    this.http.get<MediaOperationsActivityLog[]>(`${OPERATIONS_API_URL}/activity-log`).pipe(
+      map((items) => items.map((item) => this.normalizeActivityLog(item))),
+      catchError(() => {
+        this.endpointErrorsSignal.update((errors) => ({
+          ...errors,
+          activityLog: 'Unable to load this Media Operations section.'
+        }));
+        return of([] as MediaOperationsActivityLog[]);
+      })
+    ).subscribe((items) => {
+      this.activityLogSignal.set(items);
+    });
+  }
+
+  private normalizeActivityLog(log: MediaOperationsActivityLog): MediaOperationsActivityLog {
+    return {
+      ...log,
+      moduleName: log.moduleName || '',
+      entityId: log.entityId || null,
+      actionType: log.actionType || 'UPDATED',
+      title: log.title || '',
+      description: log.description || '',
+      actorName: log.actorName || '',
+      createdAt: log.createdAt || ''
     };
   }
 }

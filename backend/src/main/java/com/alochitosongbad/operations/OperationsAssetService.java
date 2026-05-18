@@ -16,16 +16,19 @@ public class OperationsAssetService {
 
     private final OperationsAssetRepository assetRepository;
     private final OperationsStaffRepository staffRepository;
+    private final OperationsActivityLogService activityLogService;
     private final CurrentUserService currentUserService;
     private final InputValidator inputValidator;
 
     public OperationsAssetService(
             OperationsAssetRepository assetRepository,
             OperationsStaffRepository staffRepository,
+            OperationsActivityLogService activityLogService,
             CurrentUserService currentUserService,
             InputValidator inputValidator) {
         this.assetRepository = assetRepository;
         this.staffRepository = staffRepository;
+        this.activityLogService = activityLogService;
         this.currentUserService = currentUserService;
         this.inputValidator = inputValidator;
     }
@@ -42,7 +45,9 @@ public class OperationsAssetService {
 
         OperationsAsset asset = new OperationsAsset();
         applyRequest(asset, request, null);
-        return toResponse(assetRepository.save(asset));
+        OperationsAsset saved = assetRepository.save(asset);
+        activityLogService.record("Assets", saved.getId(), OperationsActivityActionType.CREATED, saved.getAssetName(), "Asset created");
+        return toResponse(saved);
     }
 
     public Optional<OperationsAssetResponseDto> update(Long id, OperationsAssetRequestDto request) {
@@ -51,7 +56,9 @@ public class OperationsAssetService {
         return assetRepository.findById(id)
                 .map((asset) -> {
                     applyRequest(asset, request, id);
-                    return toResponse(assetRepository.save(asset));
+                    OperationsAsset saved = assetRepository.save(asset);
+                    activityLogService.record("Assets", saved.getId(), OperationsActivityActionType.UPDATED, saved.getAssetName(), "Asset updated");
+                    return toResponse(saved);
                 });
     }
 
@@ -62,7 +69,9 @@ public class OperationsAssetService {
                 .map((asset) -> {
                     asset.setAvailabilityStatus(OperationsAssetAvailabilityStatus.RETIRED);
                     asset.setConditionStatus(OperationsAssetConditionStatus.RETIRED);
-                    return toResponse(assetRepository.save(asset));
+                    OperationsAsset saved = assetRepository.save(asset);
+                    activityLogService.record("Assets", saved.getId(), OperationsActivityActionType.RETIRED, saved.getAssetName(), "Asset retired");
+                    return toResponse(saved);
                 });
     }
 

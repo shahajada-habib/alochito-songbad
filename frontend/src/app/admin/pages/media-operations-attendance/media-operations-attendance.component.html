@@ -14,6 +14,24 @@
       <input type="search" name="attendanceSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAttendance')">
     </label>
     <label>
+      <span>{{ t('assignedStaff') }}</span>
+      <select name="attendanceStaffFilter" [(ngModel)]="staffFilter">
+        <option value="">{{ t('allStaff') }}</option>
+        @for (member of staff(); track member.id) {
+          <option [ngValue]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('shift') }}</span>
+      <select name="attendanceShiftFilter" [(ngModel)]="shiftFilter">
+        <option value="">{{ t('allShifts') }}</option>
+        @for (shift of shifts; track shift) {
+          <option [value]="shift">{{ shiftLabel(shift) }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('status') }}</span>
       <select name="attendanceStatusFilter" [(ngModel)]="statusFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -22,6 +40,15 @@
         }
       </select>
     </label>
+    <label>
+      <span>{{ t('fromDate') }}</span>
+      <input type="date" name="attendanceFrom" [(ngModel)]="dutyDateFrom">
+    </label>
+    <label>
+      <span>{{ t('toDate') }}</span>
+      <input type="date" name="attendanceTo" [(ngModel)]="dutyDateTo">
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

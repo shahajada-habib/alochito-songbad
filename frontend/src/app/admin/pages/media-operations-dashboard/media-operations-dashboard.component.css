@@ -184,6 +184,47 @@
   gap: 10px;
 }
 
+.activity-list {
+  display: grid;
+  gap: 10px;
+}
+
+.activity-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(130px, auto);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border: 1px solid #eee9e1;
+  border-radius: var(--space-2);
+  background: var(--color-surface-soft);
+}
+
+.activity-main {
+  min-width: 0;
+}
+
+.activity-main strong,
+.activity-main span {
+  display: block;
+}
+
+.activity-main strong {
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.activity-main span,
+.activity-row small {
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+
+.activity-row small {
+  text-align: right;
+  font-weight: 700;
+}
+
 .assignment-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(170px, 220px) minmax(170px, auto);
@@ -295,6 +336,24 @@
   color: #475467;
 }
 
+.activity-created {
+  background: #e7f5ee;
+  color: #137047;
+}
+
+.activity-updated,
+.activity-status-changed {
+  background: #e8f2ff;
+  color: #175cd3;
+}
+
+.activity-archived,
+.activity-cancelled,
+.activity-retired {
+  background: #fff3d6;
+  color: #8a5a00;
+}
+
 .operations-empty {
   margin-top: var(--space-3);
 }
@@ -334,8 +393,13 @@
 
 @media (max-width: 760px) {
   .operations-hero,
+  .activity-row,
   .assignment-row {
     grid-template-columns: 1fr;
+  }
+
+  .activity-row small {
+    text-align: left;
   }
 
   .operations-stats {

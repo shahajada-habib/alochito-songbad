@@ -14,6 +14,15 @@
       <input type="search" name="adClientSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAdClients')">
     </label>
     <label>
+      <span>{{ t('industry') }}</span>
+      <select name="adClientIndustryFilter" [(ngModel)]="industryFilter">
+        <option value="">{{ t('allIndustries') }}</option>
+        @for (industry of industries(); track industry) {
+          <option [value]="industry">{{ industry }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('status') }}</span>
       <select name="adClientStatusFilter" [(ngModel)]="statusFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -21,6 +30,7 @@
         <option value="INACTIVE">{{ t('inactive') }}</option>
       </select>
     </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

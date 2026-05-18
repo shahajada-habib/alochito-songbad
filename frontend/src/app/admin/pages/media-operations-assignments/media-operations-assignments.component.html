@@ -22,6 +22,33 @@
         }
       </select>
     </label>
+    <label>
+      <span>{{ t('priority') }}</span>
+      <select name="assignmentPriorityFilter" [(ngModel)]="priorityFilter">
+        <option value="">{{ t('allPriorities') }}</option>
+        @for (priority of priorities; track priority) {
+          <option [value]="priority">{{ priorityLabel(priority) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('assignedStaff') }}</span>
+      <select name="assignmentStaffFilter" [(ngModel)]="assignedStaffFilter">
+        <option value="">{{ t('allStaff') }}</option>
+        @for (member of staff(); track member.id) {
+          <option [ngValue]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('fromDate') }}</span>
+      <input type="date" name="assignmentDeadlineFrom" [(ngModel)]="deadlineFrom">
+    </label>
+    <label>
+      <span>{{ t('toDate') }}</span>
+      <input type="date" name="assignmentDeadlineTo" [(ngModel)]="deadlineTo">
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

@@ -43,7 +43,7 @@
 .operations-btn.compact { min-height: 36px; padding: 8px 12px; }
 .operations-toolbar {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(180px, 260px);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-3);
   align-items: end;
   padding: var(--space-3);

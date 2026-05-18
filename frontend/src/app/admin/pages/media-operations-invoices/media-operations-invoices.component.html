@@ -14,6 +14,15 @@
       <input type="search" name="invoiceSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchInvoices')">
     </label>
     <label>
+      <span>{{ t('advertisementClient') }}</span>
+      <select name="invoiceClientFilter" [(ngModel)]="adClientFilter">
+        <option value="">{{ t('allAdClients') }}</option>
+        @for (client of adClients(); track client.id) {
+          <option [ngValue]="client.id">{{ client.clientName }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('paymentStatus') }}</span>
       <select name="invoiceStatusFilter" [(ngModel)]="paymentStatusFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -22,6 +31,15 @@
         }
       </select>
     </label>
+    <label>
+      <span>{{ t('fromDate') }}</span>
+      <input type="date" name="invoiceDueFrom" [(ngModel)]="dueDateFrom">
+    </label>
+    <label>
+      <span>{{ t('toDate') }}</span>
+      <input type="date" name="invoiceDueTo" [(ngModel)]="dueDateTo">
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

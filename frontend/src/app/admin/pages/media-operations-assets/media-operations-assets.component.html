@@ -14,6 +14,24 @@
       <input type="search" name="assetSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAssets')">
     </label>
     <label>
+      <span>{{ t('assetType') }}</span>
+      <select name="assetTypeFilter" [(ngModel)]="assetTypeFilter">
+        <option value="">{{ t('allAssetTypes') }}</option>
+        @for (type of assetTypes; track type) {
+          <option [value]="type">{{ assetTypeLabel(type) }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span>{{ t('conditionStatus') }}</span>
+      <select name="assetConditionFilter" [(ngModel)]="conditionFilter">
+        <option value="">{{ t('allConditions') }}</option>
+        @for (status of conditionStatuses; track status) {
+          <option [value]="status">{{ conditionLabel(status) }}</option>
+        }
+      </select>
+    </label>
+    <label>
       <span>{{ t('availabilityStatus') }}</span>
       <select name="assetAvailabilityFilter" [(ngModel)]="availabilityFilter">
         <option value="">{{ t('allStatuses') }}</option>
@@ -22,6 +40,16 @@
         }
       </select>
     </label>
+    <label>
+      <span>{{ t('assignedStaff') }}</span>
+      <select name="assetStaffFilter" [(ngModel)]="assignedStaffFilter">
+        <option value="">{{ t('allStaff') }}</option>
+        @for (member of staff(); track member.id) {
+          <option [ngValue]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="operations-btn secondary compact" (click)="exportCsv()">{{ t('exportCsv') }}</button>
   </section>
 
   <section class="cms-panel operations-list-panel">

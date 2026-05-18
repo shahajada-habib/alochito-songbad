@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CsvExportService } from '../../services/csv-export.service';
 import { MediaOperationsService, MediaOperationsStaff, StaffFormValue, StaffStatus } from '../../services/media-operations.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -17,11 +18,13 @@ export class MediaOperationsStaffComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly csvExport = inject(CsvExportService);
   protected readonly staff = this.operations.staff;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('staff');
   protected searchTerm = '';
   protected statusFilter: StaffStatus | '' = '';
+  protected departmentFilter = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
@@ -36,8 +39,13 @@ export class MediaOperationsStaffComponent implements OnInit {
         .toLowerCase()
         .includes(search);
       const matchesStatus = !this.statusFilter || item.status === this.statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesDepartment = !this.departmentFilter || item.department === this.departmentFilter;
+      return matchesSearch && matchesStatus && matchesDepartment;
     });
+  }
+
+  protected departments(): string[] {
+    return [...new Set(this.staff().map((item) => item.department).filter(Boolean))].sort();
   }
 
   constructor(protected readonly i18n: AdminTranslationService) {}
@@ -152,6 +160,27 @@ export class MediaOperationsStaffComponent implements OnInit {
       next: () => this.toast.success(this.t('updatedSuccessfully')),
       error: () => this.toast.error(this.t('actionFailed'))
     });
+  }
+
+  protected exportCsv(): void {
+    this.csvExport.export('media-operations-staff.csv', [
+      this.t('name'),
+      this.t('designation'),
+      this.t('department'),
+      this.t('phone'),
+      this.t('email'),
+      this.t('joiningDate'),
+      this.t('status')
+    ], this.filteredStaff().map((member) => [
+      member.name,
+      member.designation,
+      member.department,
+      member.phone,
+      member.email,
+      this.formatDate(member.joiningDate),
+      this.statusLabel(member.status)
+    ]));
+    this.toast.success(this.t('csvExported'));
   }
 
   protected formatDate(value: string): string {

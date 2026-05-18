@@ -9,6 +9,7 @@ import {
   AssignmentPriority,
   AssignmentStatus,
   InvoicePaymentStatus,
+  ActivityActionType,
   MediaOperationsService
 } from '../../services/media-operations.service';
 
@@ -29,6 +30,7 @@ export class MediaOperationsDashboardComponent {
   protected readonly invoices = this.operations.invoices;
   protected readonly attendance = this.operations.attendance;
   protected readonly assets = this.operations.assets;
+  protected readonly activityLog = this.operations.activityLog;
   protected readonly loading = this.operations.loading;
   protected readonly error = this.operations.error;
 
@@ -91,6 +93,7 @@ export class MediaOperationsDashboardComponent {
   );
   protected readonly recentAssignments = computed(() => this.assignments().slice(0, 5));
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));
+  protected readonly recentActivity = computed(() => this.activityLog().slice(0, 6));
 
   constructor(protected readonly i18n: AdminTranslationService) {}
 
@@ -150,6 +153,23 @@ export class MediaOperationsDashboardComponent {
   protected invoicePaymentStatusLabel(status: InvoicePaymentStatus): string {
     const key = `invoicePayment${this.toTitleCase(status)}` as TranslationKey;
     return this.t(key);
+  }
+
+  protected activityActionLabel(action: ActivityActionType): string {
+    const key = `operationsAction${this.toTitleCase(action)}` as TranslationKey;
+    return this.t(key);
+  }
+
+  protected activityActionClass(action: ActivityActionType): string {
+    return `activity-${action.toLowerCase().replaceAll('_', '-')}`;
+  }
+
+  protected activityLoadError(): string {
+    return this.operations.errorFor('activityLog');
+  }
+
+  protected formatActivityTime(value: string): string {
+    return this.formatDate(value, true);
   }
 
   protected formatDeadline(value: string): string {
