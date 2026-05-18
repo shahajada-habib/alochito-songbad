@@ -16,10 +16,13 @@ export class MediaOperationsStaffComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   protected readonly staff = this.operations.staff;
+  protected readonly loading = this.operations.loading;
+  protected readonly error = this.operations.error;
   protected searchTerm = '';
   protected statusFilter: StaffStatus | '' = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
+  protected isSaving = false;
   protected form: StaffFormValue = this.emptyForm();
   protected editForm: StaffFormValue = this.emptyForm();
 
@@ -76,14 +79,23 @@ export class MediaOperationsStaffComponent implements OnInit {
   }
 
   protected create(): void {
-    if (!this.canSaveStaff) {
+    if (!this.canSaveStaff || this.isSaving) {
       return;
     }
 
-    this.operations.createStaff(this.form);
-    this.form = this.emptyForm();
-    this.isFormOpen = false;
-    this.toast.success(this.t('createdSuccessfully'));
+    this.isSaving = true;
+    this.operations.createStaff(this.form).subscribe({
+      next: () => {
+        this.form = this.emptyForm();
+        this.isFormOpen = false;
+        this.isSaving = false;
+        this.toast.success(this.t('createdSuccessfully'));
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
   }
 
   protected startEdit(member: MediaOperationsStaff): void {
@@ -101,13 +113,22 @@ export class MediaOperationsStaffComponent implements OnInit {
   }
 
   protected saveEdit(id: number): void {
-    if (!this.canSaveStaff) {
+    if (!this.canSaveStaff || this.isSaving) {
       return;
     }
 
-    this.operations.updateStaff(id, this.editForm);
-    this.closeForm();
-    this.toast.success(this.t('updatedSuccessfully'));
+    this.isSaving = true;
+    this.operations.updateStaff(id, this.editForm).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.closeForm();
+        this.toast.success(this.t('updatedSuccessfully'));
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
   }
 
   protected cancelEdit(): void {

@@ -61,7 +61,11 @@
       <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assignments">{{ t('viewAllAssignments') }}</button>
     </div>
 
-    @if (recentAssignments().length > 0) {
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (recentAssignments().length > 0) {
       <div class="assignment-list">
         @for (assignment of recentAssignments(); track assignment.id) {
           <article class="assignment-row">

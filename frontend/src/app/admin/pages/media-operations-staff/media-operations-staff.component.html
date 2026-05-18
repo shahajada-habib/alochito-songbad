@@ -32,7 +32,11 @@
       <small>{{ filteredStaff().length }} {{ t('recordsFound') }}</small>
     </div>
 
-    @if (filteredStaff().length > 0) {
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredStaff().length > 0) {
       <div class="staff-list">
         @for (member of filteredStaff(); track member.id) {
           <article class="staff-card">
@@ -109,7 +113,7 @@
             </select>
           </label>
           <div class="form-actions full-width">
-            <button type="submit" class="operations-btn primary" [disabled]="!canSaveStaff">{{ t('saveStaff') }}</button>
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveStaff || isSaving">{{ isSaving ? t('saving') : t('saveStaff') }}</button>
             <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
           </div>
         </form>
@@ -147,7 +151,7 @@
             </select>
           </label>
           <div class="form-actions full-width">
-            <button type="submit" class="operations-btn primary" [disabled]="!canSaveStaff">{{ t('saveStaff') }}</button>
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveStaff || isSaving">{{ isSaving ? t('saving') : t('saveStaff') }}</button>
             <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
           </div>
         </form>

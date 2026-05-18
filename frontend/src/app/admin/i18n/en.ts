@@ -197,6 +197,9 @@ export const EN_TRANSLATIONS = {
   notesPlaceholder: 'Desk notes or filing instructions',
   saveAssignment: 'Save Assignment',
   assignmentList: 'Assignment List',
+  operationsLoading: 'Loading Media Operations data...',
+  operationsLoadError: 'Media Operations data could not be loaded. Please check the backend connection.',
+  saving: 'Saving...',
 
   homepage: 'Homepage',
   homepageHelp: 'Choose which categories, post count, and layouts appear on the homepage.',

@@ -1,4 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { forkJoin, map, Observable, tap } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../../auth/auth.service';
 
 export type StaffStatus = 'ACTIVE' | 'INACTIVE';
 export type AssignmentPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
@@ -13,6 +18,8 @@ export interface MediaOperationsStaff {
   email: string;
   joiningDate: string;
   status: StaffStatus;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MediaOperationsAssignment {
@@ -26,135 +33,135 @@ export interface MediaOperationsAssignment {
   priority: AssignmentPriority;
   status: AssignmentStatus;
   notes: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type StaffFormValue = Omit<MediaOperationsStaff, 'id'>;
-export type AssignmentFormValue = Omit<MediaOperationsAssignment, 'id'>;
+export type StaffFormValue = Omit<MediaOperationsStaff, 'id' | 'createdAt' | 'updatedAt'>;
+export type AssignmentFormValue = Omit<MediaOperationsAssignment, 'id' | 'createdAt' | 'updatedAt'>;
+
+const OPERATIONS_API_URL = `${environment.apiBaseUrl}/api/admin/operations`;
 
 @Injectable({ providedIn: 'root' })
 export class MediaOperationsService {
-  private readonly staffSignal = signal<MediaOperationsStaff[]>([
-    {
-      id: 1,
-      name: 'Nusrat Jahan',
-      designation: 'Senior Reporter',
-      department: 'National Desk',
-      phone: '+8801700000001',
-      email: 'nusrat@example.com',
-      joiningDate: '2025-01-15',
-      status: 'ACTIVE'
-    },
-    {
-      id: 2,
-      name: 'Arif Hasan',
-      designation: 'Photo Journalist',
-      department: 'Visual Desk',
-      phone: '+8801700000002',
-      email: 'arif@example.com',
-      joiningDate: '2024-08-10',
-      status: 'ACTIVE'
-    },
-    {
-      id: 3,
-      name: 'Mehedi Rahman',
-      designation: 'Assignment Editor',
-      department: 'News Desk',
-      phone: '+8801700000003',
-      email: 'mehedi@example.com',
-      joiningDate: '2023-11-05',
-      status: 'INACTIVE'
-    }
-  ]);
-
-  private readonly assignmentsSignal = signal<MediaOperationsAssignment[]>([
-    {
-      id: 1,
-      title: 'City market price follow-up',
-      description: 'Collect trader and consumer comments for the evening update.',
-      assignedStaffId: 1,
-      category: 'Economy',
-      location: 'Karwan Bazar',
-      deadline: '2026-05-18T17:00',
-      priority: 'HIGH',
-      status: 'IN_PROGRESS',
-      notes: 'Coordinate with photo desk before filing.'
-    },
-    {
-      id: 2,
-      title: 'Flood preparation visuals',
-      description: 'Capture preparedness activity and shelter conditions.',
-      assignedStaffId: 2,
-      category: 'National',
-      location: 'Sylhet',
-      deadline: '2026-05-19T13:00',
-      priority: 'URGENT',
-      status: 'ASSIGNED',
-      notes: 'Need at least six usable photos.'
-    },
-    {
-      id: 3,
-      title: 'Interview scheduling',
-      description: 'Prepare slots and contact list for the weekend feature.',
-      assignedStaffId: 3,
-      category: 'Feature',
-      location: 'Dhaka',
-      deadline: '2026-05-21T11:00',
-      priority: 'MEDIUM',
-      status: 'DRAFT',
-      notes: 'Awaiting editor confirmation.'
-    }
-  ]);
+  private readonly auth = inject(AuthService);
+  private readonly http = inject(HttpClient);
+  private readonly staffSignal = signal<MediaOperationsStaff[]>([]);
+  private readonly assignmentsSignal = signal<MediaOperationsAssignment[]>([]);
+  private readonly loadingSignal = signal(false);
+  private readonly errorSignal = signal('');
 
   readonly staff = this.staffSignal.asReadonly();
   readonly assignments = this.assignmentsSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
+  readonly error = this.errorSignal.asReadonly();
 
-  createStaff(value: StaffFormValue): MediaOperationsStaff {
-    const created = { ...value, id: this.nextId(this.staffSignal()) };
-    this.staffSignal.update((items) => [created, ...items]);
-    return created;
+  constructor() {
+    effect(() => {
+      const token = this.auth.token();
+      if (token && !this.auth.isTokenExpired(token)) {
+        this.loadAll();
+      } else {
+        this.staffSignal.set([]);
+        this.assignmentsSignal.set([]);
+      }
+    });
   }
 
-  updateStaff(id: number, value: StaffFormValue): MediaOperationsStaff | undefined {
-    let updated: MediaOperationsStaff | undefined;
-    this.staffSignal.update((items) =>
-      items.map((item) => {
-        if (item.id !== id) {
-          return item;
-        }
+  loadAll(): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set('');
 
-        updated = { ...value, id };
-        return updated;
-      })
+    forkJoin({
+      staff: this.http.get<MediaOperationsStaff[]>(`${OPERATIONS_API_URL}/staff`),
+      assignments: this.http.get<MediaOperationsAssignment[]>(`${OPERATIONS_API_URL}/assignments`)
+    }).pipe(
+      map(({ staff, assignments }) => ({
+        staff: staff.map((item) => this.normalizeStaff(item)),
+        assignments: assignments.map((item) => this.normalizeAssignment(item))
+      }))
+    ).subscribe({
+      next: ({ staff, assignments }) => {
+        this.staffSignal.set(staff);
+        this.assignmentsSignal.set(assignments);
+        this.loadingSignal.set(false);
+      },
+      error: () => {
+        this.errorSignal.set('Unable to load Media Operations data.');
+        this.loadingSignal.set(false);
+      }
+    });
+  }
+
+  createStaff(value: StaffFormValue): Observable<MediaOperationsStaff> {
+    this.errorSignal.set('');
+
+    return this.http.post<MediaOperationsStaff>(`${OPERATIONS_API_URL}/staff`, value).pipe(
+      map((created) => this.normalizeStaff(created)),
+      tap((created) => this.staffSignal.update((items) => [created, ...items]))
     );
-    return updated;
   }
 
-  createAssignment(value: AssignmentFormValue): MediaOperationsAssignment {
-    const created = { ...value, id: this.nextId(this.assignmentsSignal()) };
-    this.assignmentsSignal.update((items) => [created, ...items]);
-    return created;
-  }
+  updateStaff(id: number, value: StaffFormValue): Observable<MediaOperationsStaff> {
+    this.errorSignal.set('');
 
-  updateAssignment(id: number, value: AssignmentFormValue): MediaOperationsAssignment | undefined {
-    let updated: MediaOperationsAssignment | undefined;
-    this.assignmentsSignal.update((items) =>
-      items.map((item) => {
-        if (item.id !== id) {
-          return item;
-        }
-
-        updated = { ...value, id };
-        return updated;
-      })
+    return this.http.put<MediaOperationsStaff>(`${OPERATIONS_API_URL}/staff/${id}`, value).pipe(
+      map((updated) => this.normalizeStaff(updated)),
+      tap((updated) => this.staffSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
     );
-    return updated;
+  }
+
+  createAssignment(value: AssignmentFormValue): Observable<MediaOperationsAssignment> {
+    this.errorSignal.set('');
+
+    return this.http.post<MediaOperationsAssignment>(`${OPERATIONS_API_URL}/assignments`, value).pipe(
+      map((created) => this.normalizeAssignment(created)),
+      tap((created) => this.assignmentsSignal.update((items) => [created, ...items]))
+    );
+  }
+
+  updateAssignment(id: number, value: AssignmentFormValue): Observable<MediaOperationsAssignment> {
+    this.errorSignal.set('');
+
+    return this.http.put<MediaOperationsAssignment>(`${OPERATIONS_API_URL}/assignments/${id}`, value).pipe(
+      map((updated) => this.normalizeAssignment(updated)),
+      tap((updated) => this.assignmentsSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
   }
 
   staffName(id: number): string {
     return this.staffSignal().find((item) => item.id === id)?.name || 'Unassigned';
   }
 
-  private nextId(items: Array<{ id: number }>): number {
-    return items.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+  private normalizeStaff(staff: MediaOperationsStaff): MediaOperationsStaff {
+    return {
+      ...staff,
+      department: staff.department || '',
+      phone: staff.phone || '',
+      email: staff.email || '',
+      joiningDate: staff.joiningDate || '',
+      status: staff.status || 'ACTIVE',
+      createdAt: staff.createdAt || '',
+      updatedAt: staff.updatedAt || ''
+    };
+  }
+
+  private normalizeAssignment(assignment: MediaOperationsAssignment): MediaOperationsAssignment {
+    return {
+      ...assignment,
+      description: assignment.description || '',
+      category: assignment.category || '',
+      location: assignment.location || '',
+      deadline: assignment.deadline || '',
+      priority: assignment.priority || 'MEDIUM',
+      status: assignment.status || 'DRAFT',
+      notes: assignment.notes || '',
+      createdAt: assignment.createdAt || '',
+      updatedAt: assignment.updatedAt || ''
+    };
   }
 }

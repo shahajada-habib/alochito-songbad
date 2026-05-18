@@ -33,7 +33,11 @@
       <small>{{ filteredAssignments().length }} {{ t('recordsFound') }}</small>
     </div>
 
-    @if (filteredAssignments().length > 0) {
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredAssignments().length > 0) {
       <div class="assignment-list">
         @for (assignment of filteredAssignments(); track assignment.id) {
           <article class="assignment-card">
@@ -135,7 +139,7 @@
             <textarea name="editAssignmentNotes" rows="2" [(ngModel)]="editForm.notes" [placeholder]="t('notesPlaceholder')"></textarea>
           </label>
           <div class="form-actions full-width">
-            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAssignment">{{ t('saveAssignment') }}</button>
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAssignment || isSaving">{{ isSaving ? t('saving') : t('saveAssignment') }}</button>
             <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
           </div>
         </form>
@@ -190,7 +194,7 @@
             <textarea name="assignmentNotes" rows="2" [(ngModel)]="form.notes" [placeholder]="t('notesPlaceholder')"></textarea>
           </label>
           <div class="form-actions full-width">
-            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAssignment">{{ t('saveAssignment') }}</button>
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAssignment || isSaving">{{ isSaving ? t('saving') : t('saveAssignment') }}</button>
             <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
           </div>
         </form>

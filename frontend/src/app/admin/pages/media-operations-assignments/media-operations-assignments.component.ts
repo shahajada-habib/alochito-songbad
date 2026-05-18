@@ -23,10 +23,13 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
   private readonly toast = inject(ToastService);
   protected readonly staff = this.operations.staff;
   protected readonly assignments = this.operations.assignments;
+  protected readonly loading = this.operations.loading;
+  protected readonly error = this.operations.error;
   protected searchTerm = '';
   protected statusFilter: AssignmentStatus | '' = '';
   protected editingId: number | null = null;
   protected isFormOpen = false;
+  protected isSaving = false;
   protected form: AssignmentFormValue = this.emptyForm();
   protected editForm: AssignmentFormValue = this.emptyForm();
   protected readonly priorities: AssignmentPriority[] = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
@@ -102,14 +105,23 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
   }
 
   protected create(): void {
-    if (!this.canSaveAssignment) {
+    if (!this.canSaveAssignment || this.isSaving) {
       return;
     }
 
-    this.operations.createAssignment(this.form);
-    this.form = this.emptyForm();
-    this.isFormOpen = false;
-    this.toast.success(this.t('createdSuccessfully'));
+    this.isSaving = true;
+    this.operations.createAssignment(this.form).subscribe({
+      next: () => {
+        this.form = this.emptyForm();
+        this.isFormOpen = false;
+        this.isSaving = false;
+        this.toast.success(this.t('createdSuccessfully'));
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
   }
 
   protected startEdit(assignment: MediaOperationsAssignment): void {
@@ -129,13 +141,22 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
   }
 
   protected saveEdit(id: number): void {
-    if (!this.canSaveAssignment) {
+    if (!this.canSaveAssignment || this.isSaving) {
       return;
     }
 
-    this.operations.updateAssignment(id, this.editForm);
-    this.closeForm();
-    this.toast.success(this.t('updatedSuccessfully'));
+    this.isSaving = true;
+    this.operations.updateAssignment(id, this.editForm).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.closeForm();
+        this.toast.success(this.t('updatedSuccessfully'));
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
   }
 
   protected cancelEdit(): void {

@@ -15,6 +15,8 @@ export class MediaOperationsDashboardComponent {
   private readonly operations = inject(MediaOperationsService);
   protected readonly staff = this.operations.staff;
   protected readonly assignments = this.operations.assignments;
+  protected readonly loading = this.operations.loading;
+  protected readonly error = this.operations.error;
 
   protected readonly activeStaffCount = computed(() => this.staff().filter((item) => item.status === 'ACTIVE').length);
   protected readonly activeAssignmentCount = computed(() =>

@@ -197,6 +197,9 @@ export const BN_TRANSLATIONS = {
   notesPlaceholder: 'ডেস্ক নোট বা ফাইলিং নির্দেশনা',
   saveAssignment: 'অ্যাসাইনমেন্ট সংরক্ষণ',
   assignmentList: 'অ্যাসাইনমেন্ট তালিকা',
+  operationsLoading: 'মিডিয়া অপারেশনস তথ্য লোড হচ্ছে...',
+  operationsLoadError: 'মিডিয়া অপারেশনস তথ্য লোড করা যায়নি। অনুগ্রহ করে ব্যাকএন্ড সংযোগ পরীক্ষা করুন।',
+  saving: 'সংরক্ষণ হচ্ছে...',
 
   homepage: 'Homepage',
   homepageHelp: 'হোমপেজে কোন বিভাগ, কত পোস্ট এবং কোন লেআউটে দেখাবে তা সেট করুন।',
