@@ -1,0 +1,140 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('expenseTracking') }}</h2>
+      <p>{{ t('expenseTrackingHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addExpense') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchExpensesLabel') }}</span>
+      <input type="search" name="expenseSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchExpenses')">
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="expenseStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('financeDesk') }}</span>
+        <h3>{{ t('expenseList') }}</h3>
+      </div>
+      <small>{{ filteredExpenses().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredExpenses().length > 0) {
+      <div class="finance-list">
+        @for (expense of filteredExpenses(); track expense.id) {
+          <article class="finance-card">
+            <div class="finance-main">
+              <strong>{{ expense.title }}</strong>
+              <span>{{ categoryLabel(expense.category) }}</span>
+              <div class="finance-meta">
+                <small>{{ t('paidBy') }}: {{ expense.paidBy || '-' }}</small>
+                <small>{{ t('paymentMethod') }}: {{ paymentMethodLabel(expense.paymentMethod) }}</small>
+                @if (expense.notes) {
+                  <small>{{ t('notes') }}: {{ expense.notes }}</small>
+                }
+              </div>
+            </div>
+            <div class="finance-side">
+              <small>{{ t('expenseDate') }}</small>
+              <strong>{{ formatDate(expense.expenseDate) }}</strong>
+            </div>
+            <div class="finance-side">
+              <small>{{ t('amount') }}</small>
+              <strong>{{ formatMoney(expense.amount) }}</strong>
+            </div>
+            <span class="ops-badge {{ statusClass(expense.status) }}">{{ statusLabel(expense.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(expense)">{{ t('editExpense') }}</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noExpensesFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editExpense') : t('addExpense') }}</span>
+          <h3>{{ isEditing ? t('editExpense') : t('newExpense') }}</h3>
+          <p>{{ t('expenseFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+        <label>
+          <span>{{ t('title') }}</span>
+          <input type="text" name="expenseTitle" [(ngModel)]="activeForm.title" [placeholder]="t('expenseTitlePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('category') }}</span>
+          <select name="expenseCategory" [(ngModel)]="activeForm.category">
+            @for (category of categories; track category) {
+              <option [value]="category">{{ categoryLabel(category) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('amount') }}</span>
+          <input type="number" min="0" step="0.01" name="expenseAmount" [(ngModel)]="activeForm.amount" [placeholder]="t('pricePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('expenseDate') }}</span>
+          <input type="date" name="expenseDate" [(ngModel)]="activeForm.expenseDate">
+        </label>
+        <label>
+          <span>{{ t('paidBy') }}</span>
+          <input type="text" name="expensePaidBy" [(ngModel)]="activeForm.paidBy" [placeholder]="t('paidByPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('paymentMethod') }}</span>
+          <select name="expenseMethod" [(ngModel)]="activeForm.paymentMethod">
+            @for (method of methods; track method) {
+              <option [value]="method">{{ paymentMethodLabel(method) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('status') }}</span>
+          <select name="expenseStatus" [(ngModel)]="activeForm.status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ statusLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('notes') }}</span>
+          <textarea name="expenseNotes" rows="2" [(ngModel)]="activeForm.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+        </label>
+        <div class="form-actions full-width">
+          <button type="submit" class="operations-btn primary" [disabled]="!canSaveExpense || isSaving">{{ isSaving ? t('saving') : t('saveExpense') }}</button>
+          <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+        </div>
+      </form>
+    </section>
+  }
+</section>

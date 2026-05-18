@@ -2,7 +2,15 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
-import { AdPaymentStatus, AdPlacement, AdPublishStatus, AssignmentPriority, AssignmentStatus, MediaOperationsService } from '../../services/media-operations.service';
+import {
+  AdPaymentStatus,
+  AdPlacement,
+  AdPublishStatus,
+  AssignmentPriority,
+  AssignmentStatus,
+  InvoicePaymentStatus,
+  MediaOperationsService
+} from '../../services/media-operations.service';
 
 @Component({
   selector: 'app-media-operations-dashboard',
@@ -17,6 +25,8 @@ export class MediaOperationsDashboardComponent {
   protected readonly assignments = this.operations.assignments;
   protected readonly adClients = this.operations.adClients;
   protected readonly adBookings = this.operations.adBookings;
+  protected readonly expenses = this.operations.expenses;
+  protected readonly invoices = this.operations.invoices;
   protected readonly loading = this.operations.loading;
   protected readonly error = this.operations.error;
 
@@ -36,6 +46,27 @@ export class MediaOperationsDashboardComponent {
   );
   protected readonly unpaidAdBookingCount = computed(() =>
     this.adBookings().filter((item) => item.paymentStatus !== 'PAID' && item.publishStatus !== 'CANCELLED').length
+  );
+  protected readonly monthlyExpenseTotal = computed(() => {
+    const now = new Date();
+    return this.expenses()
+      .filter((item) => {
+        const date = new Date(item.expenseDate);
+        return !Number.isNaN(date.getTime())
+          && date.getMonth() === now.getMonth()
+          && date.getFullYear() === now.getFullYear()
+          && item.status !== 'CANCELLED';
+      })
+      .reduce((sum, item) => sum + item.amount, 0);
+  });
+  protected readonly unpaidInvoiceCount = computed(() =>
+    this.invoices().filter((item) => ['UNPAID', 'PARTIAL', 'OVERDUE'].includes(item.paymentStatus)).length
+  );
+  protected readonly paidInvoiceCount = computed(() =>
+    this.invoices().filter((item) => item.paymentStatus === 'PAID').length
+  );
+  protected readonly totalInvoiceAmount = computed(() =>
+    this.invoices().filter((item) => item.paymentStatus !== 'CANCELLED').reduce((sum, item) => sum + item.amount, 0)
   );
   protected readonly recentAssignments = computed(() => this.assignments().slice(0, 5));
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));
@@ -95,12 +126,25 @@ export class MediaOperationsDashboardComponent {
     return `ad-publish-${status.toLowerCase()}`;
   }
 
+  protected invoicePaymentStatusLabel(status: InvoicePaymentStatus): string {
+    const key = `invoicePayment${this.toTitleCase(status)}` as TranslationKey;
+    return this.t(key);
+  }
+
   protected formatDeadline(value: string): string {
     return this.formatDate(value, true);
   }
 
   protected formatDateOnly(value: string): string {
     return this.formatDate(value, false);
+  }
+
+  protected formatMoney(value: number): string {
+    return new Intl.NumberFormat(this.i18n.language() === 'bn' ? 'bn-BD' : 'en-BD', {
+      style: 'currency',
+      currency: 'BDT',
+      maximumFractionDigits: 2
+    }).format(value || 0);
   }
 
   private formatDate(value: string, includeTime: boolean): string {

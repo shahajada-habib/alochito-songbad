@@ -1,0 +1,153 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('invoicePaymentStatus') }}</h2>
+      <p>{{ t('invoicePaymentStatusHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addInvoice') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchInvoicesLabel') }}</span>
+      <input type="search" name="invoiceSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchInvoices')">
+    </label>
+    <label>
+      <span>{{ t('paymentStatus') }}</span>
+      <select name="invoiceStatusFilter" [(ngModel)]="paymentStatusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of paymentStatuses; track status) {
+          <option [value]="status">{{ paymentStatusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('financeDesk') }}</span>
+        <h3>{{ t('invoiceList') }}</h3>
+      </div>
+      <small>{{ filteredInvoices().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredInvoices().length > 0) {
+      <div class="finance-list">
+        @for (invoice of filteredInvoices(); track invoice.id) {
+          <article class="finance-card">
+            <div class="finance-main">
+              <strong>{{ invoice.invoiceNumber }} - {{ invoice.title }}</strong>
+              <span>{{ adClientName(invoice.adClientId) }}</span>
+              <div class="finance-meta">
+                <small>{{ t('adBookingsCampaigns') }}: {{ adBookingTitle(invoice.adBookingId) }}</small>
+                <small>{{ t('paidAmount') }}: {{ formatMoney(invoice.paidAmount) }}</small>
+                @if (invoice.notes) {
+                  <small>{{ t('notes') }}: {{ invoice.notes }}</small>
+                }
+              </div>
+            </div>
+            <div class="finance-side">
+              <small>{{ t('dueDate') }}</small>
+              <strong>{{ formatDate(invoice.dueDate) }}</strong>
+            </div>
+            <div class="finance-side">
+              <small>{{ t('amount') }}</small>
+              <strong>{{ formatMoney(invoice.amount) }}</strong>
+            </div>
+            <span class="ops-badge {{ paymentStatusClass(invoice.paymentStatus) }}">{{ paymentStatusLabel(invoice.paymentStatus) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(invoice)">{{ t('editInvoice') }}</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noInvoicesFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editInvoice') : t('addInvoice') }}</span>
+          <h3>{{ isEditing ? t('editInvoice') : t('newInvoice') }}</h3>
+          <p>{{ t('invoiceFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (adClients().length === 0) {
+        <div class="operations-muted">{{ t('adClientRequiredForInvoice') }}</div>
+      } @else {
+        <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+          <label>
+            <span>{{ t('invoiceNumber') }}</span>
+            <input type="text" name="invoiceNumber" [(ngModel)]="activeForm.invoiceNumber" [placeholder]="t('invoiceNumberPlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('title') }}</span>
+            <input type="text" name="invoiceTitle" [(ngModel)]="activeForm.title" [placeholder]="t('invoiceTitlePlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('advertisementClient') }}</span>
+            <select name="invoiceClient" [(ngModel)]="activeForm.adClientId">
+              @for (client of adClients(); track client.id) {
+                <option [ngValue]="client.id">{{ client.clientName }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('adBookingsCampaigns') }}</span>
+            <select name="invoiceBooking" [(ngModel)]="activeForm.adBookingId">
+              <option [ngValue]="null">{{ t('noLinkedBooking') }}</option>
+              @for (booking of adBookings(); track booking.id) {
+                <option [ngValue]="booking.id">{{ booking.title }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('amount') }}</span>
+            <input type="number" min="0" step="0.01" name="invoiceAmount" [(ngModel)]="activeForm.amount" [placeholder]="t('pricePlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('paidAmount') }}</span>
+            <input type="number" min="0" step="0.01" name="invoicePaidAmount" [(ngModel)]="activeForm.paidAmount" [placeholder]="t('pricePlaceholder')">
+          </label>
+          <label>
+            <span>{{ t('issueDate') }}</span>
+            <input type="date" name="invoiceIssueDate" [(ngModel)]="activeForm.issueDate">
+          </label>
+          <label>
+            <span>{{ t('dueDate') }}</span>
+            <input type="date" name="invoiceDueDate" [(ngModel)]="activeForm.dueDate">
+          </label>
+          <label>
+            <span>{{ t('paymentStatus') }}</span>
+            <select name="invoicePaymentStatus" [(ngModel)]="activeForm.paymentStatus">
+              @for (status of paymentStatuses; track status) {
+                <option [value]="status">{{ paymentStatusLabel(status) }}</option>
+              }
+            </select>
+          </label>
+          <label class="wide-field">
+            <span>{{ t('notes') }}</span>
+            <textarea name="invoiceNotes" rows="2" [(ngModel)]="activeForm.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+          </label>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveInvoice || isSaving">{{ isSaving ? t('saving') : t('saveInvoice') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</section>

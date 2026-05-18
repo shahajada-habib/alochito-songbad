@@ -94,6 +94,14 @@ export class AdminLayoutComponent {
       return this.i18n.t('adBookingsCampaigns');
     }
 
+    if (url.includes('/admin/media-operations/expenses')) {
+      return this.i18n.t('expenseTracking');
+    }
+
+    if (url.includes('/admin/media-operations/invoices')) {
+      return this.i18n.t('invoicePaymentStatus');
+    }
+
     if (url.includes('/admin/media-operations')) {
       return this.i18n.t('mediaOperations');
     }

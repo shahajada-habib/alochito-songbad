@@ -9,6 +9,8 @@
         <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/assignments">{{ t('assignmentManagement') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-clients">{{ t('advertisementClients') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-bookings">{{ t('adBookingsCampaigns') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/expenses">{{ t('expenseTracking') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/invoices">{{ t('invoicePaymentStatus') }}</button>
       </div>
     </div>
     <div class="hero-queue">
@@ -73,6 +75,38 @@
         <strong>{{ unpaidAdBookingCount() }}</strong>
         <span>{{ t('pendingAdPayments') }}</span>
         <small>{{ t('pendingAdPaymentsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('expenseStatMark') }}</span>
+      <div>
+        <strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong>
+        <span>{{ t('monthlyExpenses') }}</span>
+        <small>{{ t('monthlyExpensesHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('invoiceUnpaidStatMark') }}</span>
+      <div>
+        <strong>{{ unpaidInvoiceCount() }}</strong>
+        <span>{{ t('unpaidInvoices') }}</span>
+        <small>{{ t('unpaidInvoicesHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('invoicePaidStatMark') }}</span>
+      <div>
+        <strong>{{ paidInvoiceCount() }}</strong>
+        <span>{{ t('paidInvoices') }}</span>
+        <small>{{ t('paidInvoicesHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('invoiceTotalStatMark') }}</span>
+      <div>
+        <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
+        <span>{{ t('totalInvoiceAmount') }}</span>
+        <small>{{ t('totalInvoiceAmountHint') }}</small>
       </div>
     </article>
   </div>
