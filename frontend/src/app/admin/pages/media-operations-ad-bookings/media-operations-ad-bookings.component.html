@@ -1,0 +1,171 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('adBookingsCampaigns') }}</h2>
+      <p>{{ t('adBookingsHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addAdBooking') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchAdBookingsLabel') }}</span>
+      <input type="search" name="adBookingSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAdBookings')">
+    </label>
+    <label>
+      <span>{{ t('publishStatus') }}</span>
+      <select name="adBookingStatusFilter" [(ngModel)]="publishStatusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of publishStatuses; track status) {
+          <option [value]="status">{{ publishStatusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('campaignDesk') }}</span>
+        <h3>{{ t('adBookingList') }}</h3>
+      </div>
+      <small>{{ filteredAdBookings().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredAdBookings().length > 0) {
+      <div class="ad-booking-list">
+        @for (adBooking of filteredAdBookings(); track adBooking.id) {
+          <article class="ad-booking-card">
+            <div class="ad-booking-main">
+              <strong>{{ adBooking.title }}</strong>
+              <span>{{ adClientName(adBooking.adClientId) }}</span>
+              <div class="ad-booking-meta">
+                <small>{{ t('placement') }}: {{ placementLabel(adBooking.placement) }}</small>
+                <small>{{ t('salesOwner') }}: {{ adBooking.salesOwner || '-' }}</small>
+                @if (adBooking.notes) {
+                  <small>{{ t('notes') }}: {{ adBooking.notes }}</small>
+                }
+              </div>
+            </div>
+            <div class="ad-booking-dates">
+              <small>{{ t('campaignDates') }}</small>
+              <strong>{{ formatDate(adBooking.startDate) }} - {{ formatDate(adBooking.endDate) }}</strong>
+            </div>
+            <div class="ad-booking-price">
+              <small>{{ t('price') }}</small>
+              <strong>{{ formatPrice(adBooking.price) }}</strong>
+            </div>
+            <div class="ad-booking-badges">
+              <span class="ops-badge {{ paymentStatusClass(adBooking.paymentStatus) }}">{{ paymentStatusLabel(adBooking.paymentStatus) }}</span>
+              <span class="ops-badge {{ publishStatusClass(adBooking.publishStatus) }}">{{ publishStatusLabel(adBooking.publishStatus) }}</span>
+            </div>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(adBooking)">{{ t('editAdBooking') }}</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAdBookingsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editAdBooking') : t('addAdBooking') }}</span>
+          <h3>{{ isEditing ? t('editAdBooking') : t('newAdBooking') }}</h3>
+          <p>{{ t('adBookingFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (adClients().length === 0) {
+        <div class="operations-muted">{{ t('adClientRequiredForBooking') }}</div>
+      } @else if (isEditing) {
+        <form class="operations-form ad-booking-form" (ngSubmit)="saveEdit(editingId ?? 0)">
+          <ng-container *ngTemplateOutlet="adBookingFields; context: { value: editForm, prefix: 'edit' }"></ng-container>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAdBooking || isSaving">{{ isSaving ? t('saving') : t('saveAdBooking') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      } @else {
+        <form class="operations-form ad-booking-form" (ngSubmit)="create()">
+          <ng-container *ngTemplateOutlet="adBookingFields; context: { value: form, prefix: 'create' }"></ng-container>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAdBooking || isSaving">{{ isSaving ? t('saving') : t('saveAdBooking') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+
+      <ng-template #adBookingFields let-value="value" let-prefix="prefix">
+        <label>
+          <span>{{ t('title') }}</span>
+          <input type="text" [name]="prefix + 'Title'" [(ngModel)]="value.title" [placeholder]="t('adBookingTitlePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('advertisementClient') }}</span>
+          <select [name]="prefix + 'AdClient'" [(ngModel)]="value.adClientId">
+            @for (adClient of adClients(); track adClient.id) {
+              <option [ngValue]="adClient.id">{{ adClient.clientName }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('placement') }}</span>
+          <select [name]="prefix + 'Placement'" [(ngModel)]="value.placement">
+            @for (placement of placements; track placement) {
+              <option [value]="placement">{{ placementLabel(placement) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('startDate') }}</span>
+          <input type="date" [name]="prefix + 'StartDate'" [(ngModel)]="value.startDate">
+        </label>
+        <label>
+          <span>{{ t('endDate') }}</span>
+          <input type="date" [name]="prefix + 'EndDate'" [(ngModel)]="value.endDate">
+        </label>
+        <label>
+          <span>{{ t('price') }}</span>
+          <input type="number" min="0" step="0.01" [name]="prefix + 'Price'" [(ngModel)]="value.price" [placeholder]="t('pricePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('paymentStatus') }}</span>
+          <select [name]="prefix + 'PaymentStatus'" [(ngModel)]="value.paymentStatus">
+            @for (status of paymentStatuses; track status) {
+              <option [value]="status">{{ paymentStatusLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('publishStatus') }}</span>
+          <select [name]="prefix + 'PublishStatus'" [(ngModel)]="value.publishStatus">
+            @for (status of publishStatuses; track status) {
+              <option [value]="status">{{ publishStatusLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('salesOwner') }}</span>
+          <input type="text" [name]="prefix + 'SalesOwner'" [(ngModel)]="value.salesOwner" [placeholder]="t('salesOwnerPlaceholder')">
+        </label>
+        <label class="wide-field">
+          <span>{{ t('notes') }}</span>
+          <textarea [name]="prefix + 'Notes'" rows="2" [(ngModel)]="value.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+        </label>
+      </ng-template>
+    </section>
+  }
+</section>

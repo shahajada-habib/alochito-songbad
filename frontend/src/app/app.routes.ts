@@ -122,6 +122,16 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/media-operations-assignments/media-operations-assignments.component').then((m) => m.MediaOperationsAssignmentsComponent)
       },
       {
+        path: 'media-operations/ad-clients',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-ad-clients/media-operations-ad-clients.component').then((m) => m.MediaOperationsAdClientsComponent)
+      },
+      {
+        path: 'media-operations/ad-bookings',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-ad-bookings/media-operations-ad-bookings.component').then((m) => m.MediaOperationsAdBookingsComponent)
+      },
+      {
         path: 'homepage-customize',
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/pages/homepage-customize/homepage-customize.component').then((m) => m.HomepageCustomizeComponent)

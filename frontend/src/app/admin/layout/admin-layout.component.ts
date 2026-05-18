@@ -86,6 +86,14 @@ export class AdminLayoutComponent {
       return this.i18n.t('assignmentManagement');
     }
 
+    if (url.includes('/admin/media-operations/ad-clients')) {
+      return this.i18n.t('advertisementClients');
+    }
+
+    if (url.includes('/admin/media-operations/ad-bookings')) {
+      return this.i18n.t('adBookingsCampaigns');
+    }
+
     if (url.includes('/admin/media-operations')) {
       return this.i18n.t('mediaOperations');
     }

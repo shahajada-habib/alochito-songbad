@@ -1,0 +1,144 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('advertisementClients') }}</h2>
+      <p>{{ t('advertisementClientsHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addAdClient') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchAdClientsLabel') }}</span>
+      <input type="search" name="adClientSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAdClients')">
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="adClientStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        <option value="ACTIVE">{{ t('active') }}</option>
+        <option value="INACTIVE">{{ t('inactive') }}</option>
+      </select>
+    </label>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('advertisingDesk') }}</span>
+        <h3>{{ t('adClientList') }}</h3>
+      </div>
+      <small>{{ filteredAdClients().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredAdClients().length > 0) {
+      <div class="ad-client-list">
+        @for (adClient of filteredAdClients(); track adClient.id) {
+          <article class="ad-client-card">
+            <div class="ad-client-avatar">{{ adClient.clientName.charAt(0) }}</div>
+            <div class="ad-client-main">
+              <strong>{{ adClient.clientName }}</strong>
+              <span>{{ adClient.companyName || '-' }}</span>
+              <small>{{ adClient.industry || '-' }}</small>
+            </div>
+            <div class="ad-client-contact">
+              <span>{{ adClient.contactPerson || '-' }}</span>
+              <small>{{ adClient.phone || '-' }}</small>
+              <small>{{ adClient.email || '-' }}</small>
+            </div>
+            <div class="ad-client-notes">
+              <small>{{ t('notes') }}</small>
+              <span>{{ adClient.notes || '-' }}</span>
+            </div>
+            <span class="ops-badge {{ statusClass(adClient.status) }}">{{ statusLabel(adClient.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(adClient)">{{ t('editAdClient') }}</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAdClientsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editAdClient') : t('addAdClient') }}</span>
+          <h3>{{ isEditing ? t('editAdClient') : t('newAdClient') }}</h3>
+          <p>{{ t('adClientFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (isEditing) {
+        <form class="operations-form ad-client-form" (ngSubmit)="saveEdit(editingId ?? 0)">
+          <ng-container *ngTemplateOutlet="adClientFields; context: { value: editForm, prefix: 'edit' }"></ng-container>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAdClient || isSaving">{{ isSaving ? t('saving') : t('saveAdClient') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      } @else {
+        <form class="operations-form ad-client-form" (ngSubmit)="create()">
+          <ng-container *ngTemplateOutlet="adClientFields; context: { value: form, prefix: 'create' }"></ng-container>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAdClient || isSaving">{{ isSaving ? t('saving') : t('saveAdClient') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+
+      <ng-template #adClientFields let-value="value" let-prefix="prefix">
+        <label>
+          <span>{{ t('clientName') }}</span>
+          <input type="text" [name]="prefix + 'ClientName'" [(ngModel)]="value.clientName" [placeholder]="t('clientNamePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('companyName') }}</span>
+          <input type="text" [name]="prefix + 'CompanyName'" [(ngModel)]="value.companyName" [placeholder]="t('companyNamePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('contactPerson') }}</span>
+          <input type="text" [name]="prefix + 'ContactPerson'" [(ngModel)]="value.contactPerson" [placeholder]="t('contactPersonPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('phone') }}</span>
+          <input type="tel" [name]="prefix + 'Phone'" [(ngModel)]="value.phone" [placeholder]="t('phonePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('email') }}</span>
+          <input type="email" [name]="prefix + 'Email'" [(ngModel)]="value.email" [placeholder]="t('emailPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('industry') }}</span>
+          <input type="text" [name]="prefix + 'Industry'" [(ngModel)]="value.industry" [placeholder]="t('industryPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('status') }}</span>
+          <select [name]="prefix + 'Status'" [(ngModel)]="value.status">
+            <option value="ACTIVE">{{ t('active') }}</option>
+            <option value="INACTIVE">{{ t('inactive') }}</option>
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('address') }}</span>
+          <textarea [name]="prefix + 'Address'" rows="2" [(ngModel)]="value.address" [placeholder]="t('addressPlaceholder')"></textarea>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('notes') }}</span>
+          <textarea [name]="prefix + 'Notes'" rows="2" [(ngModel)]="value.notes" [placeholder]="t('notesPlaceholder')"></textarea>
+        </label>
+      </ng-template>
+    </section>
+  }
+</section>

@@ -7,6 +7,8 @@
       <div class="hero-actions">
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/staff">{{ t('staffManagement') }}</button>
         <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/assignments">{{ t('assignmentManagement') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-clients">{{ t('advertisementClients') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-bookings">{{ t('adBookingsCampaigns') }}</button>
       </div>
     </div>
     <div class="hero-queue">
@@ -47,6 +49,30 @@
         <strong>{{ completedAssignmentCount() }}</strong>
         <span>{{ t('completedAssignments') }}</span>
         <small>{{ t('completedAssignmentHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('adClientStatMark') }}</span>
+      <div>
+        <strong>{{ activeAdClientCount() }}</strong>
+        <span>{{ t('activeAdClients') }}</span>
+        <small>{{ t('activeAdClientsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('adBookingStatMark') }}</span>
+      <div>
+        <strong>{{ runningAdBookingCount() }}</strong>
+        <span>{{ t('runningAdBookings') }}</span>
+        <small>{{ t('runningAdBookingsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('adPaymentStatMark') }}</span>
+      <div>
+        <strong>{{ unpaidAdBookingCount() }}</strong>
+        <span>{{ t('pendingAdPayments') }}</span>
+        <small>{{ t('pendingAdPaymentsHint') }}</small>
       </div>
     </article>
   </div>
@@ -94,6 +120,53 @@
         <span>0</span>
         <h3>{{ t('noAssignmentsFound') }}</h3>
         <p>{{ t('assignmentManagementHelp') }}</p>
+      </div>
+    }
+  </section>
+
+  <section class="cms-panel operations-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('campaignDesk') }}</span>
+        <h3>{{ t('recentAdBookings') }}</h3>
+        <p>{{ t('adBookingsHelp') }}</p>
+      </div>
+      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-bookings">{{ t('viewAllAdBookings') }}</button>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (recentAdBookings().length > 0) {
+      <div class="assignment-list">
+        @for (adBooking of recentAdBookings(); track adBooking.id) {
+          <article class="assignment-row">
+            <div class="assignment-main">
+              <strong>{{ adBooking.title }}</strong>
+              <span>{{ adClientName(adBooking.adClientId) }}</span>
+              <div class="assignment-meta">
+                <small>{{ t('placement') }}: {{ placementLabel(adBooking.placement) }}</small>
+                <small>{{ t('campaignDates') }}: {{ formatDateOnly(adBooking.startDate) }} - {{ formatDateOnly(adBooking.endDate) }}</small>
+                <small>{{ t('salesOwner') }}: {{ adBooking.salesOwner || '-' }}</small>
+              </div>
+            </div>
+            <div class="assignment-side">
+              <small>{{ t('paymentStatus') }}</small>
+              <strong>{{ adPaymentStatusLabel(adBooking.paymentStatus) }}</strong>
+            </div>
+            <div class="assignment-badges">
+              <span class="ops-badge {{ adPaymentStatusClass(adBooking.paymentStatus) }}">{{ adPaymentStatusLabel(adBooking.paymentStatus) }}</span>
+              <span class="ops-badge {{ adPublishStatusClass(adBooking.publishStatus) }}">{{ adPublishStatusLabel(adBooking.publishStatus) }}</span>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAdBookingsFound') }}</h3>
+        <p>{{ t('adBookingsHelp') }}</p>
       </div>
     }
   </section>

@@ -110,7 +110,7 @@
 
 .operations-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(170px, 1fr));
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
   gap: var(--space-3);
 }
 
@@ -268,6 +268,30 @@
 .assignment-completed {
   background: #e7f5ee;
   color: #137047;
+}
+
+.ad-payment-unpaid,
+.ad-publish-cancelled {
+  background: #fff2ef;
+  color: #b42318;
+}
+
+.ad-payment-partial,
+.ad-publish-scheduled,
+.ad-publish-running {
+  background: #fff3d6;
+  color: #8a5a00;
+}
+
+.ad-payment-paid,
+.ad-publish-completed {
+  background: #e7f5ee;
+  color: #137047;
+}
+
+.ad-publish-draft {
+  background: #eef2f7;
+  color: #475467;
 }
 
 .operations-empty {
