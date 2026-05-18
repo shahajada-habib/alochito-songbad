@@ -36,6 +36,9 @@ export class MediaOperationsDashboardComponent {
   protected readonly vendors = this.operations.vendors;
   protected readonly purchaseRequests = this.operations.purchaseRequests;
   protected readonly purchaseOrders = this.operations.purchaseOrders;
+  protected readonly approvalQueue = this.operations.approvalQueue;
+  protected readonly notifications = this.operations.notifications;
+  protected readonly reminders = this.operations.reminders;
   protected readonly activityLog = this.operations.activityLog;
   protected readonly loading = this.operations.loading;
   protected readonly error = this.operations.error;
@@ -115,8 +118,13 @@ export class MediaOperationsDashboardComponent {
   protected readonly placedPurchaseOrderCount = computed(() =>
     this.purchaseOrders().filter((item) => ['PLACED', 'RECEIVED'].includes(item.orderStatus)).length
   );
+  protected readonly approvalQueueCount = computed(() => this.approvalQueue().length);
+  protected readonly unreadNotificationCount = computed(() => this.notifications().filter((item) => item.readStatus === 'UNREAD').length);
+  protected readonly urgentReminderCount = computed(() => this.reminders().filter((item) => ['URGENT', 'HIGH'].includes(item.severity)).length);
   protected readonly recentAssignments = computed(() => this.assignments().slice(0, 5));
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));
+  protected readonly recentNotifications = computed(() => this.notifications().slice(0, 4));
+  protected readonly recentReminders = computed(() => this.reminders().slice(0, 4));
   protected readonly recentActivity = computed(() => this.activityLog().slice(0, 6));
 
   constructor(protected readonly i18n: AdminTranslationService) {}
@@ -177,6 +185,10 @@ export class MediaOperationsDashboardComponent {
   protected invoicePaymentStatusLabel(status: InvoicePaymentStatus): string {
     const key = `invoicePayment${this.toTitleCase(status)}` as TranslationKey;
     return this.t(key);
+  }
+
+  protected formatReminderDate(value: string | null): string {
+    return this.formatDate(value || '', false);
   }
 
   protected activityActionLabel(action: ActivityActionType): string {

@@ -187,6 +187,21 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/media-operations-purchase-orders/media-operations-purchase-orders.component').then((m) => m.MediaOperationsPurchaseOrdersComponent)
       },
       {
+        path: 'media-operations/approvals',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-approvals/media-operations-approvals.component').then((m) => m.MediaOperationsApprovalsComponent)
+      },
+      {
+        path: 'media-operations/notifications',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-notifications/media-operations-notifications.component').then((m) => m.MediaOperationsNotificationsComponent)
+      },
+      {
+        path: 'media-operations/reminders',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-reminders/media-operations-reminders.component').then((m) => m.MediaOperationsRemindersComponent)
+      },
+      {
         path: 'homepage-customize',
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/pages/homepage-customize/homepage-customize.component').then((m) => m.HomepageCustomizeComponent)

@@ -1,0 +1,52 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('approvalQueue') }}</h2>
+      <p>{{ t('approvalQueueHelp') }}</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+  } @else if (loading()) {
+    <div class="operations-muted">{{ t('operationsLoading') }}</div>
+  }
+
+  @for (group of groups; track group.key) {
+    <section class="cms-panel operations-list-panel">
+      <div class="operations-section-head">
+        <div>
+          <span>{{ t('approvalQueue') }}</span>
+          <h3>{{ t(group.title) }}</h3>
+        </div>
+        <small>{{ groupedItems(group.modules).length }} {{ t('recordsFound') }}</small>
+      </div>
+
+      @if (groupedItems(group.modules).length > 0) {
+        <div class="operations-list">
+          @for (item of groupedItems(group.modules); track item.id) {
+            <article class="operations-card">
+              <div class="operations-main">
+                <strong>{{ item.title }}</strong>
+                <span>{{ item.moduleName }} &middot; {{ item.actionLabel }}</span>
+                <div class="operations-meta">
+                  <small>{{ t('dueDate') }}: {{ formatDate(item.dueDate) }}</small>
+                  <small>{{ t('amount') }}: {{ formatAmount(item.amount) }}</small>
+                  @if (item.priority) { <small>{{ t('priority') }}: {{ item.priority }}</small> }
+                </div>
+              </div>
+              <span class="ops-badge {{ statusClass(item.status) }}">{{ item.status }}</span>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible operations-empty">
+          <span>0</span>
+          <h3>{{ t('noApprovalItemsFound') }}</h3>
+          <p>{{ t('approvalQueueHelp') }}</p>
+        </div>
+      }
+    </section>
+  }
+</section>

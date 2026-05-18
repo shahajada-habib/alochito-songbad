@@ -1,0 +1,51 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('reminders') }}</h2>
+      <p>{{ t('remindersHelp') }}</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+  } @else if (loading()) {
+    <div class="operations-muted">{{ t('operationsLoading') }}</div>
+  }
+
+  @for (severity of severities; track severity) {
+    <section class="cms-panel operations-list-panel">
+      <div class="operations-section-head">
+        <div>
+          <span>{{ t('reminders') }}</span>
+          <h3>{{ severityLabel(severity) }}</h3>
+        </div>
+        <small>{{ remindersBySeverity(severity).length }} {{ t('recordsFound') }}</small>
+      </div>
+
+      @if (remindersBySeverity(severity).length > 0) {
+        <div class="operations-list">
+          @for (reminder of remindersBySeverity(severity); track reminder.id) {
+            <article class="operations-card">
+              <div class="operations-main">
+                <strong>{{ reminder.title }}</strong>
+                <span>{{ reminder.moduleName }} &middot; {{ reminder.reminderType }}</span>
+                <div class="operations-meta">
+                  <small>{{ t('dueDate') }}: {{ formatDate(reminder.dueDate) }}</small>
+                  <small>{{ reminder.description }}</small>
+                </div>
+              </div>
+              <span class="ops-badge {{ severityClass(reminder.severity) }}">{{ severityLabel(reminder.severity) }}</span>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible operations-empty">
+          <span>0</span>
+          <h3>{{ t('noRemindersFound') }}</h3>
+          <p>{{ t('remindersHelp') }}</p>
+        </div>
+      }
+    </section>
+  }
+</section>

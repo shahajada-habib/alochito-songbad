@@ -134,6 +134,18 @@ export class AdminLayoutComponent {
       return this.i18n.t('purchaseOrders');
     }
 
+    if (url.includes('/admin/media-operations/approvals')) {
+      return this.i18n.t('approvalQueue');
+    }
+
+    if (url.includes('/admin/media-operations/notifications')) {
+      return this.i18n.t('notificationCenter');
+    }
+
+    if (url.includes('/admin/media-operations/reminders')) {
+      return this.i18n.t('reminders');
+    }
+
     if (url.includes('/admin/media-operations/reports')) {
       return this.i18n.t('mediaOperationsReports');
     }

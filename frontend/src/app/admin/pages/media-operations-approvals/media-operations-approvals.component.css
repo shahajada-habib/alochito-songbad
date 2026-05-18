@@ -1,0 +1,8 @@
+@import '../media-operations-vendors/media-operations-vendors.component.css';
+.approval-pending,
+.approval-submitted,
+.approval-unpaid,
+.approval-partial,
+.approval-draft,
+.approval-approved,
+.approval-scheduled { background: #fff7e6; color: #9a5b00; }

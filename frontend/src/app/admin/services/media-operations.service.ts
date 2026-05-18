@@ -32,8 +32,11 @@ export type PurchaseRequestPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type PurchaseRequestStatus = 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 export type PurchaseOrderPaymentStatus = 'UNPAID' | 'PARTIAL' | 'PAID' | 'CANCELLED';
 export type PurchaseOrderStatus = 'DRAFT' | 'PLACED' | 'RECEIVED' | 'CANCELLED';
+export type NotificationType = 'INFO' | 'WARNING' | 'SUCCESS' | 'REMINDER' | 'APPROVAL';
+export type NotificationReadStatus = 'UNREAD' | 'READ';
+export type ReminderSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 export type ActivityActionType = 'CREATED' | 'UPDATED' | 'ARCHIVED' | 'CANCELLED' | 'STATUS_CHANGED' | 'RETIRED';
-export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'departments' | 'leaveRequests' | 'staffDocuments' | 'vendors' | 'purchaseRequests' | 'purchaseOrders' | 'activityLog';
+export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets' | 'departments' | 'leaveRequests' | 'staffDocuments' | 'vendors' | 'purchaseRequests' | 'purchaseOrders' | 'approvalQueue' | 'notifications' | 'reminders' | 'activityLog';
 
 export interface MediaOperationsStaff {
   id: number;
@@ -236,6 +239,43 @@ export interface MediaOperationsPurchaseOrder {
   updatedAt: string;
 }
 
+export interface MediaOperationsApprovalItem {
+  id: string;
+  moduleName: string;
+  entityId: number;
+  title: string;
+  status: string;
+  priority: string;
+  amount: number | null;
+  dueDate: string | null;
+  createdAt: string;
+  actionLabel: string;
+}
+
+export interface MediaOperationsNotification {
+  id: number;
+  title: string;
+  message: string;
+  notificationType: NotificationType;
+  sourceModule: string;
+  sourceEntityId: number | null;
+  readStatus: NotificationReadStatus;
+  dueAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaOperationsReminder {
+  id: string;
+  moduleName: string;
+  entityId: number;
+  title: string;
+  reminderType: string;
+  dueDate: string | null;
+  severity: ReminderSeverity;
+  description: string;
+}
+
 export interface MediaOperationsActivityLog {
   id: number;
   moduleName: string;
@@ -261,6 +301,7 @@ export type StaffDocumentFormValue = Omit<MediaOperationsStaffDocument, 'id' | '
 export type VendorFormValue = Omit<MediaOperationsVendor, 'id' | 'createdAt' | 'updatedAt'>;
 export type PurchaseRequestFormValue = Omit<MediaOperationsPurchaseRequest, 'id' | 'createdAt' | 'updatedAt'>;
 export type PurchaseOrderFormValue = Omit<MediaOperationsPurchaseOrder, 'id' | 'createdAt' | 'updatedAt'>;
+export type NotificationFormValue = Omit<MediaOperationsNotification, 'id' | 'readStatus' | 'createdAt' | 'updatedAt'>;
 
 const OPERATIONS_API_URL = `${environment.apiBaseUrl}/api/admin/operations`;
 
@@ -282,6 +323,9 @@ export class MediaOperationsService {
   private readonly vendorsSignal = signal<MediaOperationsVendor[]>([]);
   private readonly purchaseRequestsSignal = signal<MediaOperationsPurchaseRequest[]>([]);
   private readonly purchaseOrdersSignal = signal<MediaOperationsPurchaseOrder[]>([]);
+  private readonly approvalQueueSignal = signal<MediaOperationsApprovalItem[]>([]);
+  private readonly notificationsSignal = signal<MediaOperationsNotification[]>([]);
+  private readonly remindersSignal = signal<MediaOperationsReminder[]>([]);
   private readonly activityLogSignal = signal<MediaOperationsActivityLog[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal('');
@@ -301,6 +345,9 @@ export class MediaOperationsService {
   readonly vendors = this.vendorsSignal.asReadonly();
   readonly purchaseRequests = this.purchaseRequestsSignal.asReadonly();
   readonly purchaseOrders = this.purchaseOrdersSignal.asReadonly();
+  readonly approvalQueue = this.approvalQueueSignal.asReadonly();
+  readonly notifications = this.notificationsSignal.asReadonly();
+  readonly reminders = this.remindersSignal.asReadonly();
   readonly activityLog = this.activityLogSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
@@ -326,6 +373,9 @@ export class MediaOperationsService {
         this.vendorsSignal.set([]);
         this.purchaseRequestsSignal.set([]);
         this.purchaseOrdersSignal.set([]);
+        this.approvalQueueSignal.set([]);
+        this.notificationsSignal.set([]);
+        this.remindersSignal.set([]);
         this.activityLogSignal.set([]);
         this.endpointErrorsSignal.set({});
       }
@@ -357,9 +407,12 @@ export class MediaOperationsService {
       vendors: this.http.get<MediaOperationsVendor[]>(`${OPERATIONS_API_URL}/vendors`).pipe(catchError(() => recover<MediaOperationsVendor>('vendors'))),
       purchaseRequests: this.http.get<MediaOperationsPurchaseRequest[]>(`${OPERATIONS_API_URL}/purchase-requests`).pipe(catchError(() => recover<MediaOperationsPurchaseRequest>('purchaseRequests'))),
       purchaseOrders: this.http.get<MediaOperationsPurchaseOrder[]>(`${OPERATIONS_API_URL}/purchase-orders`).pipe(catchError(() => recover<MediaOperationsPurchaseOrder>('purchaseOrders'))),
+      approvalQueue: this.http.get<MediaOperationsApprovalItem[]>(`${OPERATIONS_API_URL}/approval-queue`).pipe(catchError(() => recover<MediaOperationsApprovalItem>('approvalQueue'))),
+      notifications: this.http.get<MediaOperationsNotification[]>(`${OPERATIONS_API_URL}/notifications`).pipe(catchError(() => recover<MediaOperationsNotification>('notifications'))),
+      reminders: this.http.get<MediaOperationsReminder[]>(`${OPERATIONS_API_URL}/reminders`).pipe(catchError(() => recover<MediaOperationsReminder>('reminders'))),
       activityLog: this.http.get<MediaOperationsActivityLog[]>(`${OPERATIONS_API_URL}/activity-log`).pipe(catchError(() => recover<MediaOperationsActivityLog>('activityLog')))
     }).pipe(
-      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, vendors, purchaseRequests, purchaseOrders, activityLog }) => ({
+      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, vendors, purchaseRequests, purchaseOrders, approvalQueue, notifications, reminders, activityLog }) => ({
         staff: staff.map((item) => this.normalizeStaff(item)),
         assignments: assignments.map((item) => this.normalizeAssignment(item)),
         adClients: adClients.map((item) => this.normalizeAdClient(item)),
@@ -374,10 +427,13 @@ export class MediaOperationsService {
         vendors: vendors.map((item) => this.normalizeVendor(item)),
         purchaseRequests: purchaseRequests.map((item) => this.normalizePurchaseRequest(item)),
         purchaseOrders: purchaseOrders.map((item) => this.normalizePurchaseOrder(item)),
+        approvalQueue: approvalQueue.map((item) => this.normalizeApprovalItem(item)),
+        notifications: notifications.map((item) => this.normalizeNotification(item)),
+        reminders: reminders.map((item) => this.normalizeReminder(item)),
         activityLog: activityLog.map((item) => this.normalizeActivityLog(item))
       }))
     ).subscribe({
-      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, vendors, purchaseRequests, purchaseOrders, activityLog }) => {
+      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets, departments, leaveRequests, staffDocuments, vendors, purchaseRequests, purchaseOrders, approvalQueue, notifications, reminders, activityLog }) => {
         this.staffSignal.set(staff);
         this.assignmentsSignal.set(assignments);
         this.adClientsSignal.set(adClients);
@@ -392,6 +448,9 @@ export class MediaOperationsService {
         this.vendorsSignal.set(vendors);
         this.purchaseRequestsSignal.set(purchaseRequests);
         this.purchaseOrdersSignal.set(purchaseOrders);
+        this.approvalQueueSignal.set(approvalQueue);
+        this.notificationsSignal.set(notifications);
+        this.remindersSignal.set(reminders);
         this.activityLogSignal.set(activityLog);
         this.endpointErrorsSignal.set(endpointErrors);
         this.errorSignal.set('');
@@ -842,6 +901,33 @@ export class MediaOperationsService {
     );
   }
 
+  createNotification(value: NotificationFormValue): Observable<MediaOperationsNotification> {
+    this.errorSignal.set('');
+    return this.http.post<MediaOperationsNotification>(`${OPERATIONS_API_URL}/notifications`, value).pipe(
+      map((created) => this.normalizeNotification(created)),
+      tap((created) => this.notificationsSignal.update((items) => [created, ...items])),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  markNotificationRead(id: number): Observable<MediaOperationsNotification> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsNotification>(`${OPERATIONS_API_URL}/notifications/${id}/read`, {}).pipe(
+      map((updated) => this.normalizeNotification(updated)),
+      tap((updated) => this.notificationsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
+  markAllNotificationsRead(): Observable<MediaOperationsNotification[]> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsNotification[]>(`${OPERATIONS_API_URL}/notifications/mark-all-read`, {}).pipe(
+      map((items) => items.map((item) => this.normalizeNotification(item))),
+      tap((items) => this.notificationsSignal.set(items)),
+      tap(() => this.refreshActivityLog())
+    );
+  }
+
   staffName(id: number): string {
     return this.staffSignal().find((item) => item.id === id)?.name || 'Unassigned';
   }
@@ -1097,6 +1183,52 @@ export class MediaOperationsService {
       notes: purchaseOrder.notes || '',
       createdAt: purchaseOrder.createdAt || '',
       updatedAt: purchaseOrder.updatedAt || ''
+    };
+  }
+
+  private normalizeApprovalItem(item: MediaOperationsApprovalItem): MediaOperationsApprovalItem {
+    return {
+      ...item,
+      id: item.id || '',
+      moduleName: item.moduleName || '',
+      entityId: item.entityId || 0,
+      title: item.title || '',
+      status: item.status || '',
+      priority: item.priority || '',
+      amount: item.amount == null ? null : Number(item.amount),
+      dueDate: item.dueDate || null,
+      createdAt: item.createdAt || '',
+      actionLabel: item.actionLabel || ''
+    };
+  }
+
+  private normalizeNotification(notification: MediaOperationsNotification): MediaOperationsNotification {
+    return {
+      ...notification,
+      id: notification.id || 0,
+      title: notification.title || '',
+      message: notification.message || '',
+      notificationType: notification.notificationType || 'INFO',
+      sourceModule: notification.sourceModule || '',
+      sourceEntityId: notification.sourceEntityId || null,
+      readStatus: notification.readStatus || 'UNREAD',
+      dueAt: notification.dueAt || null,
+      createdAt: notification.createdAt || '',
+      updatedAt: notification.updatedAt || ''
+    };
+  }
+
+  private normalizeReminder(reminder: MediaOperationsReminder): MediaOperationsReminder {
+    return {
+      ...reminder,
+      id: reminder.id || '',
+      moduleName: reminder.moduleName || '',
+      entityId: reminder.entityId || 0,
+      title: reminder.title || '',
+      reminderType: reminder.reminderType || '',
+      dueDate: reminder.dueDate || null,
+      severity: reminder.severity || 'LOW',
+      description: reminder.description || ''
     };
   }
 

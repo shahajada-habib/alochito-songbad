@@ -1,0 +1,5 @@
+@import '../media-operations-vendors/media-operations-vendors.component.css';
+.reminder-urgent { background: #ffe8e3; color: #b42318; }
+.reminder-high { background: #fff0cc; color: #9a5b00; }
+.reminder-medium { background: #e8f1ff; color: #1e5b9d; }
+.reminder-low { background: #e7f5ee; color: #137047; }

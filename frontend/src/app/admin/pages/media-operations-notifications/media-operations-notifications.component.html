@@ -1,0 +1,113 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('notificationCenter') }}</h2>
+      <p>{{ t('notificationCenterHelp') }}</p>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="operations-btn secondary" (click)="markAllRead()" [disabled]="unreadCount() === 0">{{ t('markAllRead') }}</button>
+      <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addNotification') }}</button>
+    </div>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label>
+      <span>{{ t('readStatus') }}</span>
+      <select name="notificationFilter" [(ngModel)]="filter">
+        <option value="">{{ t('allNotifications') }}</option>
+        <option value="UNREAD">{{ t('unread') }}</option>
+        <option value="READ">{{ t('read') }}</option>
+      </select>
+    </label>
+    <div class="operations-muted">{{ unreadCount() }} {{ t('unreadNotifications') }}</div>
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ t('notificationCenter') }}</span>
+          <h3>{{ t('newNotification') }}</h3>
+          <p>{{ t('notificationFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+      <form class="operations-form" (ngSubmit)="create()">
+        <label>
+          <span>{{ t('title') }}</span>
+          <input type="text" name="notificationTitle" [(ngModel)]="form.title" [placeholder]="t('notificationTitlePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('notificationType') }}</span>
+          <select name="notificationType" [(ngModel)]="form.notificationType">
+            @for (type of types; track type) {
+              <option [value]="type">{{ typeLabel(type) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('dueAt') }}</span>
+          <input type="datetime-local" name="notificationDueAt" [(ngModel)]="form.dueAt">
+        </label>
+        <label>
+          <span>{{ t('sourceModule') }}</span>
+          <input type="text" name="notificationSourceModule" [(ngModel)]="form.sourceModule" [placeholder]="t('sourceModulePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('sourceEntityId') }}</span>
+          <input type="number" min="0" name="notificationSourceEntity" [(ngModel)]="form.sourceEntityId">
+        </label>
+        <label class="wide-field">
+          <span>{{ t('message') }}</span>
+          <textarea name="notificationMessage" rows="2" [(ngModel)]="form.message" [placeholder]="t('notificationMessagePlaceholder')"></textarea>
+        </label>
+        <div class="form-actions full-width">
+          <button type="submit" class="operations-btn primary" [disabled]="!canSaveNotification || isSaving">{{ isSaving ? t('saving') : t('saveNotification') }}</button>
+          <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('notificationCenter') }}</span>
+        <h3>{{ t('notificationList') }}</h3>
+      </div>
+      <small>{{ filteredNotifications().length }} {{ t('recordsFound') }}</small>
+    </div>
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredNotifications().length > 0) {
+      <div class="operations-list">
+        @for (notification of filteredNotifications(); track notification.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ notification.title }}</strong>
+              <span>{{ notification.message }}</span>
+              <div class="operations-meta">
+                <small>{{ t('sourceModule') }}: {{ notification.sourceModule || '-' }}</small>
+                <small>{{ t('dueAt') }}: {{ formatDate(notification.dueAt) }}</small>
+                <small>{{ t('createdAt') }}: {{ formatDate(notification.createdAt) }}</small>
+              </div>
+            </div>
+            <span class="ops-badge {{ badgeClass(notification) }}">{{ typeLabel(notification.notificationType) }} / {{ readStatusLabel(notification.readStatus) }}</span>
+            @if (notification.readStatus === 'UNREAD') {
+              <button type="button" class="operations-btn secondary compact" (click)="markRead(notification)">{{ t('markRead') }}</button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noNotificationsFound') }}</h3>
+        <p>{{ t('notificationCenterHelp') }}</p>
+      </div>
+    }
+  </section>
+</section>

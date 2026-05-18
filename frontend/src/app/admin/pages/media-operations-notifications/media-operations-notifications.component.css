@@ -1,0 +1,7 @@
+@import '../media-operations-vendors/media-operations-vendors.component.css';
+.notification-info { background: #e8f1ff; color: #1e5b9d; }
+.notification-warning,
+.notification-reminder,
+.notification-approval { background: #fff7e6; color: #9a5b00; }
+.notification-success { background: #e7f5ee; color: #137047; }
+.read { opacity: 0.7; }

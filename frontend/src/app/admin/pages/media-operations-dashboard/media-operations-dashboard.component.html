@@ -19,6 +19,9 @@
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/vendors">{{ t('vendorsSuppliers') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/purchase-requests">{{ t('purchaseRequests') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/purchase-orders">{{ t('purchaseOrders') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/approvals">{{ t('approvalQueue') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/notifications">{{ t('notificationCenter') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/reminders">{{ t('reminders') }}</button>
         <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/reports">{{ t('reports') }}</button>
       </div>
     </div>
@@ -206,7 +209,93 @@
         <small>{{ t('placedPurchaseOrdersHint') }}</small>
       </div>
     </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('approvalStatMark') }}</span>
+      <div>
+        <strong>{{ approvalQueueCount() }}</strong>
+        <span>{{ t('approvalQueue') }}</span>
+        <small>{{ t('approvalQueueHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('notificationStatMark') }}</span>
+      <div>
+        <strong>{{ unreadNotificationCount() }}</strong>
+        <span>{{ t('unreadNotifications') }}</span>
+        <small>{{ t('unreadNotificationsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('reminderStatMark') }}</span>
+      <div>
+        <strong>{{ urgentReminderCount() }}</strong>
+        <span>{{ t('urgentReminders') }}</span>
+        <small>{{ t('urgentRemindersHint') }}</small>
+      </div>
+    </article>
   </div>
+
+  <section class="cms-panel operations-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('notificationCenter') }}</span>
+        <h3>{{ t('dashboardNotifications') }}</h3>
+        <p>{{ t('notificationCenterHelp') }}</p>
+      </div>
+      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/notifications">{{ t('viewAllNotifications') }}</button>
+    </div>
+    @if (recentNotifications().length > 0) {
+      <div class="activity-list">
+        @for (notification of recentNotifications(); track notification.id) {
+          <article class="activity-row">
+            <span class="ops-badge">{{ notification.notificationType }}</span>
+            <div class="activity-main">
+              <strong>{{ notification.title }}</strong>
+              <span>{{ notification.message }}</span>
+            </div>
+            <small>{{ notification.readStatus }}</small>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noNotificationsFound') }}</h3>
+        <p>{{ t('notificationCenterHelp') }}</p>
+      </div>
+    }
+  </section>
+
+  <section class="cms-panel operations-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('reminders') }}</span>
+        <h3>{{ t('dashboardReminders') }}</h3>
+        <p>{{ t('remindersHelp') }}</p>
+      </div>
+      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/reminders">{{ t('viewAllReminders') }}</button>
+    </div>
+    @if (recentReminders().length > 0) {
+      <div class="activity-list">
+        @for (reminder of recentReminders(); track reminder.id) {
+          <article class="activity-row">
+            <span class="ops-badge">{{ reminder.severity }}</span>
+            <div class="activity-main">
+              <strong>{{ reminder.title }}</strong>
+              <span>{{ reminder.moduleName }} &middot; {{ reminder.description }}</span>
+            </div>
+            <small>{{ formatReminderDate(reminder.dueDate) }}</small>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noRemindersFound') }}</h3>
+        <p>{{ t('remindersHelp') }}</p>
+      </div>
+    }
+  </section>
 
   <section class="cms-panel operations-panel">
     <div class="operations-section-head">
