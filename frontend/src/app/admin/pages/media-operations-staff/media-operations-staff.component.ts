@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
@@ -12,13 +12,14 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './media-operations-staff.component.html',
   styleUrl: './media-operations-staff.component.css'
 })
-export class MediaOperationsStaffComponent {
+export class MediaOperationsStaffComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   protected readonly staff = this.operations.staff;
   protected searchTerm = '';
   protected statusFilter: StaffStatus | '' = '';
   protected editingId: number | null = null;
+  protected isFormOpen = false;
   protected form: StaffFormValue = this.emptyForm();
   protected editForm: StaffFormValue = this.emptyForm();
 
@@ -36,6 +37,10 @@ export class MediaOperationsStaffComponent {
 
   constructor(protected readonly i18n: AdminTranslationService) {}
 
+  ngOnInit(): void {
+    this.closeForm();
+  }
+
   protected t(key: TranslationKey): string {
     return this.i18n.t(key);
   }
@@ -48,18 +53,42 @@ export class MediaOperationsStaffComponent {
     return status === 'ACTIVE' ? 'staff-active' : 'staff-inactive';
   }
 
+  protected get isEditing(): boolean {
+    return this.editingId !== null;
+  }
+
+  protected get canSaveStaff(): boolean {
+    const value = this.isEditing ? this.editForm : this.form;
+    return !!value.name.trim() && !!value.designation.trim();
+  }
+
+  protected openCreate(): void {
+    this.editingId = null;
+    this.form = this.emptyForm();
+    this.isFormOpen = true;
+  }
+
+  protected closeForm(): void {
+    this.isFormOpen = false;
+    this.editingId = null;
+    this.form = this.emptyForm();
+    this.editForm = this.emptyForm();
+  }
+
   protected create(): void {
-    if (!this.form.name.trim() || !this.form.designation.trim()) {
+    if (!this.canSaveStaff) {
       return;
     }
 
     this.operations.createStaff(this.form);
     this.form = this.emptyForm();
+    this.isFormOpen = false;
     this.toast.success(this.t('createdSuccessfully'));
   }
 
   protected startEdit(member: MediaOperationsStaff): void {
     this.editingId = member.id;
+    this.isFormOpen = true;
     this.editForm = {
       name: member.name,
       designation: member.designation,
@@ -72,21 +101,37 @@ export class MediaOperationsStaffComponent {
   }
 
   protected saveEdit(id: number): void {
+    if (!this.canSaveStaff) {
+      return;
+    }
+
     this.operations.updateStaff(id, this.editForm);
-    this.cancelEdit();
+    this.closeForm();
     this.toast.success(this.t('updatedSuccessfully'));
   }
 
   protected cancelEdit(): void {
-    this.editingId = null;
-    this.editForm = this.emptyForm();
+    this.closeForm();
+  }
+
+  protected formatDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value || '-';
+    }
+
+    return new Intl.DateTimeFormat(this.i18n.language() === 'bn' ? 'bn-BD' : 'en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(date);
   }
 
   private emptyForm(): StaffFormValue {
     return {
       name: '',
       designation: '',
-      department: 'News Desk',
+      department: '',
       phone: '',
       email: '',
       joiningDate: new Date().toISOString().slice(0, 10),

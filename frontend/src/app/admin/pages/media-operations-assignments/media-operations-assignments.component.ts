@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
@@ -18,7 +18,7 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './media-operations-assignments.component.html',
   styleUrl: './media-operations-assignments.component.css'
 })
-export class MediaOperationsAssignmentsComponent {
+export class MediaOperationsAssignmentsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   protected readonly staff = this.operations.staff;
@@ -26,6 +26,7 @@ export class MediaOperationsAssignmentsComponent {
   protected searchTerm = '';
   protected statusFilter: AssignmentStatus | '' = '';
   protected editingId: number | null = null;
+  protected isFormOpen = false;
   protected form: AssignmentFormValue = this.emptyForm();
   protected editForm: AssignmentFormValue = this.emptyForm();
   protected readonly priorities: AssignmentPriority[] = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
@@ -52,6 +53,10 @@ export class MediaOperationsAssignmentsComponent {
 
   constructor(protected readonly i18n: AdminTranslationService) {}
 
+  ngOnInit(): void {
+    this.closeForm();
+  }
+
   protected t(key: TranslationKey): string {
     return this.i18n.t(key);
   }
@@ -74,18 +79,42 @@ export class MediaOperationsAssignmentsComponent {
     return `assignment-${status.toLowerCase().replaceAll('_', '-')}`;
   }
 
+  protected get isEditing(): boolean {
+    return this.editingId !== null;
+  }
+
+  protected get canSaveAssignment(): boolean {
+    const value = this.isEditing ? this.editForm : this.form;
+    return !!value.title.trim() && !!value.assignedStaffId;
+  }
+
+  protected openCreate(): void {
+    this.editingId = null;
+    this.form = this.emptyForm();
+    this.isFormOpen = true;
+  }
+
+  protected closeForm(): void {
+    this.isFormOpen = false;
+    this.editingId = null;
+    this.form = this.emptyForm();
+    this.editForm = this.emptyForm();
+  }
+
   protected create(): void {
-    if (!this.form.title.trim() || !this.form.assignedStaffId) {
+    if (!this.canSaveAssignment) {
       return;
     }
 
     this.operations.createAssignment(this.form);
     this.form = this.emptyForm();
+    this.isFormOpen = false;
     this.toast.success(this.t('createdSuccessfully'));
   }
 
   protected startEdit(assignment: MediaOperationsAssignment): void {
     this.editingId = assignment.id;
+    this.isFormOpen = true;
     this.editForm = {
       title: assignment.title,
       description: assignment.description,
@@ -100,18 +129,51 @@ export class MediaOperationsAssignmentsComponent {
   }
 
   protected saveEdit(id: number): void {
+    if (!this.canSaveAssignment) {
+      return;
+    }
+
     this.operations.updateAssignment(id, this.editForm);
-    this.cancelEdit();
+    this.closeForm();
     this.toast.success(this.t('updatedSuccessfully'));
   }
 
   protected cancelEdit(): void {
-    this.editingId = null;
-    this.editForm = this.emptyForm();
+    this.closeForm();
   }
 
   protected staffName(id: number): string {
     return this.operations.staffName(id);
+  }
+
+  protected formatDeadline(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value || '-';
+    }
+
+    if (this.i18n.language() === 'bn') {
+      const datePart = new Intl.DateTimeFormat('bn-BD', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(date);
+      const timePart = new Intl.DateTimeFormat('bn-BD', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }).format(date);
+      return `${datePart}, ${timePart}`;
+    }
+
+    return new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(date);
   }
 
   private toTitleCase(value: string): string {
@@ -127,7 +189,7 @@ export class MediaOperationsAssignmentsComponent {
       title: '',
       description: '',
       assignedStaffId: this.staff()[0]?.id ?? 0,
-      category: 'National',
+      category: '',
       location: '',
       deadline: new Date().toISOString().slice(0, 16),
       priority: 'MEDIUM',

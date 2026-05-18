@@ -1,90 +1,91 @@
 <section class="cms-page">
-  <div class="cms-heading cms-heading-row">
-    <div>
-      <span>{{ t('mediaOperations') }}</span>
+  <div class="operations-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">{{ t('mediaOperations') }}</span>
       <h2>{{ t('mediaOperationsDashboard') }}</h2>
       <p>{{ t('mediaOperationsHelp') }}</p>
+      <div class="hero-actions">
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/staff">{{ t('staffManagement') }}</button>
+        <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/assignments">{{ t('assignmentManagement') }}</button>
+      </div>
     </div>
-    <div class="cms-actions">
-      <button type="button" class="admin-btn secondary" routerLink="/admin/media-operations/staff">{{ t('staffManagement') }}</button>
-      <button type="button" class="admin-btn" routerLink="/admin/media-operations/assignments">{{ t('assignmentManagement') }}</button>
+    <div class="hero-queue">
+      <span>{{ t('todaysCoverage') }}</span>
+      <strong>{{ activeAssignmentCount() }}</strong>
+      <small>{{ t('activeAssignments') }}</small>
     </div>
   </div>
 
-  <div class="cms-stats">
-    <article>
-      <span class="stat-icon">S</span>
+  <div class="operations-stats">
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('staffStatMark') }}</span>
       <div>
         <strong>{{ activeStaffCount() }}</strong>
         <span>{{ t('activeStaff') }}</span>
-        <small>{{ t('staffManagement') }}</small>
+        <small>{{ t('staffCoverageHint') }}</small>
       </div>
     </article>
-    <article>
-      <span class="stat-icon">A</span>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('assignmentStatMark') }}</span>
       <div>
         <strong>{{ activeAssignmentCount() }}</strong>
         <span>{{ t('activeAssignments') }}</span>
-        <small>{{ t('assignmentManagement') }}</small>
+        <small>{{ t('assignmentQueueHint') }}</small>
       </div>
     </article>
-    <article>
-      <span class="stat-icon">U</span>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('urgentStatMark') }}</span>
       <div>
         <strong>{{ urgentAssignmentCount() }}</strong>
         <span>{{ t('urgentAssignments') }}</span>
-        <small>{{ t('priority') }}</small>
+        <small>{{ t('urgentAssignmentHint') }}</small>
       </div>
     </article>
-    <article>
-      <span class="stat-icon">C</span>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('completedStatMark') }}</span>
       <div>
         <strong>{{ completedAssignmentCount() }}</strong>
         <span>{{ t('completedAssignments') }}</span>
-        <small>{{ t('status') }}</small>
+        <small>{{ t('completedAssignmentHint') }}</small>
       </div>
     </article>
   </div>
 
-  <section class="cms-panel table-panel operations-panel">
-    <div class="panel-heading">
-      <h3>{{ t('recentAssignments') }}</h3>
-      <p>{{ t('assignmentManagementHelp') }}</p>
+  <section class="cms-panel operations-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('assignmentDesk') }}</span>
+        <h3>{{ t('recentAssignments') }}</h3>
+        <p>{{ t('assignmentManagementHelp') }}</p>
+      </div>
+      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assignments">{{ t('viewAllAssignments') }}</button>
     </div>
-    <table class="operations-table">
-      <thead>
-        <tr>
-          <th>{{ t('title') }}</th>
-          <th>{{ t('assignedStaff') }}</th>
-          <th>{{ t('category') }}</th>
-          <th>{{ t('deadline') }}</th>
-          <th>{{ t('priority') }}</th>
-          <th>{{ t('status') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (assignment of assignments().slice(0, 5); track assignment.id) {
-          <tr>
-            <td [attr.data-label]="t('title')" class="assignment-title-cell">
+
+    @if (recentAssignments().length > 0) {
+      <div class="assignment-list">
+        @for (assignment of recentAssignments(); track assignment.id) {
+          <article class="assignment-row">
+            <div class="assignment-main">
               <strong>{{ assignment.title }}</strong>
               <span>{{ assignment.description }}</span>
-              <small>{{ t('location') }}: {{ assignment.location }}</small>
-            </td>
-            <td [attr.data-label]="t('assignedStaff')" class="strong-cell">{{ staffName(assignment.assignedStaffId) }}</td>
-            <td [attr.data-label]="t('category')">{{ assignment.category }}</td>
-            <td [attr.data-label]="t('deadline')" class="date-cell">{{ assignment.deadline }}</td>
-            <td [attr.data-label]="t('priority')">
+              <div class="assignment-meta">
+                <small>{{ t('location') }}: {{ assignment.location }}</small>
+                <small>{{ t('assignedStaff') }}: {{ staffName(assignment.assignedStaffId) }}</small>
+                <small>{{ t('category') }}: {{ assignment.category }}</small>
+              </div>
+            </div>
+            <div class="assignment-side">
+              <small>{{ t('deadline') }}</small>
+              <strong>{{ formatDeadline(assignment.deadline) }}</strong>
+            </div>
+            <div class="assignment-badges">
               <span class="ops-badge {{ priorityClass(assignment.priority) }}">{{ priorityLabel(assignment.priority) }}</span>
-            </td>
-            <td [attr.data-label]="t('status')">
               <span class="ops-badge {{ statusClass(assignment.status) }}">{{ statusLabel(assignment.status) }}</span>
-            </td>
-          </tr>
+            </div>
+          </article>
         }
-      </tbody>
-    </table>
-
-    @if (assignments().length === 0) {
+      </div>
+    } @else {
       <div class="empty-state visible operations-empty">
         <span>0</span>
         <h3>{{ t('noAssignmentsFound') }}</h3>
