@@ -1,0 +1,193 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
+import {
+  AttendanceFormValue,
+  AttendanceShift,
+  AttendanceStatus,
+  MediaOperationsAttendance,
+  MediaOperationsService
+} from '../../services/media-operations.service';
+import { ToastService } from '../../services/toast.service';
+
+@Component({
+  selector: 'app-media-operations-attendance',
+  standalone: true,
+  imports: [FormsModule],
+  templateUrl: './media-operations-attendance.component.html',
+  styleUrl: './media-operations-attendance.component.css'
+})
+export class MediaOperationsAttendanceComponent implements OnInit {
+  private readonly operations = inject(MediaOperationsService);
+  private readonly toast = inject(ToastService);
+  protected readonly staff = this.operations.staff;
+  protected readonly attendance = this.operations.attendance;
+  protected readonly loading = this.operations.loading;
+  protected readonly error = this.operations.error;
+  protected searchTerm = '';
+  protected statusFilter: AttendanceStatus | '' = '';
+  protected editingId: number | null = null;
+  protected isFormOpen = false;
+  protected isSaving = false;
+  protected form: AttendanceFormValue = this.emptyForm();
+  protected editForm: AttendanceFormValue = this.emptyForm();
+  protected readonly shifts: AttendanceShift[] = ['MORNING', 'EVENING', 'NIGHT', 'FULL_DAY', 'OFF_DAY'];
+  protected readonly statuses: AttendanceStatus[] = ['SCHEDULED', 'PRESENT', 'ABSENT', 'LATE', 'LEAVE', 'CANCELLED'];
+
+  protected filteredAttendance(): MediaOperationsAttendance[] {
+    const search = this.searchTerm.trim().toLowerCase();
+    return this.attendance().filter((item) => {
+      const matchesSearch = !search || [
+        this.staffName(item.staffId),
+        this.shiftLabel(item.shift),
+        this.statusLabel(item.status),
+        item.dutyDate,
+        item.dutyNote
+      ].join(' ').toLowerCase().includes(search);
+      return matchesSearch && (!this.statusFilter || item.status === this.statusFilter);
+    });
+  }
+
+  constructor(protected readonly i18n: AdminTranslationService) {}
+
+  ngOnInit(): void {
+    this.closeForm();
+  }
+
+  protected t(key: TranslationKey): string {
+    return this.i18n.t(key);
+  }
+
+  protected staffName(id: number): string {
+    return this.operations.staffName(id);
+  }
+
+  protected shiftLabel(shift: AttendanceShift): string {
+    return this.t(`attendanceShift${this.toTitleCase(shift)}` as TranslationKey);
+  }
+
+  protected statusLabel(status: AttendanceStatus): string {
+    return this.t(`attendanceStatus${this.toTitleCase(status)}` as TranslationKey);
+  }
+
+  protected statusClass(status: AttendanceStatus): string {
+    return `attendance-${status.toLowerCase().replaceAll('_', '-')}`;
+  }
+
+  protected get isEditing(): boolean {
+    return this.editingId !== null;
+  }
+
+  protected get activeForm(): AttendanceFormValue {
+    return this.isEditing ? this.editForm : this.form;
+  }
+
+  protected get canSaveAttendance(): boolean {
+    const value = this.activeForm;
+    const hasValidTimes = !value.checkInTime || !value.checkOutTime || value.checkOutTime >= value.checkInTime;
+    return !!value.staffId && !!value.dutyDate && hasValidTimes;
+  }
+
+  protected openCreate(): void {
+    this.editingId = null;
+    this.form = this.emptyForm();
+    this.isFormOpen = true;
+  }
+
+  protected closeForm(): void {
+    this.isFormOpen = false;
+    this.editingId = null;
+    this.form = this.emptyForm();
+    this.editForm = this.emptyForm();
+  }
+
+  protected create(): void {
+    if (!this.canSaveAttendance || this.isSaving) {
+      return;
+    }
+
+    this.isSaving = true;
+    this.operations.createAttendance(this.form).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.closeForm();
+        this.toast.success(this.t('createdSuccessfully'));
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
+  }
+
+  protected startEdit(attendance: MediaOperationsAttendance): void {
+    this.editingId = attendance.id;
+    this.isFormOpen = true;
+    this.editForm = {
+      staffId: attendance.staffId,
+      dutyDate: attendance.dutyDate,
+      shift: attendance.shift,
+      checkInTime: attendance.checkInTime,
+      checkOutTime: attendance.checkOutTime,
+      status: attendance.status,
+      dutyNote: attendance.dutyNote
+    };
+  }
+
+  protected saveEdit(id: number): void {
+    if (!this.canSaveAttendance || this.isSaving) {
+      return;
+    }
+
+    this.isSaving = true;
+    this.operations.updateAttendance(id, this.editForm).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.closeForm();
+        this.toast.success(this.t('updatedSuccessfully'));
+      },
+      error: () => {
+        this.isSaving = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
+  }
+
+  protected formatDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value || '-';
+    }
+
+    return new Intl.DateTimeFormat(this.i18n.language() === 'bn' ? 'bn-BD' : 'en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(date);
+  }
+
+  protected formatTime(value: string): string {
+    return value || '-';
+  }
+
+  private emptyForm(): AttendanceFormValue {
+    return {
+      staffId: this.staff()[0]?.id ?? 0,
+      dutyDate: new Date().toISOString().slice(0, 10),
+      shift: 'MORNING',
+      checkInTime: '',
+      checkOutTime: '',
+      status: 'SCHEDULED',
+      dutyNote: ''
+    };
+  }
+
+  private toTitleCase(value: string): string {
+    return value
+      .toLowerCase()
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('');
+  }
+}

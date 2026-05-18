@@ -16,6 +16,11 @@ export type ExpenseCategory = 'REPORTING' | 'TRANSPORT' | 'EQUIPMENT' | 'OFFICE'
 export type ExpensePaymentMethod = 'CASH' | 'BKASH' | 'NAGAD' | 'BANK' | 'CARD' | 'OTHER';
 export type ExpenseStatus = 'DRAFT' | 'APPROVED' | 'PAID' | 'CANCELLED';
 export type InvoicePaymentStatus = 'UNPAID' | 'PARTIAL' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+export type AttendanceShift = 'MORNING' | 'EVENING' | 'NIGHT' | 'FULL_DAY' | 'OFF_DAY';
+export type AttendanceStatus = 'SCHEDULED' | 'PRESENT' | 'ABSENT' | 'LATE' | 'LEAVE' | 'CANCELLED';
+export type AssetType = 'CAMERA' | 'LAPTOP' | 'MICROPHONE' | 'MOBILE' | 'TRIPOD' | 'LIGHTING' | 'VEHICLE' | 'OFFICE_EQUIPMENT' | 'OTHER';
+export type AssetConditionStatus = 'NEW' | 'GOOD' | 'NEEDS_REPAIR' | 'DAMAGED' | 'RETIRED';
+export type AssetAvailabilityStatus = 'AVAILABLE' | 'ASSIGNED' | 'UNDER_MAINTENANCE' | 'LOST' | 'RETIRED';
 
 export interface MediaOperationsStaff {
   id: number;
@@ -106,12 +111,42 @@ export interface MediaOperationsInvoice {
   updatedAt: string;
 }
 
+export interface MediaOperationsAttendance {
+  id: number;
+  staffId: number;
+  dutyDate: string;
+  shift: AttendanceShift;
+  checkInTime: string;
+  checkOutTime: string;
+  status: AttendanceStatus;
+  dutyNote: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaOperationsAsset {
+  id: number;
+  assetName: string;
+  assetType: AssetType;
+  serialNumber: string;
+  assignedStaffId: number | null;
+  purchaseDate: string;
+  purchasePrice: number | null;
+  conditionStatus: AssetConditionStatus;
+  availabilityStatus: AssetAvailabilityStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type StaffFormValue = Omit<MediaOperationsStaff, 'id' | 'createdAt' | 'updatedAt'>;
 export type AssignmentFormValue = Omit<MediaOperationsAssignment, 'id' | 'createdAt' | 'updatedAt'>;
 export type AdClientFormValue = Omit<MediaOperationsAdClient, 'id' | 'createdAt' | 'updatedAt'>;
 export type AdBookingFormValue = Omit<MediaOperationsAdBooking, 'id' | 'createdAt' | 'updatedAt'>;
 export type ExpenseFormValue = Omit<MediaOperationsExpense, 'id' | 'createdAt' | 'updatedAt'>;
 export type InvoiceFormValue = Omit<MediaOperationsInvoice, 'id' | 'createdAt' | 'updatedAt'>;
+export type AttendanceFormValue = Omit<MediaOperationsAttendance, 'id' | 'createdAt' | 'updatedAt'>;
+export type AssetFormValue = Omit<MediaOperationsAsset, 'id' | 'createdAt' | 'updatedAt'>;
 
 const OPERATIONS_API_URL = `${environment.apiBaseUrl}/api/admin/operations`;
 
@@ -125,6 +160,8 @@ export class MediaOperationsService {
   private readonly adBookingsSignal = signal<MediaOperationsAdBooking[]>([]);
   private readonly expensesSignal = signal<MediaOperationsExpense[]>([]);
   private readonly invoicesSignal = signal<MediaOperationsInvoice[]>([]);
+  private readonly attendanceSignal = signal<MediaOperationsAttendance[]>([]);
+  private readonly assetsSignal = signal<MediaOperationsAsset[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal('');
 
@@ -134,6 +171,8 @@ export class MediaOperationsService {
   readonly adBookings = this.adBookingsSignal.asReadonly();
   readonly expenses = this.expensesSignal.asReadonly();
   readonly invoices = this.invoicesSignal.asReadonly();
+  readonly attendance = this.attendanceSignal.asReadonly();
+  readonly assets = this.assetsSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
 
@@ -149,6 +188,8 @@ export class MediaOperationsService {
         this.adBookingsSignal.set([]);
         this.expensesSignal.set([]);
         this.invoicesSignal.set([]);
+        this.attendanceSignal.set([]);
+        this.assetsSignal.set([]);
       }
     });
   }
@@ -168,24 +209,30 @@ export class MediaOperationsService {
       adClients: this.http.get<MediaOperationsAdClient[]>(`${OPERATIONS_API_URL}/ad-clients`).pipe(catchError(() => recover<MediaOperationsAdClient>())),
       adBookings: this.http.get<MediaOperationsAdBooking[]>(`${OPERATIONS_API_URL}/ad-bookings`).pipe(catchError(() => recover<MediaOperationsAdBooking>())),
       expenses: this.http.get<MediaOperationsExpense[]>(`${OPERATIONS_API_URL}/expenses`).pipe(catchError(() => recover<MediaOperationsExpense>())),
-      invoices: this.http.get<MediaOperationsInvoice[]>(`${OPERATIONS_API_URL}/invoices`).pipe(catchError(() => recover<MediaOperationsInvoice>()))
+      invoices: this.http.get<MediaOperationsInvoice[]>(`${OPERATIONS_API_URL}/invoices`).pipe(catchError(() => recover<MediaOperationsInvoice>())),
+      attendance: this.http.get<MediaOperationsAttendance[]>(`${OPERATIONS_API_URL}/attendance`).pipe(catchError(() => recover<MediaOperationsAttendance>())),
+      assets: this.http.get<MediaOperationsAsset[]>(`${OPERATIONS_API_URL}/assets`).pipe(catchError(() => recover<MediaOperationsAsset>()))
     }).pipe(
-      map(({ staff, assignments, adClients, adBookings, expenses, invoices }) => ({
+      map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets }) => ({
         staff: staff.map((item) => this.normalizeStaff(item)),
         assignments: assignments.map((item) => this.normalizeAssignment(item)),
         adClients: adClients.map((item) => this.normalizeAdClient(item)),
         adBookings: adBookings.map((item) => this.normalizeAdBooking(item)),
         expenses: expenses.map((item) => this.normalizeExpense(item)),
-        invoices: invoices.map((item) => this.normalizeInvoice(item))
+        invoices: invoices.map((item) => this.normalizeInvoice(item)),
+        attendance: attendance.map((item) => this.normalizeAttendance(item)),
+        assets: assets.map((item) => this.normalizeAsset(item))
       }))
     ).subscribe({
-      next: ({ staff, assignments, adClients, adBookings, expenses, invoices }) => {
+      next: ({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets }) => {
         this.staffSignal.set(staff);
         this.assignmentsSignal.set(assignments);
         this.adClientsSignal.set(adClients);
         this.adBookingsSignal.set(adBookings);
         this.expensesSignal.set(expenses);
         this.invoicesSignal.set(invoices);
+        this.attendanceSignal.set(attendance);
+        this.assetsSignal.set(assets);
         this.errorSignal.set(hadLoadError ? 'Some Media Operations data could not be loaded.' : '');
         this.loadingSignal.set(false);
       },
@@ -316,6 +363,46 @@ export class MediaOperationsService {
     );
   }
 
+  createAttendance(value: AttendanceFormValue): Observable<MediaOperationsAttendance> {
+    this.errorSignal.set('');
+
+    return this.http.post<MediaOperationsAttendance>(`${OPERATIONS_API_URL}/attendance`, value).pipe(
+      map((created) => this.normalizeAttendance(created)),
+      tap((created) => this.attendanceSignal.update((items) => [created, ...items]))
+    );
+  }
+
+  updateAttendance(id: number, value: AttendanceFormValue): Observable<MediaOperationsAttendance> {
+    this.errorSignal.set('');
+
+    return this.http.put<MediaOperationsAttendance>(`${OPERATIONS_API_URL}/attendance/${id}`, value).pipe(
+      map((updated) => this.normalizeAttendance(updated)),
+      tap((updated) => this.attendanceSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
+  createAsset(value: AssetFormValue): Observable<MediaOperationsAsset> {
+    this.errorSignal.set('');
+
+    return this.http.post<MediaOperationsAsset>(`${OPERATIONS_API_URL}/assets`, value).pipe(
+      map((created) => this.normalizeAsset(created)),
+      tap((created) => this.assetsSignal.update((items) => [created, ...items]))
+    );
+  }
+
+  updateAsset(id: number, value: AssetFormValue): Observable<MediaOperationsAsset> {
+    this.errorSignal.set('');
+
+    return this.http.put<MediaOperationsAsset>(`${OPERATIONS_API_URL}/assets/${id}`, value).pipe(
+      map((updated) => this.normalizeAsset(updated)),
+      tap((updated) => this.assetsSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
   staffName(id: number): string {
     return this.staffSignal().find((item) => item.id === id)?.name || 'Unassigned';
   }
@@ -425,6 +512,38 @@ export class MediaOperationsService {
       notes: invoice.notes || '',
       createdAt: invoice.createdAt || '',
       updatedAt: invoice.updatedAt || ''
+    };
+  }
+
+  private normalizeAttendance(attendance: MediaOperationsAttendance): MediaOperationsAttendance {
+    return {
+      ...attendance,
+      staffId: attendance.staffId || 0,
+      dutyDate: attendance.dutyDate || '',
+      shift: attendance.shift || 'MORNING',
+      checkInTime: attendance.checkInTime || '',
+      checkOutTime: attendance.checkOutTime || '',
+      status: attendance.status || 'SCHEDULED',
+      dutyNote: attendance.dutyNote || '',
+      createdAt: attendance.createdAt || '',
+      updatedAt: attendance.updatedAt || ''
+    };
+  }
+
+  private normalizeAsset(asset: MediaOperationsAsset): MediaOperationsAsset {
+    return {
+      ...asset,
+      assetName: asset.assetName || '',
+      assetType: asset.assetType || 'OTHER',
+      serialNumber: asset.serialNumber || '',
+      assignedStaffId: asset.assignedStaffId || null,
+      purchaseDate: asset.purchaseDate || '',
+      purchasePrice: asset.purchasePrice == null ? null : Number(asset.purchasePrice),
+      conditionStatus: asset.conditionStatus || 'GOOD',
+      availabilityStatus: asset.availabilityStatus || 'AVAILABLE',
+      notes: asset.notes || '',
+      createdAt: asset.createdAt || '',
+      updatedAt: asset.updatedAt || ''
     };
   }
 }

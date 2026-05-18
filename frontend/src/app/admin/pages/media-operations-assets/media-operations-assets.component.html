@@ -1,0 +1,150 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('assetEquipmentManagement') }}</h2>
+      <p>{{ t('assetEquipmentManagementHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addAsset') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchAssetsLabel') }}</span>
+      <input type="search" name="assetSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAssets')">
+    </label>
+    <label>
+      <span>{{ t('availabilityStatus') }}</span>
+      <select name="assetAvailabilityFilter" [(ngModel)]="availabilityFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of availabilityStatuses; track status) {
+          <option [value]="status">{{ availabilityLabel(status) }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('assetDesk') }}</span>
+        <h3>{{ t('assetList') }}</h3>
+      </div>
+      <small>{{ filteredAssets().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredAssets().length > 0) {
+      <div class="operations-list">
+        @for (asset of filteredAssets(); track asset.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ asset.assetName }}</strong>
+              <span>{{ assetTypeLabel(asset.assetType) }}</span>
+              <div class="operations-meta">
+                <small>{{ t('serialNumber') }}: {{ asset.serialNumber || '-' }}</small>
+                <small>{{ t('assignedStaff') }}: {{ staffName(asset.assignedStaffId) }}</small>
+                <small>{{ t('conditionStatus') }}: {{ conditionLabel(asset.conditionStatus) }}</small>
+                @if (asset.notes) {
+                  <small>{{ t('notes') }}: {{ asset.notes }}</small>
+                }
+              </div>
+            </div>
+            <div class="operations-side">
+              <small>{{ t('purchaseDate') }}</small>
+              <strong>{{ formatDate(asset.purchaseDate) }}</strong>
+            </div>
+            <div class="operations-side">
+              <small>{{ t('purchasePrice') }}</small>
+              <strong>{{ formatMoney(asset.purchasePrice) }}</strong>
+            </div>
+            <span class="ops-badge {{ availabilityClass(asset.availabilityStatus) }}">{{ availabilityLabel(asset.availabilityStatus) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(asset)">{{ t('editAsset') }}</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAssetsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editAsset') : t('addAsset') }}</span>
+          <h3>{{ isEditing ? t('editAsset') : t('newAsset') }}</h3>
+          <p>{{ t('assetFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+        <label>
+          <span>{{ t('assetName') }}</span>
+          <input type="text" name="assetName" [(ngModel)]="activeForm.assetName" [placeholder]="t('assetNamePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('assetType') }}</span>
+          <select name="assetType" [(ngModel)]="activeForm.assetType">
+            @for (type of assetTypes; track type) {
+              <option [value]="type">{{ assetTypeLabel(type) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('serialNumber') }}</span>
+          <input type="text" name="serialNumber" [(ngModel)]="activeForm.serialNumber" [placeholder]="t('serialNumberPlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('assignedStaffOptional') }}</span>
+          <select name="assignedStaffId" [(ngModel)]="activeForm.assignedStaffId">
+            <option [ngValue]="null">{{ t('noLinkedBooking') }}</option>
+            @for (member of staff(); track member.id) {
+              <option [ngValue]="member.id">{{ member.name }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('purchaseDate') }}</span>
+          <input type="date" name="purchaseDate" [(ngModel)]="activeForm.purchaseDate">
+        </label>
+        <label>
+          <span>{{ t('purchasePrice') }}</span>
+          <input type="number" min="0" step="0.01" name="purchasePrice" [(ngModel)]="activeForm.purchasePrice" [placeholder]="t('pricePlaceholder')">
+        </label>
+        <label>
+          <span>{{ t('conditionStatus') }}</span>
+          <select name="conditionStatus" [(ngModel)]="activeForm.conditionStatus">
+            @for (status of conditionStatuses; track status) {
+              <option [value]="status">{{ conditionLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          <span>{{ t('availabilityStatus') }}</span>
+          <select name="availabilityStatus" [(ngModel)]="activeForm.availabilityStatus">
+            @for (status of availabilityStatuses; track status) {
+              <option [value]="status">{{ availabilityLabel(status) }}</option>
+            }
+          </select>
+        </label>
+        <label class="wide-field">
+          <span>{{ t('notes') }}</span>
+          <textarea name="assetNotes" rows="2" [(ngModel)]="activeForm.notes" [placeholder]="t('assetNotesPlaceholder')"></textarea>
+        </label>
+        <div class="form-actions full-width">
+          <button type="submit" class="operations-btn primary" [disabled]="!canSaveAsset || isSaving">{{ isSaving ? t('saving') : t('saveAsset') }}</button>
+          <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+        </div>
+      </form>
+    </section>
+  }
+</section>

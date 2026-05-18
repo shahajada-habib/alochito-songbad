@@ -142,6 +142,16 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/media-operations-invoices/media-operations-invoices.component').then((m) => m.MediaOperationsInvoicesComponent)
       },
       {
+        path: 'media-operations/attendance',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-attendance/media-operations-attendance.component').then((m) => m.MediaOperationsAttendanceComponent)
+      },
+      {
+        path: 'media-operations/assets',
+        data: { roles: ['admin', 'editor'] },
+        loadComponent: () => import('./admin/pages/media-operations-assets/media-operations-assets.component').then((m) => m.MediaOperationsAssetsComponent)
+      },
+      {
         path: 'homepage-customize',
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/pages/homepage-customize/homepage-customize.component').then((m) => m.HomepageCustomizeComponent)

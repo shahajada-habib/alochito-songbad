@@ -102,6 +102,14 @@ export class AdminLayoutComponent {
       return this.i18n.t('invoicePaymentStatus');
     }
 
+    if (url.includes('/admin/media-operations/attendance')) {
+      return this.i18n.t('attendanceDutyRoster');
+    }
+
+    if (url.includes('/admin/media-operations/assets')) {
+      return this.i18n.t('assetEquipmentManagement');
+    }
+
     if (url.includes('/admin/media-operations')) {
       return this.i18n.t('mediaOperations');
     }

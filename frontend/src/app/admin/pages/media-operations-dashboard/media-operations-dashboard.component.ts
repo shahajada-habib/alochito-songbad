@@ -27,6 +27,8 @@ export class MediaOperationsDashboardComponent {
   protected readonly adBookings = this.operations.adBookings;
   protected readonly expenses = this.operations.expenses;
   protected readonly invoices = this.operations.invoices;
+  protected readonly attendance = this.operations.attendance;
+  protected readonly assets = this.operations.assets;
   protected readonly loading = this.operations.loading;
   protected readonly error = this.operations.error;
 
@@ -67,6 +69,20 @@ export class MediaOperationsDashboardComponent {
   );
   protected readonly totalInvoiceAmount = computed(() =>
     this.invoices().filter((item) => item.paymentStatus !== 'CANCELLED').reduce((sum, item) => sum + item.amount, 0)
+  );
+  protected readonly todayScheduledDutyCount = computed(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.attendance().filter((item) => item.dutyDate === today && item.status !== 'CANCELLED').length;
+  });
+  protected readonly presentTodayCount = computed(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.attendance().filter((item) => item.dutyDate === today && item.status === 'PRESENT').length;
+  });
+  protected readonly availableAssetCount = computed(() =>
+    this.assets().filter((item) => item.availabilityStatus === 'AVAILABLE').length
+  );
+  protected readonly assignedAssetCount = computed(() =>
+    this.assets().filter((item) => item.availabilityStatus === 'ASSIGNED').length
   );
   protected readonly recentAssignments = computed(() => this.assignments().slice(0, 5));
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));

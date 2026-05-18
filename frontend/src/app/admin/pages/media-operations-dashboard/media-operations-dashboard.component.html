@@ -11,6 +11,8 @@
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-bookings">{{ t('adBookingsCampaigns') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/expenses">{{ t('expenseTracking') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/invoices">{{ t('invoicePaymentStatus') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/attendance">{{ t('attendanceDutyRoster') }}</button>
+        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assets">{{ t('assetEquipmentManagement') }}</button>
       </div>
     </div>
     <div class="hero-queue">
@@ -107,6 +109,38 @@
         <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
         <span>{{ t('totalInvoiceAmount') }}</span>
         <small>{{ t('totalInvoiceAmountHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('attendanceStatMark') }}</span>
+      <div>
+        <strong>{{ todayScheduledDutyCount() }}</strong>
+        <span>{{ t('todayScheduledDuties') }}</span>
+        <small>{{ t('todayScheduledDutiesHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('presentStatMark') }}</span>
+      <div>
+        <strong>{{ presentTodayCount() }}</strong>
+        <span>{{ t('presentToday') }}</span>
+        <small>{{ t('presentTodayHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('availableAssetStatMark') }}</span>
+      <div>
+        <strong>{{ availableAssetCount() }}</strong>
+        <span>{{ t('availableAssets') }}</span>
+        <small>{{ t('availableAssetsHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat">
+      <span class="stat-mark">{{ t('assignedAssetStatMark') }}</span>
+      <div>
+        <strong>{{ assignedAssetCount() }}</strong>
+        <span>{{ t('assignedAssets') }}</span>
+        <small>{{ t('assignedAssetsHint') }}</small>
       </div>
     </article>
   </div>

@@ -1,0 +1,136 @@
+<section class="cms-page operations-page">
+  <div class="operations-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('attendanceDutyRoster') }}</h2>
+      <p>{{ t('attendanceDutyRosterHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn primary" (click)="openCreate()">{{ t('addAttendance') }}</button>
+  </div>
+
+  <section class="cms-panel operations-toolbar">
+    <label class="search-field">
+      <span>{{ t('searchAttendanceLabel') }}</span>
+      <input type="search" name="attendanceSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAttendance')">
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="attendanceStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  <section class="cms-panel operations-list-panel">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('dutyDesk') }}</span>
+        <h3>{{ t('attendanceList') }}</h3>
+      </div>
+      <small>{{ filteredAttendance().length }} {{ t('recordsFound') }}</small>
+    </div>
+
+    @if (error()) {
+      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
+    } @else if (loading()) {
+      <div class="operations-muted">{{ t('operationsLoading') }}</div>
+    } @else if (filteredAttendance().length > 0) {
+      <div class="operations-list">
+        @for (record of filteredAttendance(); track record.id) {
+          <article class="operations-card">
+            <div class="operations-main">
+              <strong>{{ staffName(record.staffId) }}</strong>
+              <span>{{ shiftLabel(record.shift) }}</span>
+              <div class="operations-meta">
+                <small>{{ t('checkInTime') }}: {{ formatTime(record.checkInTime) }}</small>
+                <small>{{ t('checkOutTime') }}: {{ formatTime(record.checkOutTime) }}</small>
+                @if (record.dutyNote) {
+                  <small>{{ t('dutyNote') }}: {{ record.dutyNote }}</small>
+                }
+              </div>
+            </div>
+            <div class="operations-side">
+              <small>{{ t('dutyDate') }}</small>
+              <strong>{{ formatDate(record.dutyDate) }}</strong>
+            </div>
+            <span class="ops-badge {{ statusClass(record.status) }}">{{ statusLabel(record.status) }}</span>
+            <button type="button" class="operations-btn secondary compact" (click)="startEdit(record)">{{ t('editAttendance') }}</button>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAttendanceFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
+  </section>
+
+  @if (isFormOpen) {
+    <section class="cms-panel operations-form-panel">
+      <div class="form-panel-head">
+        <div>
+          <span>{{ isEditing ? t('editAttendance') : t('addAttendance') }}</span>
+          <h3>{{ isEditing ? t('editAttendance') : t('newAttendance') }}</h3>
+          <p>{{ t('attendanceFormHelp') }}</p>
+        </div>
+        <button type="button" class="operations-btn ghost" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+      </div>
+
+      @if (staff().length === 0) {
+        <div class="operations-alert">{{ t('staffRequiredForAttendance') }}</div>
+      } @else {
+        <form class="operations-form" (ngSubmit)="isEditing ? saveEdit(editingId ?? 0) : create()">
+          <label>
+            <span>{{ t('assignedStaff') }}</span>
+            <select name="attendanceStaff" [(ngModel)]="activeForm.staffId">
+              @for (member of staff(); track member.id) {
+                <option [value]="member.id">{{ member.name }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('dutyDate') }}</span>
+            <input type="date" name="dutyDate" [(ngModel)]="activeForm.dutyDate">
+          </label>
+          <label>
+            <span>{{ t('shift') }}</span>
+            <select name="attendanceShift" [(ngModel)]="activeForm.shift">
+              @for (shift of shifts; track shift) {
+                <option [value]="shift">{{ shiftLabel(shift) }}</option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>{{ t('checkInTime') }}</span>
+            <input type="time" name="checkInTime" [(ngModel)]="activeForm.checkInTime">
+          </label>
+          <label>
+            <span>{{ t('checkOutTime') }}</span>
+            <input type="time" name="checkOutTime" [(ngModel)]="activeForm.checkOutTime">
+          </label>
+          <label>
+            <span>{{ t('status') }}</span>
+            <select name="attendanceStatus" [(ngModel)]="activeForm.status">
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ statusLabel(status) }}</option>
+              }
+            </select>
+          </label>
+          <label class="wide-field">
+            <span>{{ t('dutyNote') }}</span>
+            <textarea name="dutyNote" rows="2" [(ngModel)]="activeForm.dutyNote" [placeholder]="t('dutyNotePlaceholder')"></textarea>
+          </label>
+          <div class="form-actions full-width">
+            <button type="submit" class="operations-btn primary" [disabled]="!canSaveAttendance || isSaving">{{ isSaving ? t('saving') : t('saveAttendance') }}</button>
+            <button type="button" class="operations-btn secondary" (click)="closeForm()">{{ t('cancelEdit') }}</button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</section>
