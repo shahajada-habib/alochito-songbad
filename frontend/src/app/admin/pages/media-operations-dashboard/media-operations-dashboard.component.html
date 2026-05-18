@@ -13,6 +13,7 @@
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/invoices">{{ t('invoicePaymentStatus') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/attendance">{{ t('attendanceDutyRoster') }}</button>
         <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assets">{{ t('assetEquipmentManagement') }}</button>
+        <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/reports">{{ t('reports') }}</button>
       </div>
     </div>
     <div class="hero-queue">
@@ -109,6 +110,14 @@
         <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
         <span>{{ t('totalInvoiceAmount') }}</span>
         <small>{{ t('totalInvoiceAmountHint') }}</small>
+      </div>
+    </article>
+    <article class="operations-stat urgent-stat">
+      <span class="stat-mark">{{ t('pendingPaymentStatMark') }}</span>
+      <div>
+        <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
+        <span>{{ t('pendingPaymentAmount') }}</span>
+        <small>{{ t('pendingPaymentAmountHint') }}</small>
       </div>
     </article>
     <article class="operations-stat">

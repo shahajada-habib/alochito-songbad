@@ -63,6 +63,9 @@
             </div>
             <span class="ops-badge {{ availabilityClass(asset.availabilityStatus) }}">{{ availabilityLabel(asset.availabilityStatus) }}</span>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(asset)">{{ t('editAsset') }}</button>
+            @if (asset.availabilityStatus !== 'RETIRED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(asset)">{{ t('retire') }}</button>
+            }
           </article>
         }
       </div>

@@ -54,6 +54,16 @@ public class OperationsAttendanceService {
                 });
     }
 
+    public Optional<OperationsAttendanceResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations attendance");
+
+        return attendanceRepository.findById(id)
+                .map((attendance) -> {
+                    attendance.setStatus(OperationsAttendanceStatus.CANCELLED);
+                    return toResponse(attendanceRepository.save(attendance));
+                });
+    }
+
     private void applyRequest(OperationsAttendance attendance, OperationsAttendanceRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

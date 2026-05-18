@@ -52,6 +52,16 @@ public class OperationsExpenseService {
                 });
     }
 
+    public Optional<OperationsExpenseResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations expenses");
+
+        return expenseRepository.findById(id)
+                .map((expense) -> {
+                    expense.setStatus(OperationsExpenseStatus.CANCELLED);
+                    return toResponse(expenseRepository.save(expense));
+                });
+    }
+
     private void applyRequest(OperationsExpense expense, OperationsExpenseRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

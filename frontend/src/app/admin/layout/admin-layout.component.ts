@@ -110,6 +110,10 @@ export class AdminLayoutComponent {
       return this.i18n.t('assetEquipmentManagement');
     }
 
+    if (url.includes('/admin/media-operations/reports')) {
+      return this.i18n.t('mediaOperationsReports');
+    }
+
     if (url.includes('/admin/media-operations')) {
       return this.i18n.t('mediaOperations');
     }

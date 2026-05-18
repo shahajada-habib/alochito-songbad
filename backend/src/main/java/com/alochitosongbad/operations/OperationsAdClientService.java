@@ -51,6 +51,16 @@ public class OperationsAdClientService {
                 });
     }
 
+    public Optional<OperationsAdClientResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations ad clients");
+
+        return adClientRepository.findById(id)
+                .map((adClient) -> {
+                    adClient.setStatus(OperationsAdClientStatus.INACTIVE);
+                    return toResponse(adClientRepository.save(adClient));
+                });
+    }
+
     private void applyRequest(OperationsAdClient adClient, OperationsAdClientRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

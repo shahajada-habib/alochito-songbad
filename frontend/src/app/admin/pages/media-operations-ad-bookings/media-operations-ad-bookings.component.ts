@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import {
   AdBookingFormValue,
   AdPaymentStatus,
@@ -23,10 +24,11 @@ import { ToastService } from '../../services/toast.service';
 export class MediaOperationsAdBookingsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   protected readonly adClients = this.operations.adClients;
   protected readonly adBookings = this.operations.adBookings;
   protected readonly loading = this.operations.loading;
-  protected readonly error = this.operations.error;
+  protected readonly error = () => this.operations.errorFor('adBookings');
   protected searchTerm = '';
   protected publishStatusFilter: AdPublishStatus | '' = '';
   protected editingId: number | null = null;
@@ -163,6 +165,23 @@ export class MediaOperationsAdBookingsComponent implements OnInit {
         this.isSaving = false;
         this.toast.error(this.t('actionFailed'));
       }
+    });
+  }
+
+  protected async archive(adBooking: MediaOperationsAdBooking): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.t('confirmArchiveTitle'),
+      message: this.t('confirmCancelMessage'),
+      confirmText: this.t('cancelRecord'),
+      cancelText: this.t('cancel')
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    this.operations.archiveAdBooking(adBooking.id).subscribe({
+      next: () => this.toast.success(this.t('updatedSuccessfully')),
+      error: () => this.toast.error(this.t('actionFailed'))
     });
   }
 

@@ -1,0 +1,96 @@
+<section class="cms-page reports-page">
+  <div class="reports-heading">
+    <div>
+      <span>{{ t('mediaOperations') }}</span>
+      <h2>{{ t('mediaOperationsReports') }}</h2>
+      <p>{{ t('mediaOperationsReportsHelp') }}</p>
+    </div>
+    <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations">{{ t('backToMediaOperations') }}</button>
+  </div>
+
+  @if (loading()) {
+    <div class="operations-muted">{{ t('operationsLoading') }}</div>
+  }
+
+  <section class="reports-section">
+    <div class="reports-section-head">
+      <span>{{ t('operationsOverview') }}</span>
+      <h3>{{ t('coreOperations') }}</h3>
+    </div>
+    <div class="reports-grid">
+      <article class="report-card">
+        <span>{{ t('staffCount') }}</span>
+        <strong>{{ staffCount() }}</strong>
+        @if (sectionError('staff')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('activeAssignments') }}</span>
+        <strong>{{ activeAssignments() }}</strong>
+        @if (sectionError('assignments')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('todayScheduledDuties') }}</span>
+        <strong>{{ todayScheduledDuties() }}</strong>
+        @if (sectionError('attendance')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('presentToday') }}</span>
+        <strong>{{ presentToday() }}</strong>
+        @if (sectionError('attendance')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+    </div>
+  </section>
+
+  <section class="reports-section">
+    <div class="reports-section-head">
+      <span>{{ t('campaignDesk') }}</span>
+      <h3>{{ t('commercialSnapshot') }}</h3>
+    </div>
+    <div class="reports-grid">
+      <article class="report-card">
+        <span>{{ t('runningAdBookings') }}</span>
+        <strong>{{ runningAdBookings() }}</strong>
+        @if (sectionError('adBookings')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('unpaidInvoices') }}</span>
+        <strong>{{ unpaidInvoices() }}</strong>
+        @if (sectionError('invoices')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('totalInvoiceAmount') }}</span>
+        <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
+        @if (sectionError('invoices')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('pendingPaymentAmount') }}</span>
+        <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
+        @if (sectionError('invoices')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+    </div>
+  </section>
+
+  <section class="reports-section">
+    <div class="reports-section-head">
+      <span>{{ t('assetDesk') }}</span>
+      <h3>{{ t('resourcesSnapshot') }}</h3>
+    </div>
+    <div class="reports-grid">
+      <article class="report-card">
+        <span>{{ t('monthlyExpenses') }}</span>
+        <strong>{{ formatMoney(monthlyExpenses()) }}</strong>
+        @if (sectionError('expenses')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('availableAssets') }}</span>
+        <strong>{{ availableAssets() }}</strong>
+        @if (sectionError('assets')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('assignedAssets') }}</span>
+        <strong>{{ assignedAssets() }}</strong>
+        @if (sectionError('assets')) { <small>{{ t('sectionLoadError') }}</small> }
+      </article>
+    </div>
+  </section>
+</section>

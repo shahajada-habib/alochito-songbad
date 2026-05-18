@@ -55,6 +55,17 @@ public class OperationsAssetService {
                 });
     }
 
+    public Optional<OperationsAssetResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations assets");
+
+        return assetRepository.findById(id)
+                .map((asset) -> {
+                    asset.setAvailabilityStatus(OperationsAssetAvailabilityStatus.RETIRED);
+                    asset.setConditionStatus(OperationsAssetConditionStatus.RETIRED);
+                    return toResponse(assetRepository.save(asset));
+                });
+    }
+
     private void applyRequest(OperationsAsset asset, OperationsAssetRequestDto request, Long currentId) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

@@ -58,6 +58,9 @@
             </div>
             <span class="ops-badge {{ statusClass(record.status) }}">{{ statusLabel(record.status) }}</span>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(record)">{{ t('editAttendance') }}</button>
+            @if (record.status !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(record)">{{ t('cancelRecord') }}</button>
+            }
           </article>
         }
       </div>

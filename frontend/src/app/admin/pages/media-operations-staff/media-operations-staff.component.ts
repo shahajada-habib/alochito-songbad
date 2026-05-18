@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { MediaOperationsService, MediaOperationsStaff, StaffFormValue, StaffStatus } from '../../services/media-operations.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -15,9 +16,10 @@ import { ToastService } from '../../services/toast.service';
 export class MediaOperationsStaffComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   protected readonly staff = this.operations.staff;
   protected readonly loading = this.operations.loading;
-  protected readonly error = this.operations.error;
+  protected readonly error = () => this.operations.errorFor('staff');
   protected searchTerm = '';
   protected statusFilter: StaffStatus | '' = '';
   protected editingId: number | null = null;
@@ -133,6 +135,23 @@ export class MediaOperationsStaffComponent implements OnInit {
 
   protected cancelEdit(): void {
     this.closeForm();
+  }
+
+  protected async archive(member: MediaOperationsStaff): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.t('confirmArchiveTitle'),
+      message: this.t('confirmMarkInactiveMessage'),
+      confirmText: this.t('markInactive'),
+      cancelText: this.t('cancel')
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    this.operations.archiveStaff(member.id).subscribe({
+      next: () => this.toast.success(this.t('updatedSuccessfully')),
+      error: () => this.toast.error(this.t('actionFailed'))
+    });
   }
 
   protected formatDate(value: string): string {

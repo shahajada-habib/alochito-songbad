@@ -21,6 +21,7 @@ export type AttendanceStatus = 'SCHEDULED' | 'PRESENT' | 'ABSENT' | 'LATE' | 'LE
 export type AssetType = 'CAMERA' | 'LAPTOP' | 'MICROPHONE' | 'MOBILE' | 'TRIPOD' | 'LIGHTING' | 'VEHICLE' | 'OFFICE_EQUIPMENT' | 'OTHER';
 export type AssetConditionStatus = 'NEW' | 'GOOD' | 'NEEDS_REPAIR' | 'DAMAGED' | 'RETIRED';
 export type AssetAvailabilityStatus = 'AVAILABLE' | 'ASSIGNED' | 'UNDER_MAINTENANCE' | 'LOST' | 'RETIRED';
+export type MediaOperationsEndpointKey = 'staff' | 'assignments' | 'adClients' | 'adBookings' | 'expenses' | 'invoices' | 'attendance' | 'assets';
 
 export interface MediaOperationsStaff {
   id: number;
@@ -164,6 +165,7 @@ export class MediaOperationsService {
   private readonly assetsSignal = signal<MediaOperationsAsset[]>([]);
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal('');
+  private readonly endpointErrorsSignal = signal<Partial<Record<MediaOperationsEndpointKey, string>>>({});
 
   readonly staff = this.staffSignal.asReadonly();
   readonly assignments = this.assignmentsSignal.asReadonly();
@@ -175,6 +177,7 @@ export class MediaOperationsService {
   readonly assets = this.assetsSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
+  readonly endpointErrors = this.endpointErrorsSignal.asReadonly();
 
   constructor() {
     effect(() => {
@@ -190,6 +193,7 @@ export class MediaOperationsService {
         this.invoicesSignal.set([]);
         this.attendanceSignal.set([]);
         this.assetsSignal.set([]);
+        this.endpointErrorsSignal.set({});
       }
     });
   }
@@ -197,21 +201,22 @@ export class MediaOperationsService {
   loadAll(): void {
     this.loadingSignal.set(true);
     this.errorSignal.set('');
-    let hadLoadError = false;
-    const recover = <T>() => {
-      hadLoadError = true;
+    this.endpointErrorsSignal.set({});
+    const endpointErrors: Partial<Record<MediaOperationsEndpointKey, string>> = {};
+    const recover = <T>(key: MediaOperationsEndpointKey) => {
+      endpointErrors[key] = 'Unable to load this Media Operations section.';
       return of([] as T[]);
     };
 
     forkJoin({
-      staff: this.http.get<MediaOperationsStaff[]>(`${OPERATIONS_API_URL}/staff`).pipe(catchError(() => recover<MediaOperationsStaff>())),
-      assignments: this.http.get<MediaOperationsAssignment[]>(`${OPERATIONS_API_URL}/assignments`).pipe(catchError(() => recover<MediaOperationsAssignment>())),
-      adClients: this.http.get<MediaOperationsAdClient[]>(`${OPERATIONS_API_URL}/ad-clients`).pipe(catchError(() => recover<MediaOperationsAdClient>())),
-      adBookings: this.http.get<MediaOperationsAdBooking[]>(`${OPERATIONS_API_URL}/ad-bookings`).pipe(catchError(() => recover<MediaOperationsAdBooking>())),
-      expenses: this.http.get<MediaOperationsExpense[]>(`${OPERATIONS_API_URL}/expenses`).pipe(catchError(() => recover<MediaOperationsExpense>())),
-      invoices: this.http.get<MediaOperationsInvoice[]>(`${OPERATIONS_API_URL}/invoices`).pipe(catchError(() => recover<MediaOperationsInvoice>())),
-      attendance: this.http.get<MediaOperationsAttendance[]>(`${OPERATIONS_API_URL}/attendance`).pipe(catchError(() => recover<MediaOperationsAttendance>())),
-      assets: this.http.get<MediaOperationsAsset[]>(`${OPERATIONS_API_URL}/assets`).pipe(catchError(() => recover<MediaOperationsAsset>()))
+      staff: this.http.get<MediaOperationsStaff[]>(`${OPERATIONS_API_URL}/staff`).pipe(catchError(() => recover<MediaOperationsStaff>('staff'))),
+      assignments: this.http.get<MediaOperationsAssignment[]>(`${OPERATIONS_API_URL}/assignments`).pipe(catchError(() => recover<MediaOperationsAssignment>('assignments'))),
+      adClients: this.http.get<MediaOperationsAdClient[]>(`${OPERATIONS_API_URL}/ad-clients`).pipe(catchError(() => recover<MediaOperationsAdClient>('adClients'))),
+      adBookings: this.http.get<MediaOperationsAdBooking[]>(`${OPERATIONS_API_URL}/ad-bookings`).pipe(catchError(() => recover<MediaOperationsAdBooking>('adBookings'))),
+      expenses: this.http.get<MediaOperationsExpense[]>(`${OPERATIONS_API_URL}/expenses`).pipe(catchError(() => recover<MediaOperationsExpense>('expenses'))),
+      invoices: this.http.get<MediaOperationsInvoice[]>(`${OPERATIONS_API_URL}/invoices`).pipe(catchError(() => recover<MediaOperationsInvoice>('invoices'))),
+      attendance: this.http.get<MediaOperationsAttendance[]>(`${OPERATIONS_API_URL}/attendance`).pipe(catchError(() => recover<MediaOperationsAttendance>('attendance'))),
+      assets: this.http.get<MediaOperationsAsset[]>(`${OPERATIONS_API_URL}/assets`).pipe(catchError(() => recover<MediaOperationsAsset>('assets')))
     }).pipe(
       map(({ staff, assignments, adClients, adBookings, expenses, invoices, attendance, assets }) => ({
         staff: staff.map((item) => this.normalizeStaff(item)),
@@ -233,7 +238,8 @@ export class MediaOperationsService {
         this.invoicesSignal.set(invoices);
         this.attendanceSignal.set(attendance);
         this.assetsSignal.set(assets);
-        this.errorSignal.set(hadLoadError ? 'Some Media Operations data could not be loaded.' : '');
+        this.endpointErrorsSignal.set(endpointErrors);
+        this.errorSignal.set('');
         this.loadingSignal.set(false);
       },
       error: () => {
@@ -241,6 +247,10 @@ export class MediaOperationsService {
         this.loadingSignal.set(false);
       }
     });
+  }
+
+  errorFor(key: MediaOperationsEndpointKey): string {
+    return this.endpointErrorsSignal()[key] || '';
   }
 
   createStaff(value: StaffFormValue): Observable<MediaOperationsStaff> {
@@ -256,6 +266,17 @@ export class MediaOperationsService {
     this.errorSignal.set('');
 
     return this.http.put<MediaOperationsStaff>(`${OPERATIONS_API_URL}/staff/${id}`, value).pipe(
+      map((updated) => this.normalizeStaff(updated)),
+      tap((updated) => this.staffSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
+  archiveStaff(id: number): Observable<MediaOperationsStaff> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsStaff>(`${OPERATIONS_API_URL}/staff/${id}`).pipe(
       map((updated) => this.normalizeStaff(updated)),
       tap((updated) => this.staffSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
@@ -283,6 +304,17 @@ export class MediaOperationsService {
     );
   }
 
+  archiveAssignment(id: number): Observable<MediaOperationsAssignment> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsAssignment>(`${OPERATIONS_API_URL}/assignments/${id}`).pipe(
+      map((updated) => this.normalizeAssignment(updated)),
+      tap((updated) => this.assignmentsSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
   createAdClient(value: AdClientFormValue): Observable<MediaOperationsAdClient> {
     this.errorSignal.set('');
 
@@ -296,6 +328,17 @@ export class MediaOperationsService {
     this.errorSignal.set('');
 
     return this.http.put<MediaOperationsAdClient>(`${OPERATIONS_API_URL}/ad-clients/${id}`, value).pipe(
+      map((updated) => this.normalizeAdClient(updated)),
+      tap((updated) => this.adClientsSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
+  archiveAdClient(id: number): Observable<MediaOperationsAdClient> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsAdClient>(`${OPERATIONS_API_URL}/ad-clients/${id}`).pipe(
       map((updated) => this.normalizeAdClient(updated)),
       tap((updated) => this.adClientsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
@@ -323,6 +366,17 @@ export class MediaOperationsService {
     );
   }
 
+  archiveAdBooking(id: number): Observable<MediaOperationsAdBooking> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsAdBooking>(`${OPERATIONS_API_URL}/ad-bookings/${id}`).pipe(
+      map((updated) => this.normalizeAdBooking(updated)),
+      tap((updated) => this.adBookingsSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
   createExpense(value: ExpenseFormValue): Observable<MediaOperationsExpense> {
     this.errorSignal.set('');
 
@@ -336,6 +390,17 @@ export class MediaOperationsService {
     this.errorSignal.set('');
 
     return this.http.put<MediaOperationsExpense>(`${OPERATIONS_API_URL}/expenses/${id}`, value).pipe(
+      map((updated) => this.normalizeExpense(updated)),
+      tap((updated) => this.expensesSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
+  archiveExpense(id: number): Observable<MediaOperationsExpense> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsExpense>(`${OPERATIONS_API_URL}/expenses/${id}`).pipe(
       map((updated) => this.normalizeExpense(updated)),
       tap((updated) => this.expensesSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))
@@ -363,6 +428,17 @@ export class MediaOperationsService {
     );
   }
 
+  archiveInvoice(id: number): Observable<MediaOperationsInvoice> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsInvoice>(`${OPERATIONS_API_URL}/invoices/${id}`).pipe(
+      map((updated) => this.normalizeInvoice(updated)),
+      tap((updated) => this.invoicesSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
   createAttendance(value: AttendanceFormValue): Observable<MediaOperationsAttendance> {
     this.errorSignal.set('');
 
@@ -383,6 +459,17 @@ export class MediaOperationsService {
     );
   }
 
+  archiveAttendance(id: number): Observable<MediaOperationsAttendance> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsAttendance>(`${OPERATIONS_API_URL}/attendance/${id}`).pipe(
+      map((updated) => this.normalizeAttendance(updated)),
+      tap((updated) => this.attendanceSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
   createAsset(value: AssetFormValue): Observable<MediaOperationsAsset> {
     this.errorSignal.set('');
 
@@ -396,6 +483,17 @@ export class MediaOperationsService {
     this.errorSignal.set('');
 
     return this.http.put<MediaOperationsAsset>(`${OPERATIONS_API_URL}/assets/${id}`, value).pipe(
+      map((updated) => this.normalizeAsset(updated)),
+      tap((updated) => this.assetsSignal.update((items) =>
+        items.map((item) => (item.id === id ? updated : item))
+      ))
+    );
+  }
+
+  archiveAsset(id: number): Observable<MediaOperationsAsset> {
+    this.errorSignal.set('');
+
+    return this.http.delete<MediaOperationsAsset>(`${OPERATIONS_API_URL}/assets/${id}`).pipe(
       map((updated) => this.normalizeAsset(updated)),
       tap((updated) => this.assetsSignal.update((items) =>
         items.map((item) => (item.id === id ? updated : item))

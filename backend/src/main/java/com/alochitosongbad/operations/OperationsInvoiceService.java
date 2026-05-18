@@ -58,6 +58,16 @@ public class OperationsInvoiceService {
                 });
     }
 
+    public Optional<OperationsInvoiceResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations invoices");
+
+        return invoiceRepository.findById(id)
+                .map((invoice) -> {
+                    invoice.setPaymentStatus(OperationsInvoicePaymentStatus.CANCELLED);
+                    return toResponse(invoiceRepository.save(invoice));
+                });
+    }
+
     private void applyRequest(OperationsInvoice invoice, OperationsInvoiceRequestDto request, Long currentId) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

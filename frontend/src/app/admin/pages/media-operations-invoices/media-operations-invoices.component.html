@@ -62,6 +62,9 @@
             </div>
             <span class="ops-badge {{ paymentStatusClass(invoice.paymentStatus) }}">{{ paymentStatusLabel(invoice.paymentStatus) }}</span>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(invoice)">{{ t('editInvoice') }}</button>
+            @if (invoice.paymentStatus !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(invoice)">{{ t('cancelRecord') }}</button>
+            }
           </article>
         }
       </div>

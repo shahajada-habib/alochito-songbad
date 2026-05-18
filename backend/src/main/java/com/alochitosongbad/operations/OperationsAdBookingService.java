@@ -55,6 +55,16 @@ public class OperationsAdBookingService {
                 });
     }
 
+    public Optional<OperationsAdBookingResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations ad bookings");
+
+        return adBookingRepository.findById(id)
+                .map((adBooking) -> {
+                    adBooking.setPublishStatus(OperationsAdPublishStatus.CANCELLED);
+                    return toResponse(adBookingRepository.save(adBooking));
+                });
+    }
+
     private void applyRequest(OperationsAdBooking adBooking, OperationsAdBookingRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

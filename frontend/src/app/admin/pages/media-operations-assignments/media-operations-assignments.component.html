@@ -65,6 +65,9 @@
               <span class="ops-badge {{ statusClass(assignment.status) }}">{{ statusLabel(assignment.status) }}</span>
             </div>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(assignment)">{{ t('editAssignment') }}</button>
+            @if (assignment.status !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(assignment)">{{ t('cancelRecord') }}</button>
+            }
           </article>
         }
       </div>

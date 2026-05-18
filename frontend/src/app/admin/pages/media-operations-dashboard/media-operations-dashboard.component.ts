@@ -70,6 +70,11 @@ export class MediaOperationsDashboardComponent {
   protected readonly totalInvoiceAmount = computed(() =>
     this.invoices().filter((item) => item.paymentStatus !== 'CANCELLED').reduce((sum, item) => sum + item.amount, 0)
   );
+  protected readonly pendingPaymentAmount = computed(() =>
+    this.invoices()
+      .filter((item) => ['UNPAID', 'PARTIAL', 'OVERDUE'].includes(item.paymentStatus))
+      .reduce((sum, item) => sum + Math.max(item.amount - item.paidAmount, 0), 0)
+  );
   protected readonly todayScheduledDutyCount = computed(() => {
     const today = new Date().toISOString().slice(0, 10);
     return this.attendance().filter((item) => item.dutyDate === today && item.status !== 'CANCELLED').length;

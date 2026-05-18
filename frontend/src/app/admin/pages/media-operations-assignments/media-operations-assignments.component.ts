@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import {
   AssignmentFormValue,
   AssignmentPriority,
@@ -21,10 +22,11 @@ import { ToastService } from '../../services/toast.service';
 export class MediaOperationsAssignmentsComponent implements OnInit {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   protected readonly staff = this.operations.staff;
   protected readonly assignments = this.operations.assignments;
   protected readonly loading = this.operations.loading;
-  protected readonly error = this.operations.error;
+  protected readonly error = () => this.operations.errorFor('assignments');
   protected searchTerm = '';
   protected statusFilter: AssignmentStatus | '' = '';
   protected editingId: number | null = null;
@@ -161,6 +163,23 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
 
   protected cancelEdit(): void {
     this.closeForm();
+  }
+
+  protected async archive(assignment: MediaOperationsAssignment): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: this.t('confirmArchiveTitle'),
+      message: this.t('confirmCancelMessage'),
+      confirmText: this.t('cancelRecord'),
+      cancelText: this.t('cancel')
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    this.operations.archiveAssignment(assignment.id).subscribe({
+      next: () => this.toast.success(this.t('updatedSuccessfully')),
+      error: () => this.toast.error(this.t('actionFailed'))
+    });
   }
 
   protected staffName(id: number): string {

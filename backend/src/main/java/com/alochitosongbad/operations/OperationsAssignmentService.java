@@ -54,6 +54,16 @@ public class OperationsAssignmentService {
                 });
     }
 
+    public Optional<OperationsAssignmentResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations assignments");
+
+        return assignmentRepository.findById(id)
+                .map((assignment) -> {
+                    assignment.setStatus(OperationsAssignmentStatus.CANCELLED);
+                    return toResponse(assignmentRepository.save(assignment));
+                });
+    }
+
     private void applyRequest(OperationsAssignment assignment, OperationsAssignmentRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

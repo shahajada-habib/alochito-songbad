@@ -51,6 +51,16 @@ public class OperationsStaffService {
                 });
     }
 
+    public Optional<OperationsStaffResponseDto> archive(Long id) {
+        currentUserService.requireEditorOrAdmin("archive operations staff");
+
+        return staffRepository.findById(id)
+                .map((staff) -> {
+                    staff.setStatus(OperationsStaffStatus.INACTIVE);
+                    return toResponse(staffRepository.save(staff));
+                });
+    }
+
     private void applyRequest(OperationsStaff staff, OperationsStaffRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

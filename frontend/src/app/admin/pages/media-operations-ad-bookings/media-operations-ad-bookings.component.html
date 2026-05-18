@@ -65,6 +65,9 @@
               <span class="ops-badge {{ publishStatusClass(adBooking.publishStatus) }}">{{ publishStatusLabel(adBooking.publishStatus) }}</span>
             </div>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(adBooking)">{{ t('editAdBooking') }}</button>
+            @if (adBooking.publishStatus !== 'CANCELLED') {
+              <button type="button" class="operations-btn secondary compact" (click)="archive(adBooking)">{{ t('cancelRecord') }}</button>
+            }
           </article>
         }
       </div>
