@@ -9,7 +9,8 @@ import { ToastService } from '../../services/toast.service';
   selector: 'app-media-operations-staff',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './media-operations-staff.component.html'
+  templateUrl: './media-operations-staff.component.html',
+  styleUrl: './media-operations-staff.component.css'
 })
 export class MediaOperationsStaffComponent {
   private readonly operations = inject(MediaOperationsService);
@@ -37,6 +38,14 @@ export class MediaOperationsStaffComponent {
 
   protected t(key: TranslationKey): string {
     return this.i18n.t(key);
+  }
+
+  protected statusLabel(status: StaffStatus): string {
+    return status === 'ACTIVE' ? this.t('active') : this.t('inactive');
+  }
+
+  protected statusClass(status: StaffStatus): string {
+    return status === 'ACTIVE' ? 'staff-active' : 'staff-inactive';
   }
 
   protected create(): void {

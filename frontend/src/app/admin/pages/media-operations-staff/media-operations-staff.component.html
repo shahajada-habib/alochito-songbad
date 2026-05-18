@@ -5,12 +5,12 @@
     <p>{{ t('staffManagementHelp') }}</p>
   </div>
 
-  <section class="cms-panel">
+  <section class="cms-panel operations-form-panel">
     <div class="panel-heading">
       <h3>{{ t('addStaff') }}</h3>
       <p>{{ t('staffManagementHelp') }}</p>
     </div>
-    <form class="cms-form" (ngSubmit)="create()">
+    <form class="cms-form operations-form staff-form" (ngSubmit)="create()">
       <label>
         <span>{{ t('name') }}</span>
         <input type="text" name="staffName" [(ngModel)]="form.name">
@@ -48,17 +48,23 @@
     </form>
   </section>
 
-  <section class="cms-panel filter-panel">
-    <input type="search" name="staffSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchStaff')">
-    <select name="staffStatusFilter" [(ngModel)]="statusFilter">
-      <option value="">{{ t('allStatuses') }}</option>
-      <option value="ACTIVE">{{ t('active') }}</option>
-      <option value="INACTIVE">{{ t('inactive') }}</option>
-    </select>
+  <section class="cms-panel operations-filter">
+    <label>
+      <span>{{ t('searchStaff') }}</span>
+      <input type="search" name="staffSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchStaff')">
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="staffStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        <option value="ACTIVE">{{ t('active') }}</option>
+        <option value="INACTIVE">{{ t('inactive') }}</option>
+      </select>
+    </label>
   </section>
 
-  <section class="cms-panel table-panel">
-    <table>
+  <section class="cms-panel table-panel operations-panel">
+    <table class="operations-table">
       <thead>
         <tr>
           <th>{{ t('name') }}</th>
@@ -94,16 +100,17 @@
                 </div>
               </td>
             } @else {
-              <td [attr.data-label]="t('name')"><strong>{{ member.name }}</strong></td>
-              <td [attr.data-label]="t('designation')">{{ member.designation }}</td>
+              <td [attr.data-label]="t('name')" class="staff-name-cell">
+                <strong>{{ member.name }}</strong>
+                <small>{{ member.email }}</small>
+              </td>
+              <td [attr.data-label]="t('designation')" class="strong-cell">{{ member.designation }}</td>
               <td [attr.data-label]="t('department')">{{ member.department }}</td>
               <td [attr.data-label]="t('phone')">{{ member.phone }}</td>
               <td [attr.data-label]="t('email')">{{ member.email }}</td>
               <td [attr.data-label]="t('joiningDate')">{{ member.joiningDate }}</td>
               <td [attr.data-label]="t('status')">
-                <span class="status" [class.published]="member.status === 'ACTIVE'" [class.archived]="member.status === 'INACTIVE'">
-                  {{ member.status === 'ACTIVE' ? t('active') : t('inactive') }}
-                </span>
+                <span class="ops-badge {{ statusClass(member.status) }}">{{ statusLabel(member.status) }}</span>
               </td>
               <td [attr.data-label]="t('actions')">
                 <button type="button" class="admin-btn secondary" (click)="startEdit(member)">{{ t('edit') }}</button>
@@ -113,5 +120,13 @@
         }
       </tbody>
     </table>
+
+    @if (filteredStaff().length === 0) {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noStaffFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
   </section>
 </section>

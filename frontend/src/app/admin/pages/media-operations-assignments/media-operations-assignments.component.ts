@@ -15,7 +15,8 @@ import { ToastService } from '../../services/toast.service';
   selector: 'app-media-operations-assignments',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './media-operations-assignments.component.html'
+  templateUrl: './media-operations-assignments.component.html',
+  styleUrl: './media-operations-assignments.component.css'
 })
 export class MediaOperationsAssignmentsComponent {
   private readonly operations = inject(MediaOperationsService);
@@ -53,6 +54,24 @@ export class MediaOperationsAssignmentsComponent {
 
   protected t(key: TranslationKey): string {
     return this.i18n.t(key);
+  }
+
+  protected priorityLabel(priority: AssignmentPriority): string {
+    const key = `priority${this.toTitleCase(priority)}` as TranslationKey;
+    return this.t(key);
+  }
+
+  protected statusLabel(status: AssignmentStatus): string {
+    const key = `assignment${this.toTitleCase(status)}` as TranslationKey;
+    return this.t(key);
+  }
+
+  protected priorityClass(priority: AssignmentPriority): string {
+    return `priority-${priority.toLowerCase()}`;
+  }
+
+  protected statusClass(status: AssignmentStatus): string {
+    return `assignment-${status.toLowerCase().replaceAll('_', '-')}`;
   }
 
   protected create(): void {
@@ -93,6 +112,14 @@ export class MediaOperationsAssignmentsComponent {
 
   protected staffName(id: number): string {
     return this.operations.staffName(id);
+  }
+
+  private toTitleCase(value: string): string {
+    return value
+      .toLowerCase()
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('');
   }
 
   private emptyForm(): AssignmentFormValue {

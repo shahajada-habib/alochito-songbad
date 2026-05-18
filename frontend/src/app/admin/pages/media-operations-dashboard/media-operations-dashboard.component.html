@@ -46,12 +46,12 @@
     </article>
   </div>
 
-  <section class="cms-panel table-panel">
+  <section class="cms-panel table-panel operations-panel">
     <div class="panel-heading">
       <h3>{{ t('recentAssignments') }}</h3>
       <p>{{ t('assignmentManagementHelp') }}</p>
     </div>
-    <table>
+    <table class="operations-table">
       <thead>
         <tr>
           <th>{{ t('title') }}</th>
@@ -65,18 +65,31 @@
       <tbody>
         @for (assignment of assignments().slice(0, 5); track assignment.id) {
           <tr>
-            <td [attr.data-label]="t('title')">
+            <td [attr.data-label]="t('title')" class="assignment-title-cell">
               <strong>{{ assignment.title }}</strong>
-              <small>{{ assignment.location }}</small>
+              <span>{{ assignment.description }}</span>
+              <small>{{ t('location') }}: {{ assignment.location }}</small>
             </td>
-            <td [attr.data-label]="t('assignedStaff')">{{ staffName(assignment.assignedStaffId) }}</td>
+            <td [attr.data-label]="t('assignedStaff')" class="strong-cell">{{ staffName(assignment.assignedStaffId) }}</td>
             <td [attr.data-label]="t('category')">{{ assignment.category }}</td>
-            <td [attr.data-label]="t('deadline')">{{ assignment.deadline }}</td>
-            <td [attr.data-label]="t('priority')"><span class="status review">{{ assignment.priority }}</span></td>
-            <td [attr.data-label]="t('status')"><span class="status draft">{{ assignment.status }}</span></td>
+            <td [attr.data-label]="t('deadline')" class="date-cell">{{ assignment.deadline }}</td>
+            <td [attr.data-label]="t('priority')">
+              <span class="ops-badge {{ priorityClass(assignment.priority) }}">{{ priorityLabel(assignment.priority) }}</span>
+            </td>
+            <td [attr.data-label]="t('status')">
+              <span class="ops-badge {{ statusClass(assignment.status) }}">{{ statusLabel(assignment.status) }}</span>
+            </td>
           </tr>
         }
       </tbody>
     </table>
+
+    @if (assignments().length === 0) {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAssignmentsFound') }}</h3>
+        <p>{{ t('assignmentManagementHelp') }}</p>
+      </div>
+    }
   </section>
 </section>

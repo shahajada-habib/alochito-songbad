@@ -1,0 +1,92 @@
+.operations-panel {
+  overflow-x: auto;
+}
+
+.operations-table {
+  min-width: 960px;
+}
+
+.assignment-title-cell {
+  min-width: 300px;
+}
+
+.assignment-title-cell strong,
+.assignment-title-cell span,
+.assignment-title-cell small {
+  display: block;
+}
+
+.assignment-title-cell strong {
+  margin-bottom: 5px;
+  line-height: 1.35;
+}
+
+.assignment-title-cell span {
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.assignment-title-cell small,
+.date-cell {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.strong-cell {
+  font-weight: 700;
+}
+
+.ops-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.priority-low,
+.assignment-draft {
+  background: #eef2f7;
+  color: #475467;
+}
+
+.priority-medium,
+.assignment-assigned {
+  background: #e8f2ff;
+  color: #175cd3;
+}
+
+.priority-high,
+.assignment-in-progress,
+.assignment-submitted {
+  background: #fff3d6;
+  color: #8a5a00;
+}
+
+.priority-urgent,
+.assignment-cancelled {
+  background: #fff2ef;
+  color: #b42318;
+}
+
+.assignment-completed {
+  background: #e7f5ee;
+  color: #137047;
+}
+
+.operations-empty {
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .operations-table {
+    min-width: 0;
+  }
+
+  .assignment-title-cell {
+    min-width: 0;
+  }
+}

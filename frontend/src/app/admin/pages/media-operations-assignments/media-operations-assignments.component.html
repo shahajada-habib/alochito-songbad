@@ -5,12 +5,12 @@
     <p>{{ t('assignmentManagementHelp') }}</p>
   </div>
 
-  <section class="cms-panel">
+  <section class="cms-panel operations-form-panel">
     <div class="panel-heading">
       <h3>{{ t('addAssignment') }}</h3>
       <p>{{ t('assignmentManagementHelp') }}</p>
     </div>
-    <form class="cms-form" (ngSubmit)="create()">
+    <form class="cms-form operations-form assignment-form" (ngSubmit)="create()">
       <label>
         <span>{{ t('title') }}</span>
         <input type="text" name="assignmentTitle" [(ngModel)]="form.title">
@@ -43,7 +43,7 @@
         <span>{{ t('priority') }}</span>
         <select name="assignmentPriority" [(ngModel)]="form.priority">
           @for (priority of priorities; track priority) {
-            <option [value]="priority">{{ priority }}</option>
+            <option [value]="priority">{{ priorityLabel(priority) }}</option>
           }
         </select>
       </label>
@@ -51,7 +51,7 @@
         <span>{{ t('status') }}</span>
         <select name="assignmentStatus" [(ngModel)]="form.status">
           @for (status of statuses; track status) {
-            <option [value]="status">{{ status }}</option>
+            <option [value]="status">{{ statusLabel(status) }}</option>
           }
         </select>
       </label>
@@ -65,18 +65,24 @@
     </form>
   </section>
 
-  <section class="cms-panel filter-panel">
-    <input type="search" name="assignmentSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAssignments')">
-    <select name="assignmentStatusFilter" [(ngModel)]="statusFilter">
-      <option value="">{{ t('allStatuses') }}</option>
-      @for (status of statuses; track status) {
-        <option [value]="status">{{ status }}</option>
-      }
-    </select>
+  <section class="cms-panel operations-filter">
+    <label>
+      <span>{{ t('searchAssignments') }}</span>
+      <input type="search" name="assignmentSearch" [(ngModel)]="searchTerm" [placeholder]="t('searchAssignments')">
+    </label>
+    <label>
+      <span>{{ t('status') }}</span>
+      <select name="assignmentStatusFilter" [(ngModel)]="statusFilter">
+        <option value="">{{ t('allStatuses') }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ statusLabel(status) }}</option>
+        }
+      </select>
+    </label>
   </section>
 
-  <section class="cms-panel table-panel">
-    <table>
+  <section class="cms-panel table-panel operations-panel">
+    <table class="operations-table">
       <thead>
         <tr>
           <th>{{ t('title') }}</th>
@@ -107,14 +113,14 @@
               <td [attr.data-label]="t('priority')">
                 <select name="editAssignmentPriority{{ assignment.id }}" [(ngModel)]="editForm.priority">
                   @for (priority of priorities; track priority) {
-                    <option [value]="priority">{{ priority }}</option>
+                    <option [value]="priority">{{ priorityLabel(priority) }}</option>
                   }
                 </select>
               </td>
               <td [attr.data-label]="t('status')">
                 <select name="editAssignmentStatus{{ assignment.id }}" [(ngModel)]="editForm.status">
                   @for (status of statuses; track status) {
-                    <option [value]="status">{{ status }}</option>
+                    <option [value]="status">{{ statusLabel(status) }}</option>
                   }
                 </select>
               </td>
@@ -125,16 +131,23 @@
                 </div>
               </td>
             } @else {
-              <td [attr.data-label]="t('title')">
+              <td [attr.data-label]="t('title')" class="assignment-title-cell">
                 <strong>{{ assignment.title }}</strong>
-                <small>{{ assignment.description }}</small>
+                <span>{{ assignment.description }}</span>
+                @if (assignment.notes) {
+                  <small>{{ t('notes') }}: {{ assignment.notes }}</small>
+                }
               </td>
-              <td [attr.data-label]="t('assignedStaff')">{{ staffName(assignment.assignedStaffId) }}</td>
+              <td [attr.data-label]="t('assignedStaff')" class="strong-cell">{{ staffName(assignment.assignedStaffId) }}</td>
               <td [attr.data-label]="t('category')">{{ assignment.category }}</td>
               <td [attr.data-label]="t('location')">{{ assignment.location }}</td>
-              <td [attr.data-label]="t('deadline')">{{ assignment.deadline }}</td>
-              <td [attr.data-label]="t('priority')"><span class="status review">{{ assignment.priority }}</span></td>
-              <td [attr.data-label]="t('status')"><span class="status draft">{{ assignment.status }}</span></td>
+              <td [attr.data-label]="t('deadline')" class="date-cell">{{ assignment.deadline }}</td>
+              <td [attr.data-label]="t('priority')">
+                <span class="ops-badge {{ priorityClass(assignment.priority) }}">{{ priorityLabel(assignment.priority) }}</span>
+              </td>
+              <td [attr.data-label]="t('status')">
+                <span class="ops-badge {{ statusClass(assignment.status) }}">{{ statusLabel(assignment.status) }}</span>
+              </td>
               <td [attr.data-label]="t('actions')">
                 <button type="button" class="admin-btn secondary" (click)="startEdit(assignment)">{{ t('edit') }}</button>
               </td>
@@ -143,5 +156,13 @@
         }
       </tbody>
     </table>
+
+    @if (filteredAssignments().length === 0) {
+      <div class="empty-state visible operations-empty">
+        <span>0</span>
+        <h3>{{ t('noAssignmentsFound') }}</h3>
+        <p>{{ t('noOperationsMatches') }}</p>
+      </div>
+    }
   </section>
 </section>
