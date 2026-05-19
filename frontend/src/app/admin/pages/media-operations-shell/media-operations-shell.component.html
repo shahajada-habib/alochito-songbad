@@ -1,0 +1,31 @@
+<section class="media-operations-workspace">
+  <aside class="operations-subnav" aria-label="Media Operations navigation">
+    <div class="subnav-head">
+      <span>{{ t('mediaOperations') }}</span>
+      <p>{{ t('mediaOperationsWorkspaceHelp') }}</p>
+    </div>
+
+    <nav class="subnav-groups">
+      @for (group of navGroups; track group.title) {
+        <section class="subnav-group">
+          <h3>{{ t(group.title) }}</h3>
+          <div class="subnav-links">
+            @for (item of group.items; track item.link) {
+              <a
+                [routerLink]="item.link"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+              >
+                {{ t(item.label) }}
+              </a>
+            }
+          </div>
+        </section>
+      }
+    </nav>
+  </aside>
+
+  <main class="operations-workspace-main">
+    <router-outlet></router-outlet>
+  </main>
+</section>

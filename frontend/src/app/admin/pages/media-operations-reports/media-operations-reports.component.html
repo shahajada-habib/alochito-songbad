@@ -3,7 +3,7 @@
     <div>
       <span>{{ t('mediaOperations') }}</span>
       <h2>{{ t('mediaOperationsReports') }}</h2>
-      <p>{{ t('mediaOperationsReportsHelp') }}</p>
+      <p>{{ t('mediaOperationsReportsGroupedHelp') }}</p>
     </div>
     <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations">{{ t('backToMediaOperations') }}</button>
   </div>
@@ -14,8 +14,8 @@
 
   <section class="reports-section">
     <div class="reports-section-head">
-      <span>{{ t('operationsOverview') }}</span>
-      <h3>{{ t('coreOperations') }}</h3>
+      <span>{{ t('newsroom') }}</span>
+      <h3>{{ t('newsroomSummary') }}</h3>
     </div>
     <div class="reports-grid">
       <article class="report-card">
@@ -42,49 +42,13 @@
         <small class="report-hint">{{ t('presentTodayHint') }}</small>
         @if (sectionError('attendance')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
-      <article class="report-card">
-        <span>{{ t('activeDepartments') }}</span>
-        <strong>{{ activeDepartments() }}</strong>
-        <small class="report-hint">{{ t('activeDepartmentsHint') }}</small>
-        @if (sectionError('departments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
-      </article>
-      <article class="report-card urgent">
-        <span>{{ t('pendingLeaveRequests') }}</span>
-        <strong>{{ pendingLeaveRequests() }}</strong>
-        <small class="report-hint">{{ t('pendingLeaveRequestsHint') }}</small>
-        @if (sectionError('leaveRequests')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
-      </article>
-      <article class="report-card">
-        <span>{{ t('activeStaffDocuments') }}</span>
-        <strong>{{ activeStaffDocuments() }}</strong>
-        <small class="report-hint">{{ t('activeStaffDocumentsHint') }}</small>
-        @if (sectionError('staffDocuments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
-      </article>
-      <article class="report-card">
-        <span>{{ t('activeVendors') }}</span>
-        <strong>{{ activeVendors() }}</strong>
-        <small class="report-hint">{{ t('activeVendorsHint') }}</small>
-        @if (sectionError('vendors')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
-      </article>
-      <article class="report-card urgent">
-        <span>{{ t('openPurchaseRequests') }}</span>
-        <strong>{{ openPurchaseRequests() }}</strong>
-        <small class="report-hint">{{ t('openPurchaseRequestsHint') }}</small>
-        @if (sectionError('purchaseRequests')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
-      </article>
-      <article class="report-card">
-        <span>{{ t('placedPurchaseOrders') }}</span>
-        <strong>{{ placedPurchaseOrders() }}</strong>
-        <small class="report-hint">{{ t('placedPurchaseOrdersHint') }}</small>
-        @if (sectionError('purchaseOrders')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
-      </article>
     </div>
   </section>
 
   <section class="reports-section">
     <div class="reports-section-head">
-      <span>{{ t('campaignDesk') }}</span>
-      <h3>{{ t('commercialSnapshot') }}</h3>
+      <span>{{ t('revenue') }}</span>
+      <h3>{{ t('revenueSummary') }}</h3>
     </div>
     <div class="reports-grid">
       <article class="report-card">
@@ -116,8 +80,8 @@
 
   <section class="reports-section">
     <div class="reports-section-head">
-      <span>{{ t('assetDesk') }}</span>
-      <h3>{{ t('resourcesSnapshot') }}</h3>
+      <span>{{ t('financeProcurement') }}</span>
+      <h3>{{ t('financeProcurementSummary') }}</h3>
     </div>
     <div class="reports-grid">
       <article class="report-card">
@@ -125,6 +89,51 @@
         <strong>{{ formatMoney(monthlyExpenses()) }}</strong>
         <small class="report-hint">{{ t('monthlyExpensesHint') }}</small>
         @if (sectionError('expenses')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('activeVendors') }}</span>
+        <strong>{{ activeVendors() }}</strong>
+        <small class="report-hint">{{ t('activeVendorsHint') }}</small>
+        @if (sectionError('vendors')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('openPurchaseRequests') }}</span>
+        <strong>{{ openPurchaseRequests() }}</strong>
+        <small class="report-hint">{{ t('openPurchaseRequestsHint') }}</small>
+        @if (sectionError('purchaseRequests')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('placedPurchaseOrders') }}</span>
+        <strong>{{ placedPurchaseOrders() }}</strong>
+        <small class="report-hint">{{ t('placedPurchaseOrdersHint') }}</small>
+        @if (sectionError('purchaseOrders')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+    </div>
+  </section>
+
+  <section class="reports-section">
+    <div class="reports-section-head">
+      <span>{{ t('hrAssets') }}</span>
+      <h3>{{ t('hrAssetsSummary') }}</h3>
+    </div>
+    <div class="reports-grid">
+      <article class="report-card">
+        <span>{{ t('activeDepartments') }}</span>
+        <strong>{{ activeDepartments() }}</strong>
+        <small class="report-hint">{{ t('activeDepartmentsHint') }}</small>
+        @if (sectionError('departments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('pendingLeaveRequests') }}</span>
+        <strong>{{ pendingLeaveRequests() }}</strong>
+        <small class="report-hint">{{ t('pendingLeaveRequestsHint') }}</small>
+        @if (sectionError('leaveRequests')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+      <article class="report-card">
+        <span>{{ t('activeStaffDocuments') }}</span>
+        <strong>{{ activeStaffDocuments() }}</strong>
+        <small class="report-hint">{{ t('activeStaffDocumentsHint') }}</small>
+        @if (sectionError('staffDocuments')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card">
         <span>{{ t('availableAssets') }}</span>
@@ -137,6 +146,26 @@
         <strong>{{ assignedAssets() }}</strong>
         <small class="report-hint">{{ t('assignedAssetsHint') }}</small>
         @if (sectionError('assets')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
+      </article>
+    </div>
+  </section>
+
+  <section class="reports-section">
+    <div class="reports-section-head">
+      <span>{{ t('workflow') }}</span>
+      <h3>{{ t('commandCenter') }}</h3>
+    </div>
+    <div class="reports-grid">
+      <article class="report-card urgent">
+        <span>{{ t('approvalQueue') }}</span>
+        <strong>{{ openPurchaseRequests() + pendingLeaveRequests() + unpaidInvoices() }}</strong>
+        <small class="report-hint">{{ t('approvalQueueHint') }}</small>
+      </article>
+      <article class="report-card urgent">
+        <span>{{ t('pendingPaymentAmount') }}</span>
+        <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
+        <small class="report-hint">{{ t('pendingPaymentAmountHint') }}</small>
+        @if (sectionError('invoices')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
     </div>
   </section>

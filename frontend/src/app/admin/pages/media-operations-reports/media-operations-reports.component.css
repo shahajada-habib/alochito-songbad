@@ -52,6 +52,12 @@
 
 .reports-section-head {
   margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid #eee9e1;
+}
+
+.reports-section-head h3 {
+  margin-bottom: 0;
 }
 
 .reports-grid {
@@ -63,7 +69,7 @@
 .report-card {
   display: grid;
   gap: 8px;
-  min-height: 150px;
+  min-height: 128px;
   align-content: start;
   padding: var(--space-3);
   border: 1px solid #eee9e1;

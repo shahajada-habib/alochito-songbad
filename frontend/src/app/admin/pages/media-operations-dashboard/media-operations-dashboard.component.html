@@ -2,427 +2,251 @@
   <div class="operations-hero">
     <div class="hero-copy">
       <span class="eyebrow">{{ t('mediaOperations') }}</span>
-      <h2>{{ t('mediaOperationsDashboard') }}</h2>
-      <p>{{ t('mediaOperationsHelp') }}</p>
-      <div class="hero-actions">
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/staff">{{ t('staffManagement') }}</button>
-        <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/assignments">{{ t('assignmentManagement') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-clients">{{ t('advertisementClients') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-bookings">{{ t('adBookingsCampaigns') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/expenses">{{ t('expenseTracking') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/invoices">{{ t('invoicePaymentStatus') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/attendance">{{ t('attendanceDutyRoster') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assets">{{ t('assetEquipmentManagement') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/departments">{{ t('departmentsDesks') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/leave-requests">{{ t('leaveRequests') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/staff-documents">{{ t('staffDocumentsHrNotes') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/vendors">{{ t('vendorsSuppliers') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/purchase-requests">{{ t('purchaseRequests') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/purchase-orders">{{ t('purchaseOrders') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/approvals">{{ t('approvalQueue') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/notifications">{{ t('notificationCenter') }}</button>
-        <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/reminders">{{ t('reminders') }}</button>
-        <button type="button" class="operations-btn primary" routerLink="/admin/media-operations/reports">{{ t('reports') }}</button>
+      <h2>{{ t('mediaOperationsOverview') }}</h2>
+      <p>{{ t('mediaOperationsOverviewHelp') }}</p>
+      <div class="hero-metrics">
+        <span>{{ t('activeAssignments') }} <strong>{{ activeAssignmentCount() }}</strong></span>
+        <span>{{ t('pendingPaymentAmount') }} <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong></span>
+        <span>{{ t('urgentReminders') }} <strong>{{ urgentReminderCount() }}</strong></span>
       </div>
     </div>
     <div class="hero-queue">
-      <span>{{ t('todaysCoverage') }}</span>
-      <strong>{{ activeAssignmentCount() }}</strong>
-      <small>{{ t('activeAssignments') }}</small>
+      <span>{{ t('commandCenterStatus') }}</span>
+      <strong>{{ approvalQueueCount() + urgentReminderCount() + unreadNotificationCount() }}</strong>
+      <small>{{ t('itemsNeedAttention') }}</small>
+      <div class="hero-status-list">
+        <span>{{ t('approvalQueue') }} <strong>{{ approvalQueueCount() }}</strong></span>
+        <span>{{ t('unreadNotifications') }} <strong>{{ unreadNotificationCount() }}</strong></span>
+        <span>{{ t('recentOperationsActivity') }} <strong>{{ recentActivity().length }}</strong></span>
+      </div>
     </div>
   </div>
 
-  <div class="operations-stats">
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('staffStatMark') }}</span>
-      <div>
-        <strong>{{ activeStaffCount() }}</strong>
-        <span>{{ t('activeStaff') }}</span>
-        <small>{{ t('staffCoverageHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('assignmentStatMark') }}</span>
-      <div>
-        <strong>{{ activeAssignmentCount() }}</strong>
-        <span>{{ t('activeAssignments') }}</span>
-        <small>{{ t('assignmentQueueHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('urgentStatMark') }}</span>
-      <div>
-        <strong>{{ urgentAssignmentCount() }}</strong>
-        <span>{{ t('urgentAssignments') }}</span>
-        <small>{{ t('urgentAssignmentHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('completedStatMark') }}</span>
-      <div>
-        <strong>{{ completedAssignmentCount() }}</strong>
-        <span>{{ t('completedAssignments') }}</span>
-        <small>{{ t('completedAssignmentHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('adClientStatMark') }}</span>
-      <div>
-        <strong>{{ activeAdClientCount() }}</strong>
-        <span>{{ t('activeAdClients') }}</span>
-        <small>{{ t('activeAdClientsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('adBookingStatMark') }}</span>
-      <div>
-        <strong>{{ runningAdBookingCount() }}</strong>
-        <span>{{ t('runningAdBookings') }}</span>
-        <small>{{ t('runningAdBookingsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('adPaymentStatMark') }}</span>
-      <div>
-        <strong>{{ unpaidAdBookingCount() }}</strong>
-        <span>{{ t('pendingAdPayments') }}</span>
-        <small>{{ t('pendingAdPaymentsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('expenseStatMark') }}</span>
-      <div>
-        <strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong>
-        <span>{{ t('monthlyExpenses') }}</span>
-        <small>{{ t('monthlyExpensesHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('invoiceUnpaidStatMark') }}</span>
-      <div>
-        <strong>{{ unpaidInvoiceCount() }}</strong>
-        <span>{{ t('unpaidInvoices') }}</span>
-        <small>{{ t('unpaidInvoicesHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('invoicePaidStatMark') }}</span>
-      <div>
-        <strong>{{ paidInvoiceCount() }}</strong>
-        <span>{{ t('paidInvoices') }}</span>
-        <small>{{ t('paidInvoicesHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('invoiceTotalStatMark') }}</span>
-      <div>
-        <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
-        <span>{{ t('totalInvoiceAmount') }}</span>
-        <small>{{ t('totalInvoiceAmountHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('pendingPaymentStatMark') }}</span>
-      <div>
-        <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
-        <span>{{ t('pendingPaymentAmount') }}</span>
-        <small>{{ t('pendingPaymentAmountHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('attendanceStatMark') }}</span>
-      <div>
-        <strong>{{ todayScheduledDutyCount() }}</strong>
-        <span>{{ t('todayScheduledDuties') }}</span>
-        <small>{{ t('todayScheduledDutiesHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('presentStatMark') }}</span>
-      <div>
-        <strong>{{ presentTodayCount() }}</strong>
-        <span>{{ t('presentToday') }}</span>
-        <small>{{ t('presentTodayHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('availableAssetStatMark') }}</span>
-      <div>
-        <strong>{{ availableAssetCount() }}</strong>
-        <span>{{ t('availableAssets') }}</span>
-        <small>{{ t('availableAssetsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('assignedAssetStatMark') }}</span>
-      <div>
-        <strong>{{ assignedAssetCount() }}</strong>
-        <span>{{ t('assignedAssets') }}</span>
-        <small>{{ t('assignedAssetsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('departmentStatMark') }}</span>
-      <div>
-        <strong>{{ activeDepartmentCount() }}</strong>
-        <span>{{ t('activeDepartments') }}</span>
-        <small>{{ t('activeDepartmentsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('leaveStatMark') }}</span>
-      <div>
-        <strong>{{ pendingLeaveRequestCount() }}</strong>
-        <span>{{ t('pendingLeaveRequests') }}</span>
-        <small>{{ t('pendingLeaveRequestsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('documentStatMark') }}</span>
-      <div>
-        <strong>{{ activeStaffDocumentCount() }}</strong>
-        <span>{{ t('activeStaffDocuments') }}</span>
-        <small>{{ t('activeStaffDocumentsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('vendorStatMark') }}</span>
-      <div>
-        <strong>{{ activeVendorCount() }}</strong>
-        <span>{{ t('activeVendors') }}</span>
-        <small>{{ t('activeVendorsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('purchaseRequestStatMark') }}</span>
-      <div>
-        <strong>{{ openPurchaseRequestCount() }}</strong>
-        <span>{{ t('openPurchaseRequests') }}</span>
-        <small>{{ t('openPurchaseRequestsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat">
-      <span class="stat-mark">{{ t('purchaseOrderStatMark') }}</span>
-      <div>
-        <strong>{{ placedPurchaseOrderCount() }}</strong>
-        <span>{{ t('placedPurchaseOrders') }}</span>
-        <small>{{ t('placedPurchaseOrdersHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('approvalStatMark') }}</span>
-      <div>
-        <strong>{{ approvalQueueCount() }}</strong>
-        <span>{{ t('approvalQueue') }}</span>
-        <small>{{ t('approvalQueueHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('notificationStatMark') }}</span>
-      <div>
-        <strong>{{ unreadNotificationCount() }}</strong>
-        <span>{{ t('unreadNotifications') }}</span>
-        <small>{{ t('unreadNotificationsHint') }}</small>
-      </div>
-    </article>
-    <article class="operations-stat urgent-stat">
-      <span class="stat-mark">{{ t('reminderStatMark') }}</span>
-      <div>
-        <strong>{{ urgentReminderCount() }}</strong>
-        <span>{{ t('urgentReminders') }}</span>
-        <small>{{ t('urgentRemindersHint') }}</small>
-      </div>
-    </article>
-  </div>
-
-  <section class="cms-panel operations-panel">
+  <section class="summary-section overview-kpis">
     <div class="operations-section-head">
       <div>
-        <span>{{ t('notificationCenter') }}</span>
-        <h3>{{ t('dashboardNotifications') }}</h3>
-        <p>{{ t('notificationCenterHelp') }}</p>
+        <span>{{ t('overview') }}</span>
+        <h3>{{ t('todayOperationalPulse') }}</h3>
+        <p>{{ t('todayOperationalPulseHelp') }}</p>
       </div>
-      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/notifications">{{ t('viewAllNotifications') }}</button>
     </div>
-    @if (recentNotifications().length > 0) {
-      <div class="activity-list">
-        @for (notification of recentNotifications(); track notification.id) {
-          <article class="activity-row">
-            <span class="ops-badge">{{ notification.notificationType }}</span>
-            <div class="activity-main">
-              <strong>{{ notification.title }}</strong>
-              <span>{{ notification.message }}</span>
-            </div>
-            <small>{{ notification.readStatus }}</small>
-          </article>
-        }
+    <div class="summary-grid six-up">
+      <article class="operations-stat">
+        <span class="stat-mark">{{ t('assignmentStatMark') }}</span>
+        <div><strong>{{ activeAssignmentCount() }}</strong><span>{{ t('activeAssignments') }}</span><small>{{ t('assignmentQueueHint') }}</small></div>
+      </article>
+      <article class="operations-stat">
+        <span class="stat-mark">{{ t('staffStatMark') }}</span>
+        <div><strong>{{ activeStaffCount() }}</strong><span>{{ t('activeStaff') }}</span><small>{{ t('staffCoverageHint') }}</small></div>
+      </article>
+      <article class="operations-stat urgent-stat">
+        <span class="stat-mark">{{ t('approvalStatMark') }}</span>
+        <div><strong>{{ approvalQueueCount() }}</strong><span>{{ t('approvalQueue') }}</span><small>{{ t('approvalQueueHint') }}</small></div>
+      </article>
+      <article class="operations-stat urgent-stat">
+        <span class="stat-mark">{{ t('pendingPaymentStatMark') }}</span>
+        <div><strong>{{ formatMoney(pendingPaymentAmount()) }}</strong><span>{{ t('pendingPaymentAmount') }}</span><small>{{ t('pendingPaymentAmountHint') }}</small></div>
+      </article>
+      <article class="operations-stat urgent-stat">
+        <span class="stat-mark">{{ t('reminderStatMark') }}</span>
+        <div><strong>{{ urgentReminderCount() }}</strong><span>{{ t('urgentReminders') }}</span><small>{{ t('urgentRemindersHint') }}</small></div>
+      </article>
+      <article class="operations-stat">
+        <span class="stat-mark">{{ t('expenseStatMark') }}</span>
+        <div><strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong><span>{{ t('monthlyExpenses') }}</span><small>{{ t('monthlyExpensesHint') }}</small></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="analytics-section">
+    <div class="operations-section-head">
+      <div>
+        <span>{{ t('analyticsOverview') }}</span>
+        <h3>{{ t('operationsAnalytics') }}</h3>
+        <p>{{ t('operationsAnalyticsHelp') }}</p>
       </div>
-    } @else {
-      <div class="empty-state visible operations-empty">
-        <span>0</span>
-        <h3>{{ t('noNotificationsFound') }}</h3>
-        <p>{{ t('notificationCenterHelp') }}</p>
-      </div>
-    }
+    </div>
+
+    <div class="analytics-grid compact-analytics">
+      <article class="analytics-card">
+        <div class="analytics-head">
+          <span>{{ t('revenueOverview') }}</span>
+          <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <span>{{ t('totalInvoiceAmount') }}</span>
+            <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(totalInvoiceAmount(), revenueOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row warn">
+            <span>{{ t('pendingPaymentAmount') }}</span>
+            <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(pendingPaymentAmount(), revenueOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('monthlyExpenses') }}</span>
+            <strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(monthlyExpenseTotal(), revenueOverviewMax())"></i></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="analytics-card">
+        <div class="analytics-head">
+          <span>{{ t('workflowOverview') }}</span>
+          <strong>{{ approvalQueueCount() + urgentReminderCount() + unreadNotificationCount() }}</strong>
+        </div>
+        <div class="tile-grid">
+          <div class="status-tile"><span>{{ t('approvalQueue') }}</span><strong>{{ approvalQueueCount() }}</strong></div>
+          <div class="status-tile"><span>{{ t('urgentReminders') }}</span><strong>{{ urgentReminderCount() }}</strong></div>
+          <div class="status-tile"><span>{{ t('unreadNotifications') }}</span><strong>{{ unreadNotificationCount() }}</strong></div>
+          <div class="status-tile"><span>{{ t('recentOperationsActivity') }}</span><strong>{{ recentActivity().length }}</strong></div>
+        </div>
+      </article>
+
+      <article class="analytics-card">
+        <div class="analytics-head">
+          <span>{{ t('operationsOverview') }}</span>
+          <strong>{{ activeStaffCount() }}</strong>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <span>{{ t('activeStaff') }}</span>
+            <strong>{{ activeStaffCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(activeStaffCount(), operationsOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('activeAssignments') }}</span>
+            <strong>{{ activeAssignmentCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(activeAssignmentCount(), operationsOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('todayScheduledDuties') }}</span>
+            <strong>{{ todayScheduledDutyCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(todayScheduledDutyCount(), operationsOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('presentToday') }}</span>
+            <strong>{{ presentTodayCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(presentTodayCount(), operationsOverviewMax())"></i></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="analytics-card">
+        <div class="analytics-head">
+          <span>{{ t('assetProcurementOverview') }}</span>
+          <strong>{{ availableAssetCount() + assignedAssetCount() }}</strong>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <span>{{ t('availableAssets') }}</span>
+            <strong>{{ availableAssetCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(availableAssetCount(), assetProcurementOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('assignedAssets') }}</span>
+            <strong>{{ assignedAssetCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(assignedAssetCount(), assetProcurementOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row warn">
+            <span>{{ t('openPurchaseRequests') }}</span>
+            <strong>{{ openPurchaseRequestCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(openPurchaseRequestCount(), assetProcurementOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('placedPurchaseOrders') }}</span>
+            <strong>{{ placedPurchaseOrderCount() }}</strong>
+            <div class="bar-track"><i [style.width]="barWidth(placedPurchaseOrderCount(), assetProcurementOverviewMax())"></i></div>
+          </div>
+        </div>
+      </article>
+    </div>
   </section>
 
   <section class="cms-panel operations-panel">
     <div class="operations-section-head">
       <div>
-        <span>{{ t('reminders') }}</span>
-        <h3>{{ t('dashboardReminders') }}</h3>
-        <p>{{ t('remindersHelp') }}</p>
-      </div>
-      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/reminders">{{ t('viewAllReminders') }}</button>
-    </div>
-    @if (recentReminders().length > 0) {
-      <div class="activity-list">
-        @for (reminder of recentReminders(); track reminder.id) {
-          <article class="activity-row">
-            <span class="ops-badge">{{ reminder.severity }}</span>
-            <div class="activity-main">
-              <strong>{{ reminder.title }}</strong>
-              <span>{{ reminder.moduleName }} &middot; {{ reminder.description }}</span>
-            </div>
-            <small>{{ formatReminderDate(reminder.dueDate) }}</small>
-          </article>
-        }
-      </div>
-    } @else {
-      <div class="empty-state visible operations-empty">
-        <span>0</span>
-        <h3>{{ t('noRemindersFound') }}</h3>
-        <p>{{ t('remindersHelp') }}</p>
-      </div>
-    }
-  </section>
-
-  <section class="cms-panel operations-panel">
-    <div class="operations-section-head">
-      <div>
-        <span>{{ t('operationsTimeline') }}</span>
-        <h3>{{ t('recentOperationsActivity') }}</h3>
-        <p>{{ t('operationsTimelineHelp') }}</p>
+        <span>{{ t('commandCenter') }}</span>
+        <h3>{{ t('commandCenterSnapshot') }}</h3>
+        <p>{{ t('commandCenterSnapshotHelp') }}</p>
       </div>
     </div>
 
-    @if (activityLoadError()) {
-      <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
-    } @else if (loading()) {
-      <div class="operations-muted">{{ t('operationsLoading') }}</div>
-    } @else if (recentActivity().length > 0) {
-      <div class="activity-list">
-        @for (item of recentActivity(); track item.id) {
-          <article class="activity-row">
-            <span class="ops-badge {{ activityActionClass(item.actionType) }}">{{ activityActionLabel(item.actionType) }}</span>
-            <div class="activity-main">
-              <strong>{{ item.title }}</strong>
-              <span>{{ item.moduleName }} &middot; {{ item.description || '-' }}</span>
-            </div>
-            <small>{{ formatActivityTime(item.createdAt) }}</small>
-          </article>
+    <div class="command-grid">
+      <article class="preview-card">
+        <div class="preview-head">
+          <h4>{{ t('recentOperationsActivity') }}</h4>
+        </div>
+        @if (activityLoadError()) {
+          <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
+        } @else if (loading()) {
+          <div class="operations-muted">{{ t('operationsLoading') }}</div>
+        } @else if (recentActivity().length > 0) {
+          <div class="activity-list compact-list">
+            @for (item of recentActivity(); track item.id) {
+              <article class="activity-row compact-row">
+                <span class="ops-badge {{ activityActionClass(item.actionType) }}">{{ activityActionLabel(item.actionType) }}</span>
+                <div class="activity-main">
+                  <strong>{{ item.title }}</strong>
+                  <span>{{ item.moduleName }}</span>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noOperationsActivity') }}</h3></div>
         }
-      </div>
-    } @else {
-      <div class="empty-state visible operations-empty">
-        <span>0</span>
-        <h3>{{ t('noOperationsActivity') }}</h3>
-        <p>{{ t('operationsTimelineHelp') }}</p>
-      </div>
-    }
-  </section>
+      </article>
 
-  <section class="cms-panel operations-panel">
-    <div class="operations-section-head">
-      <div>
-        <span>{{ t('assignmentDesk') }}</span>
-        <h3>{{ t('recentAssignments') }}</h3>
-        <p>{{ t('assignmentManagementHelp') }}</p>
-      </div>
-      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/assignments">{{ t('viewAllAssignments') }}</button>
+      <article class="preview-card">
+        <div class="preview-head">
+          <h4>{{ t('pendingApprovalsPreview') }}</h4>
+          <button type="button" class="text-link" routerLink="/admin/media-operations/approvals">{{ t('viewAll') }}</button>
+        </div>
+        @if (approvalQueue().length > 0) {
+          <div class="mini-list">
+            @for (item of approvalQueue().slice(0, 5); track item.id) {
+              <div class="mini-row"><strong>{{ item.title }}</strong><span>{{ item.moduleName }} &middot; {{ item.status }}</span></div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noApprovalItemsFound') }}</h3></div>
+        }
+      </article>
+
+      <article class="preview-card">
+        <div class="preview-head">
+          <h4>{{ t('upcomingReminders') }}</h4>
+          <button type="button" class="text-link" routerLink="/admin/media-operations/reminders">{{ t('viewAll') }}</button>
+        </div>
+        @if (recentReminders().length > 0) {
+          <div class="mini-list">
+            @for (reminder of recentReminders().slice(0, 5); track reminder.id) {
+              <div class="mini-row"><strong>{{ reminder.title }}</strong><span>{{ reminder.moduleName }} &middot; {{ formatReminderDate(reminder.dueDate) }}</span></div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noRemindersFound') }}</h3></div>
+        }
+      </article>
+
+      <article class="preview-card">
+        <div class="preview-head">
+          <h4>{{ t('recentNotifications') }}</h4>
+          <button type="button" class="text-link" routerLink="/admin/media-operations/notifications">{{ t('viewAll') }}</button>
+        </div>
+        @if (recentNotifications().length > 0) {
+          <div class="mini-list">
+            @for (notification of recentNotifications().slice(0, 5); track notification.id) {
+              <div class="mini-row"><strong>{{ notification.title }}</strong><span>{{ notification.notificationType }} &middot; {{ notification.readStatus }}</span></div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noNotificationsFound') }}</h3></div>
+        }
+      </article>
     </div>
-
-    @if (error()) {
-      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
-    } @else if (loading()) {
-      <div class="operations-muted">{{ t('operationsLoading') }}</div>
-    } @else if (recentAssignments().length > 0) {
-      <div class="assignment-list">
-        @for (assignment of recentAssignments(); track assignment.id) {
-          <article class="assignment-row">
-            <div class="assignment-main">
-              <strong>{{ assignment.title }}</strong>
-              <span>{{ assignment.description }}</span>
-              <div class="assignment-meta">
-                <small>{{ t('location') }}: {{ assignment.location }}</small>
-                <small>{{ t('assignedStaff') }}: {{ staffName(assignment.assignedStaffId) }}</small>
-                <small>{{ t('category') }}: {{ assignment.category }}</small>
-              </div>
-            </div>
-            <div class="assignment-side">
-              <small>{{ t('deadline') }}</small>
-              <strong>{{ formatDeadline(assignment.deadline) }}</strong>
-            </div>
-            <div class="assignment-badges">
-              <span class="ops-badge {{ priorityClass(assignment.priority) }}">{{ priorityLabel(assignment.priority) }}</span>
-              <span class="ops-badge {{ statusClass(assignment.status) }}">{{ statusLabel(assignment.status) }}</span>
-            </div>
-          </article>
-        }
-      </div>
-    } @else {
-      <div class="empty-state visible operations-empty">
-        <span>0</span>
-        <h3>{{ t('noAssignmentsFound') }}</h3>
-        <p>{{ t('assignmentManagementHelp') }}</p>
-      </div>
-    }
-  </section>
-
-  <section class="cms-panel operations-panel">
-    <div class="operations-section-head">
-      <div>
-        <span>{{ t('campaignDesk') }}</span>
-        <h3>{{ t('recentAdBookings') }}</h3>
-        <p>{{ t('adBookingsHelp') }}</p>
-      </div>
-      <button type="button" class="operations-btn secondary" routerLink="/admin/media-operations/ad-bookings">{{ t('viewAllAdBookings') }}</button>
-    </div>
-
-    @if (error()) {
-      <div class="operations-alert">{{ t('operationsLoadError') }}</div>
-    } @else if (loading()) {
-      <div class="operations-muted">{{ t('operationsLoading') }}</div>
-    } @else if (recentAdBookings().length > 0) {
-      <div class="assignment-list">
-        @for (adBooking of recentAdBookings(); track adBooking.id) {
-          <article class="assignment-row">
-            <div class="assignment-main">
-              <strong>{{ adBooking.title }}</strong>
-              <span>{{ adClientName(adBooking.adClientId) }}</span>
-              <div class="assignment-meta">
-                <small>{{ t('placement') }}: {{ placementLabel(adBooking.placement) }}</small>
-                <small>{{ t('campaignDates') }}: {{ formatDateOnly(adBooking.startDate) }} &middot; {{ formatDateOnly(adBooking.endDate) }}</small>
-                <small>{{ t('salesOwner') }}: {{ adBooking.salesOwner || '-' }}</small>
-              </div>
-            </div>
-            <div class="assignment-side">
-              <small>{{ t('paymentStatus') }}</small>
-              <strong>{{ adPaymentStatusLabel(adBooking.paymentStatus) }}</strong>
-            </div>
-            <div class="assignment-badges">
-              <span class="ops-badge {{ adPaymentStatusClass(adBooking.paymentStatus) }}">{{ adPaymentStatusLabel(adBooking.paymentStatus) }}</span>
-              <span class="ops-badge {{ adPublishStatusClass(adBooking.publishStatus) }}">{{ adPublishStatusLabel(adBooking.publishStatus) }}</span>
-            </div>
-          </article>
-        }
-      </div>
-    } @else {
-      <div class="empty-state visible operations-empty">
-        <span>0</span>
-        <h3>{{ t('noAdBookingsFound') }}</h3>
-        <p>{{ t('adBookingsHelp') }}</p>
-      </div>
-    }
   </section>
 </section>

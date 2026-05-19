@@ -78,20 +78,24 @@ export class AdminLayoutComponent {
       return this.i18n.t('team');
     }
 
-    if (url.includes('/admin/media-operations/staff')) {
-      return this.i18n.t('staffManagement');
-    }
-
-    if (url.includes('/admin/media-operations/assignments')) {
-      return this.i18n.t('assignmentManagement');
+    if (url.includes('/admin/media-operations/ad-bookings')) {
+      return this.i18n.t('adBookingsCampaigns');
     }
 
     if (url.includes('/admin/media-operations/ad-clients')) {
       return this.i18n.t('advertisementClients');
     }
 
-    if (url.includes('/admin/media-operations/ad-bookings')) {
-      return this.i18n.t('adBookingsCampaigns');
+    if (url.includes('/admin/media-operations/staff-documents')) {
+      return this.i18n.t('staffDocumentsHrNotes');
+    }
+
+    if (url.includes('/admin/media-operations/staff')) {
+      return this.i18n.t('staffManagement');
+    }
+
+    if (url.includes('/admin/media-operations/assignments')) {
+      return this.i18n.t('assignmentManagement');
     }
 
     if (url.includes('/admin/media-operations/expenses')) {
@@ -118,20 +122,16 @@ export class AdminLayoutComponent {
       return this.i18n.t('leaveRequests');
     }
 
-    if (url.includes('/admin/media-operations/staff-documents')) {
-      return this.i18n.t('staffDocumentsHrNotes');
-    }
-
-    if (url.includes('/admin/media-operations/vendors')) {
-      return this.i18n.t('vendorsSuppliers');
-    }
-
     if (url.includes('/admin/media-operations/purchase-requests')) {
       return this.i18n.t('purchaseRequests');
     }
 
     if (url.includes('/admin/media-operations/purchase-orders')) {
       return this.i18n.t('purchaseOrders');
+    }
+
+    if (url.includes('/admin/media-operations/vendors')) {
+      return this.i18n.t('vendorsSuppliers');
     }
 
     if (url.includes('/admin/media-operations/approvals')) {

@@ -125,7 +125,26 @@ export class MediaOperationsDashboardComponent {
   protected readonly recentAdBookings = computed(() => this.adBookings().slice(0, 4));
   protected readonly recentNotifications = computed(() => this.notifications().slice(0, 4));
   protected readonly recentReminders = computed(() => this.reminders().slice(0, 4));
-  protected readonly recentActivity = computed(() => this.activityLog().slice(0, 6));
+  protected readonly recentActivity = computed(() => this.activityLog().slice(0, 5));
+  protected readonly revenueOverviewMax = computed(() =>
+    Math.max(this.totalInvoiceAmount(), this.pendingPaymentAmount(), this.monthlyExpenseTotal(), 1)
+  );
+  protected readonly workflowOverviewMax = computed(() =>
+    Math.max(this.approvalQueueCount(), this.urgentReminderCount(), this.unreadNotificationCount(), this.recentActivity().length, 1)
+  );
+  protected readonly operationsOverviewMax = computed(() =>
+    Math.max(this.activeStaffCount(), this.activeAssignmentCount(), this.todayScheduledDutyCount(), this.presentTodayCount(), 1)
+  );
+  protected readonly assetProcurementOverviewMax = computed(() =>
+    Math.max(
+      this.availableAssetCount(),
+      this.assignedAssetCount(),
+      this.openPurchaseRequestCount(),
+      this.placedPurchaseOrderCount(),
+      this.activeVendorCount(),
+      1
+    )
+  );
 
   constructor(protected readonly i18n: AdminTranslationService) {}
 
@@ -222,6 +241,14 @@ export class MediaOperationsDashboardComponent {
       currency: 'BDT',
       maximumFractionDigits: 2
     }).format(value || 0);
+  }
+
+  protected barWidth(value: number, max: number): string {
+    if (!value || !max) {
+      return '0%';
+    }
+
+    return `${Math.max(4, Math.min(100, Math.round((value / max) * 100)))}%`;
   }
 
   private formatDate(value: string, includeTime: boolean): string {

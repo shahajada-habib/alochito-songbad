@@ -109,97 +109,86 @@ export const routes: Routes = [
       {
         path: 'media-operations',
         data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-dashboard/media-operations-dashboard.component').then((m) => m.MediaOperationsDashboardComponent)
-      },
-      {
-        path: 'media-operations/staff',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-staff/media-operations-staff.component').then((m) => m.MediaOperationsStaffComponent)
-      },
-      {
-        path: 'media-operations/assignments',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-assignments/media-operations-assignments.component').then((m) => m.MediaOperationsAssignmentsComponent)
-      },
-      {
-        path: 'media-operations/ad-clients',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-ad-clients/media-operations-ad-clients.component').then((m) => m.MediaOperationsAdClientsComponent)
-      },
-      {
-        path: 'media-operations/ad-bookings',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-ad-bookings/media-operations-ad-bookings.component').then((m) => m.MediaOperationsAdBookingsComponent)
-      },
-      {
-        path: 'media-operations/expenses',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-expenses/media-operations-expenses.component').then((m) => m.MediaOperationsExpensesComponent)
-      },
-      {
-        path: 'media-operations/invoices',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-invoices/media-operations-invoices.component').then((m) => m.MediaOperationsInvoicesComponent)
-      },
-      {
-        path: 'media-operations/attendance',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-attendance/media-operations-attendance.component').then((m) => m.MediaOperationsAttendanceComponent)
-      },
-      {
-        path: 'media-operations/assets',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-assets/media-operations-assets.component').then((m) => m.MediaOperationsAssetsComponent)
-      },
-      {
-        path: 'media-operations/reports',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-reports/media-operations-reports.component').then((m) => m.MediaOperationsReportsComponent)
-      },
-      {
-        path: 'media-operations/departments',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-departments/media-operations-departments.component').then((m) => m.MediaOperationsDepartmentsComponent)
-      },
-      {
-        path: 'media-operations/leave-requests',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-leave-requests/media-operations-leave-requests.component').then((m) => m.MediaOperationsLeaveRequestsComponent)
-      },
-      {
-        path: 'media-operations/staff-documents',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-staff-documents/media-operations-staff-documents.component').then((m) => m.MediaOperationsStaffDocumentsComponent)
-      },
-      {
-        path: 'media-operations/vendors',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-vendors/media-operations-vendors.component').then((m) => m.MediaOperationsVendorsComponent)
-      },
-      {
-        path: 'media-operations/purchase-requests',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-purchase-requests/media-operations-purchase-requests.component').then((m) => m.MediaOperationsPurchaseRequestsComponent)
-      },
-      {
-        path: 'media-operations/purchase-orders',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-purchase-orders/media-operations-purchase-orders.component').then((m) => m.MediaOperationsPurchaseOrdersComponent)
-      },
-      {
-        path: 'media-operations/approvals',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-approvals/media-operations-approvals.component').then((m) => m.MediaOperationsApprovalsComponent)
-      },
-      {
-        path: 'media-operations/notifications',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-notifications/media-operations-notifications.component').then((m) => m.MediaOperationsNotificationsComponent)
-      },
-      {
-        path: 'media-operations/reminders',
-        data: { roles: ['admin', 'editor'] },
-        loadComponent: () => import('./admin/pages/media-operations-reminders/media-operations-reminders.component').then((m) => m.MediaOperationsRemindersComponent)
+        loadComponent: () => import('./admin/pages/media-operations-shell/media-operations-shell.component').then((m) => m.MediaOperationsShellComponent),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            loadComponent: () => import('./admin/pages/media-operations-dashboard/media-operations-dashboard.component').then((m) => m.MediaOperationsDashboardComponent)
+          },
+          {
+            path: 'staff',
+            loadComponent: () => import('./admin/pages/media-operations-staff/media-operations-staff.component').then((m) => m.MediaOperationsStaffComponent)
+          },
+          {
+            path: 'assignments',
+            loadComponent: () => import('./admin/pages/media-operations-assignments/media-operations-assignments.component').then((m) => m.MediaOperationsAssignmentsComponent)
+          },
+          {
+            path: 'ad-clients',
+            loadComponent: () => import('./admin/pages/media-operations-ad-clients/media-operations-ad-clients.component').then((m) => m.MediaOperationsAdClientsComponent)
+          },
+          {
+            path: 'ad-bookings',
+            loadComponent: () => import('./admin/pages/media-operations-ad-bookings/media-operations-ad-bookings.component').then((m) => m.MediaOperationsAdBookingsComponent)
+          },
+          {
+            path: 'expenses',
+            loadComponent: () => import('./admin/pages/media-operations-expenses/media-operations-expenses.component').then((m) => m.MediaOperationsExpensesComponent)
+          },
+          {
+            path: 'invoices',
+            loadComponent: () => import('./admin/pages/media-operations-invoices/media-operations-invoices.component').then((m) => m.MediaOperationsInvoicesComponent)
+          },
+          {
+            path: 'attendance',
+            loadComponent: () => import('./admin/pages/media-operations-attendance/media-operations-attendance.component').then((m) => m.MediaOperationsAttendanceComponent)
+          },
+          {
+            path: 'assets',
+            loadComponent: () => import('./admin/pages/media-operations-assets/media-operations-assets.component').then((m) => m.MediaOperationsAssetsComponent)
+          },
+          {
+            path: 'reports',
+            loadComponent: () => import('./admin/pages/media-operations-reports/media-operations-reports.component').then((m) => m.MediaOperationsReportsComponent)
+          },
+          {
+            path: 'departments',
+            loadComponent: () => import('./admin/pages/media-operations-departments/media-operations-departments.component').then((m) => m.MediaOperationsDepartmentsComponent)
+          },
+          {
+            path: 'leave-requests',
+            loadComponent: () => import('./admin/pages/media-operations-leave-requests/media-operations-leave-requests.component').then((m) => m.MediaOperationsLeaveRequestsComponent)
+          },
+          {
+            path: 'staff-documents',
+            loadComponent: () => import('./admin/pages/media-operations-staff-documents/media-operations-staff-documents.component').then((m) => m.MediaOperationsStaffDocumentsComponent)
+          },
+          {
+            path: 'vendors',
+            loadComponent: () => import('./admin/pages/media-operations-vendors/media-operations-vendors.component').then((m) => m.MediaOperationsVendorsComponent)
+          },
+          {
+            path: 'purchase-requests',
+            loadComponent: () => import('./admin/pages/media-operations-purchase-requests/media-operations-purchase-requests.component').then((m) => m.MediaOperationsPurchaseRequestsComponent)
+          },
+          {
+            path: 'purchase-orders',
+            loadComponent: () => import('./admin/pages/media-operations-purchase-orders/media-operations-purchase-orders.component').then((m) => m.MediaOperationsPurchaseOrdersComponent)
+          },
+          {
+            path: 'approvals',
+            loadComponent: () => import('./admin/pages/media-operations-approvals/media-operations-approvals.component').then((m) => m.MediaOperationsApprovalsComponent)
+          },
+          {
+            path: 'notifications',
+            loadComponent: () => import('./admin/pages/media-operations-notifications/media-operations-notifications.component').then((m) => m.MediaOperationsNotificationsComponent)
+          },
+          {
+            path: 'reminders',
+            loadComponent: () => import('./admin/pages/media-operations-reminders/media-operations-reminders.component').then((m) => m.MediaOperationsRemindersComponent)
+          }
+        ]
       },
       {
         path: 'homepage-customize',
