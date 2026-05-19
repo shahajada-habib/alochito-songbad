@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { CsvExportService } from '../../services/csv-export.service';
 import {
+  MediaOperationsAdClient,
   InvoiceFormValue,
   InvoicePaymentStatus,
   MediaOperationsInvoice,
@@ -19,11 +20,12 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './media-operations-invoices.component.html',
   styleUrl: './media-operations-invoices.component.css'
 })
-export class MediaOperationsInvoicesComponent implements OnInit {
+export class MediaOperationsInvoicesComponent implements OnInit, OnDestroy {
   private readonly operations = inject(MediaOperationsService);
   private readonly toast = inject(ToastService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly csvExport = inject(CsvExportService);
+  private readonly printBodyClass = 'invoice-printing';
   protected readonly adClients = this.operations.adClients;
   protected readonly adBookings = this.operations.adBookings;
   protected readonly invoices = this.operations.invoices;
@@ -37,6 +39,7 @@ export class MediaOperationsInvoicesComponent implements OnInit {
   protected editingId: number | null = null;
   protected isFormOpen = false;
   protected isSaving = false;
+  protected selectedPrintInvoice: MediaOperationsInvoice | null = null;
   protected form: InvoiceFormValue = this.emptyForm();
   protected editForm: InvoiceFormValue = this.emptyForm();
   protected readonly paymentStatuses: InvoicePaymentStatus[] = ['UNPAID', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED'];
@@ -63,6 +66,10 @@ export class MediaOperationsInvoicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.closeForm();
+  }
+
+  ngOnDestroy(): void {
+    this.clearPrintMode();
   }
 
   protected t(key: TranslationKey): string {
@@ -206,6 +213,28 @@ export class MediaOperationsInvoicesComponent implements OnInit {
     this.toast.success(this.t('csvExported'));
   }
 
+  protected openPrintInvoice(invoice: MediaOperationsInvoice): void {
+    this.selectedPrintInvoice = invoice;
+    document.body.classList.add(this.printBodyClass);
+  }
+
+  protected closePrintInvoice(): void {
+    this.selectedPrintInvoice = null;
+    this.clearPrintMode();
+  }
+
+  protected printInvoice(): void {
+    window.setTimeout(() => window.print(), 0);
+  }
+
+  protected printClient(invoice: MediaOperationsInvoice): MediaOperationsAdClient | null {
+    return this.adClients().find((client) => client.id === invoice.adClientId) ?? null;
+  }
+
+  protected invoiceBalance(invoice: MediaOperationsInvoice): number {
+    return Math.max(Number(invoice.amount || 0) - Number(invoice.paidAmount || 0), 0);
+  }
+
   protected adClientName(id: number): string {
     return this.operations.adClientName(id);
   }
@@ -233,6 +262,10 @@ export class MediaOperationsInvoicesComponent implements OnInit {
       currency: 'BDT',
       maximumFractionDigits: 2
     }).format(value || 0);
+  }
+
+  private clearPrintMode(): void {
+    document.body.classList.remove(this.printBodyClass);
   }
 
   private emptyForm(): InvoiceFormValue {

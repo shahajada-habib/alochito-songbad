@@ -119,3 +119,47 @@ img {
     transform: translateX(100%);
   }
 }
+
+@media print {
+  body.invoice-printing {
+    background: #ffffff;
+  }
+
+  body.invoice-printing .admin-sidebar,
+  body.invoice-printing .admin-topbar,
+  body.invoice-printing .operations-subnav,
+  body.invoice-printing .operations-heading,
+  body.invoice-printing .operations-toolbar,
+  body.invoice-printing .operations-list-panel,
+  body.invoice-printing .operations-form-panel,
+  body.invoice-printing app-toast-container,
+  body.invoice-printing app-confirm-dialog {
+    display: none !important;
+  }
+
+  body.invoice-printing .admin-shell,
+  body.invoice-printing .admin-main,
+  body.invoice-printing .admin-content,
+  body.invoice-printing .media-operations-workspace,
+  body.invoice-printing .operations-workspace-main,
+  body.invoice-printing .cms-page,
+  body.invoice-printing app-media-operations-invoices {
+    display: block !important;
+    min-height: 0 !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  body.invoice-printing .invoice-print-modal {
+    display: block !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}

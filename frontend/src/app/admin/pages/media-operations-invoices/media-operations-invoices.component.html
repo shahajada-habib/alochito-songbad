@@ -79,6 +79,7 @@
               <strong>{{ formatMoney(invoice.amount) }}</strong>
             </div>
             <span class="ops-badge {{ paymentStatusClass(invoice.paymentStatus) }}">{{ paymentStatusLabel(invoice.paymentStatus) }}</span>
+            <button type="button" class="operations-btn secondary compact print-trigger" (click)="openPrintInvoice(invoice)">{{ t('printInvoice') }}</button>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(invoice)">{{ t('editInvoice') }}</button>
             @if (invoice.paymentStatus !== 'CANCELLED') {
               <button type="button" class="operations-btn secondary compact" (click)="archive(invoice)">{{ t('cancelRecord') }}</button>
@@ -170,5 +171,108 @@
         </form>
       }
     </section>
+  }
+
+  @if (selectedPrintInvoice; as invoice) {
+    <div class="invoice-print-modal" role="dialog" aria-modal="true" [attr.aria-label]="t('invoicePrintTitle')">
+      <div class="invoice-print-backdrop" (click)="closePrintInvoice()"></div>
+      <section class="invoice-print-panel">
+        <div class="invoice-print-actions">
+          <h3>{{ t('invoicePrintTitle') }}</h3>
+          <div>
+            <button type="button" class="operations-btn secondary compact" (click)="closePrintInvoice()">{{ t('close') }}</button>
+            <button type="button" class="operations-btn primary compact" (click)="printInvoice()">{{ t('printInvoice') }}</button>
+          </div>
+        </div>
+
+        <article class="invoice-print-surface">
+          <header class="invoice-print-header">
+            <div>
+              <h1>ALOCHITO SONGBAD</h1>
+              <p>{{ t('mediaOperations') }}</p>
+            </div>
+            <div class="invoice-print-title">
+              <strong>{{ t('invoice') }}</strong>
+              <span>{{ t('invoiceNumber') }}: {{ invoice.invoiceNumber }}</span>
+            </div>
+          </header>
+
+          <section class="invoice-print-parties">
+            <div>
+              <span class="print-label">{{ t('billTo') }}</span>
+              @if (printClient(invoice); as client) {
+                <h2>{{ client.clientName }}</h2>
+                @if (client.companyName) {
+                  <p>{{ client.companyName }}</p>
+                }
+                @if (client.contactPerson) {
+                  <p>{{ client.contactPerson }}</p>
+                }
+                @if (client.phone || client.email) {
+                  <p>{{ client.phone }} {{ client.email }}</p>
+                }
+                @if (client.address) {
+                  <p>{{ client.address }}</p>
+                }
+              } @else {
+                <h2>{{ adClientName(invoice.adClientId) }}</h2>
+              }
+            </div>
+
+            <div class="invoice-print-status">
+              <span class="ops-badge {{ paymentStatusClass(invoice.paymentStatus) }}">{{ paymentStatusLabel(invoice.paymentStatus) }}</span>
+              <p>{{ t('status') }}</p>
+            </div>
+          </section>
+
+          <table class="invoice-print-table">
+            <tbody>
+              <tr>
+                <th>{{ t('description') }}</th>
+                <td>
+                  <strong>{{ invoice.title }}</strong>
+                  @if (invoice.notes) {
+                    <p>{{ invoice.notes }}</p>
+                  }
+                </td>
+              </tr>
+              <tr>
+                <th>{{ t('adBookingReference') }}</th>
+                <td>{{ adBookingTitle(invoice.adBookingId) }}</td>
+              </tr>
+              <tr>
+                <th>{{ t('issueDate') }}</th>
+                <td>{{ formatDate(invoice.issueDate) }}</td>
+              </tr>
+              <tr>
+                <th>{{ t('dueDate') }}</th>
+                <td>{{ formatDate(invoice.dueDate) }}</td>
+              </tr>
+              <tr>
+                <th>{{ t('amount') }}</th>
+                <td>{{ formatMoney(invoice.amount) }}</td>
+              </tr>
+              <tr>
+                <th>{{ t('paidAmount') }}</th>
+                <td>{{ formatMoney(invoice.paidAmount) }}</td>
+              </tr>
+              <tr class="balance-row">
+                <th>{{ t('balanceDue') }}</th>
+                <td>{{ formatMoney(invoiceBalance(invoice)) }}</td>
+              </tr>
+              <tr>
+                <th>{{ t('paymentMethod') }}</th>
+                <td>{{ t('notSpecified') }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <footer class="invoice-print-footer">
+            <strong>{{ t('invoiceFooterThanks') }}</strong>
+            <p>{{ t('invoiceFooterContact') }}</p>
+          </footer>
+        </article>
+      </section>
+    </div>
   }
 </section>
