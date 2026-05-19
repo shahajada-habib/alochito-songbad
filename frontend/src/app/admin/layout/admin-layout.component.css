@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 292px minmax(0, 1fr);
   min-height: 100vh;
-  background: var(--color-background);
+  background: #0f172a;
   color: var(--color-text);
   font-family: var(--font-admin);
 }
@@ -144,8 +144,9 @@
   display: grid;
   grid-template-rows: auto 1fr;
   background:
-    radial-gradient(circle at top right, rgba(220, 38, 38, 0.05), transparent 28%),
-    #f8f7f4;
+    linear-gradient(90deg, rgba(15, 23, 42, 0.055) 0, rgba(15, 23, 42, 0) 54px),
+    radial-gradient(circle at top right, rgba(220, 38, 38, 0.055), transparent 30%),
+    #f7f4ef;
 }
 
 .admin-topbar {
@@ -156,7 +157,10 @@
   padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid #e5e7eb;
   background: #ffffff;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.055);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .topbar-title > span {
@@ -310,8 +314,9 @@
   min-width: 0;
   padding: 28px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 247, 244, 0) 190px),
-    #f8f7f4;
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 0, rgba(15, 23, 42, 0) 30px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(247, 244, 239, 0) 210px),
+    #f7f4ef;
   overflow-x: hidden;
 }
 
@@ -330,21 +335,22 @@
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.055);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
 }
 
 :host ::ng-deep .cms-heading {
   padding: 24px;
   position: relative;
   overflow: hidden;
+  border-left: 4px solid #dc2626;
 }
 
 :host ::ng-deep .cms-heading::before {
   content: "";
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  background: #dc2626;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.28), transparent);
 }
 
 :host ::ng-deep .cms-heading-row {
@@ -442,6 +448,15 @@
 
 :host ::ng-deep .cms-panel {
   padding: 24px;
+  position: relative;
+}
+
+:host ::ng-deep .cms-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 18px auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.18), rgba(15, 23, 42, 0.08), transparent);
 }
 
 :host ::ng-deep .panel-heading {
@@ -517,7 +532,8 @@
   padding: 16px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fffdfb 100%);
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
 }
 
@@ -609,7 +625,7 @@
   padding: 16px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #fbfaf8;
+  background: #fffdfb;
 }
 
 :host ::ng-deep .premium-config-card {
@@ -728,7 +744,8 @@
   overflow-x: auto;
   padding: 12px;
   border-radius: 12px;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fffdfb 100%);
 }
 
 :host ::ng-deep table {
@@ -778,7 +795,8 @@
   border: 1px dashed #d1d5db;
   border-radius: 12px;
   text-align: center;
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fffdfb 100%);
 }
 
 :host ::ng-deep .empty-state.visible {
@@ -818,7 +836,7 @@
   padding: var(--space-4);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #fbfaf8;
+  background: #fffdfb;
 }
 
 :host ::ng-deep .logo-preview > span {
@@ -849,7 +867,7 @@
   padding: var(--space-3);
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  background: #fbfaf8;
+  background: #fffdfb;
 }
 
 :host ::ng-deep .status {
