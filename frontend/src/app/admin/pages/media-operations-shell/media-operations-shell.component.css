@@ -1,35 +1,77 @@
 .media-operations-workspace {
-  display: grid;
-  grid-template-columns: minmax(210px, 250px) minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: start;
+  display: flex;
+  min-width: 0;
+  min-height: calc(100vh - 120px);
+  align-items: stretch;
+  background: #f8f7f4;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .operations-subnav {
-  position: sticky;
-  top: var(--space-3);
-  display: grid;
-  gap: var(--space-3);
-  max-height: calc(100vh - var(--space-5));
-  overflow: auto;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--space-2);
-  background: var(--color-surface);
-  box-shadow: 0 12px 28px rgba(23, 32, 38, 0.05);
+  width: 220px;
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  max-height: calc(100vh - 120px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: #0f172a;
+  color: #cbd5e1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
 }
 
-.subnav-head span {
-  color: var(--color-primary);
-  font-size: 13px;
+.operations-subnav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.operations-subnav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.45);
+}
+
+.subnav-head {
+  padding: 18px 16px 16px;
+  border-bottom: 1px solid rgba(220, 38, 38, 0.68);
+}
+
+.subnav-brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.subnav-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 15px;
   font-weight: 900;
 }
 
-.subnav-head p {
-  margin: 6px 0 0;
-  color: var(--color-muted);
-  font-size: 13px;
-  line-height: 1.5;
+.subnav-brand strong {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.subnav-brand p {
+  margin: 3px 0 0;
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.3;
 }
 
 .subnav-groups,
@@ -39,78 +81,351 @@
 }
 
 .subnav-groups {
-  gap: var(--space-3);
-}
-
-.subnav-group {
-  gap: 8px;
+  gap: 2px;
+  padding: 8px 0 12px;
 }
 
 .subnav-group h3 {
   margin: 0;
-  color: var(--color-text-secondary);
-  font-size: 12px;
-  font-weight: 900;
+  padding: 16px 16px 4px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bangla-mode .subnav-group h3 {
   letter-spacing: 0;
 }
 
-.subnav-links {
-  gap: 5px;
-}
-
 .subnav-links a {
-  display: block;
-  padding: 8px 10px;
-  border-radius: var(--space-1);
-  color: var(--color-text);
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 12px 0 20px;
+  border-left: 3px solid transparent;
+  color: #cbd5e1;
   font-size: 13px;
-  font-weight: 800;
-  line-height: 1.35;
+  font-weight: 500;
+  line-height: 1.2;
   text-decoration: none;
+  white-space: nowrap;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
 }
 
 .subnav-links a:hover {
-  background: #f6f1eb;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
 }
 
 .subnav-links a.active {
-  background: #fff2ef;
-  color: var(--color-primary);
-  box-shadow: inset 3px 0 0 var(--color-primary);
+  border-left-color: #dc2626;
+  background: rgba(220, 38, 38, 0.12);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.nav-icon {
+  width: 15px;
+  flex: 0 0 15px;
+  color: #f87171;
+  font-size: 11px;
+  text-align: center;
+}
+
+.nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subnav-version {
+  margin-top: auto;
+  padding: 14px 16px 16px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .operations-workspace-main {
+  flex: 1 1 auto;
   min-width: 0;
+  overflow-y: auto;
+  background: #f8f7f4;
 }
 
-@media (max-width: 1180px) {
+.operations-workspace-main ::ng-deep .cms-page {
+  padding: 0;
+}
+
+.operations-workspace-main ::ng-deep .operations-page,
+.operations-workspace-main ::ng-deep .reports-page {
+  gap: 18px;
+}
+
+.operations-workspace-main ::ng-deep .operations-heading,
+.operations-workspace-main ::ng-deep .reports-heading {
+  border: 0;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 0;
+  background: #ffffff;
+  box-shadow: none;
+  padding: 28px 32px;
+}
+
+.operations-workspace-main ::ng-deep .operations-heading span,
+.operations-workspace-main ::ng-deep .reports-heading span {
+  color: #dc2626;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bangla-mode .operations-workspace-main ::ng-deep .operations-heading span,
+.bangla-mode .operations-workspace-main ::ng-deep .reports-heading span {
+  letter-spacing: 0;
+}
+
+.operations-workspace-main ::ng-deep .operations-heading h2,
+.operations-workspace-main ::ng-deep .reports-heading h2 {
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.operations-workspace-main ::ng-deep .operations-heading p,
+.operations-workspace-main ::ng-deep .reports-heading p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.operations-workspace-main ::ng-deep .operations-btn.primary {
+  border-radius: 6px;
+  background: #dc2626;
+  color: #ffffff;
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 20px;
+}
+
+.operations-workspace-main ::ng-deep .operations-btn.primary:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.operations-workspace-main ::ng-deep .operations-toolbar,
+.operations-workspace-main ::ng-deep .operations-form-panel,
+.operations-workspace-main ::ng-deep .operations-list-panel,
+.operations-workspace-main ::ng-deep .reports-section,
+.operations-workspace-main ::ng-deep .cms-panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.operations-workspace-main ::ng-deep .operations-form-panel,
+.operations-workspace-main ::ng-deep .operations-list-panel,
+.operations-workspace-main ::ng-deep .reports-section,
+.operations-workspace-main ::ng-deep .cms-panel {
+  padding: 24px;
+}
+
+.operations-workspace-main ::ng-deep .operations-form-panel {
+  background: #f9fafb;
+}
+
+.operations-workspace-main ::ng-deep .operations-section-head span,
+.operations-workspace-main ::ng-deep .form-panel-head span,
+.operations-workspace-main ::ng-deep .reports-section-head span {
+  color: #dc2626;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bangla-mode .operations-workspace-main ::ng-deep .operations-section-head span,
+.bangla-mode .operations-workspace-main ::ng-deep .form-panel-head span,
+.bangla-mode .operations-workspace-main ::ng-deep .reports-section-head span {
+  letter-spacing: 0;
+}
+
+.operations-workspace-main ::ng-deep .operations-section-head h3,
+.operations-workspace-main ::ng-deep .form-panel-head h3,
+.operations-workspace-main ::ng-deep .reports-section-head h3 {
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.operations-workspace-main ::ng-deep input,
+.operations-workspace-main ::ng-deep select,
+.operations-workspace-main ::ng-deep textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  color: #374151;
+  font: inherit;
+  font-size: 14px;
+}
+
+.operations-workspace-main ::ng-deep input,
+.operations-workspace-main ::ng-deep select {
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.operations-workspace-main ::ng-deep textarea {
+  padding: 10px 12px;
+}
+
+.operations-workspace-main ::ng-deep input:focus,
+.operations-workspace-main ::ng-deep select:focus,
+.operations-workspace-main ::ng-deep textarea:focus {
+  border-color: #dc2626;
+  outline: none;
+}
+
+.operations-workspace-main ::ng-deep .operations-toolbar label span,
+.operations-workspace-main ::ng-deep .operations-form label span {
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.operations-workspace-main ::ng-deep .operations-btn.secondary {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  box-shadow: none;
+}
+
+.operations-workspace-main ::ng-deep .operations-toolbar .operations-btn.secondary {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.operations-workspace-main ::ng-deep .operations-toolbar .operations-btn.secondary:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.operations-workspace-main ::ng-deep article[class$='-card'],
+.operations-workspace-main ::ng-deep .assignment-row,
+.operations-workspace-main ::ng-deep .activity-row {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.operations-workspace-main ::ng-deep article[class$='-card']:hover,
+.operations-workspace-main ::ng-deep .assignment-row:hover,
+.operations-workspace-main ::ng-deep .activity-row:hover {
+  border-color: #dc2626;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
+  transform: translateY(-1px);
+}
+
+.operations-workspace-main ::ng-deep .ops-badge {
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.operations-workspace-main ::ng-deep .staff-active,
+.operations-workspace-main ::ng-deep .ad-payment-paid,
+.operations-workspace-main ::ng-deep .assignment-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.operations-workspace-main ::ng-deep .staff-inactive,
+.operations-workspace-main ::ng-deep .assignment-draft,
+.operations-workspace-main ::ng-deep .ad-publish-draft {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.operations-workspace-main ::ng-deep .assignment-cancelled,
+.operations-workspace-main ::ng-deep .ad-payment-unpaid,
+.operations-workspace-main ::ng-deep .ad-publish-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.operations-workspace-main ::ng-deep .priority-high,
+.operations-workspace-main ::ng-deep .priority-urgent,
+.operations-workspace-main ::ng-deep .ad-payment-partial {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.operations-workspace-main ::ng-deep .ad-publish-scheduled,
+.operations-workspace-main ::ng-deep .ad-publish-running,
+.operations-workspace-main ::ng-deep .assignment-assigned,
+.operations-workspace-main ::ng-deep .assignment-in-progress,
+.operations-workspace-main ::ng-deep .assignment-submitted {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.operations-workspace-main ::ng-deep .empty-state.visible {
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  background: #f9fafb;
+  color: #6b7280;
+  text-align: center;
+}
+
+.operations-workspace-main ::ng-deep .empty-state.visible span {
+  color: #9ca3af;
+  font-size: 42px;
+}
+
+@media (max-width: 1280px) {
+  .operations-subnav {
+    width: 200px;
+    flex-basis: 200px;
+  }
+}
+
+@media (max-width: 980px) {
   .media-operations-workspace {
+    display: grid;
     grid-template-columns: 1fr;
   }
 
   .operations-subnav {
-    position: static;
+    width: auto;
+    flex-basis: auto;
     max-height: none;
   }
 
   .subnav-groups {
     display: flex;
-    gap: var(--space-2);
+    gap: 12px;
     overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  .subnav-group {
-    min-width: 210px;
-  }
-}
-
-@media (max-width: 640px) {
-  .operations-subnav {
-    padding: var(--space-2);
+    padding: 10px 12px 14px;
   }
 
   .subnav-group {
     min-width: 190px;
+  }
+}
+
+@media (max-width: 640px) {
+  .operations-workspace-main ::ng-deep .operations-heading,
+  .operations-workspace-main ::ng-deep .reports-heading {
+    padding: 22px;
   }
 }

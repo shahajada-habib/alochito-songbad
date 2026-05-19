@@ -1,73 +1,60 @@
-<section class="cms-page">
-  <div class="operations-hero">
+<section class="cms-page operations-overview-page">
+  <div class="overview-hero">
     <div class="hero-copy">
       <span class="eyebrow">{{ t('mediaOperations') }}</span>
-      <h2>{{ t('mediaOperationsOverview') }}</h2>
-      <p>{{ t('mediaOperationsOverviewHelp') }}</p>
-      <div class="hero-metrics">
-        <span>{{ t('activeAssignments') }} <strong>{{ activeAssignmentCount() }}</strong></span>
-        <span>{{ t('pendingPaymentAmount') }} <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong></span>
-        <span>{{ t('urgentReminders') }} <strong>{{ urgentReminderCount() }}</strong></span>
-      </div>
+      <h2>{{ t('mediaOperations') }}</h2>
+      <p>{{ t('newsroomCommandCenterSubtitle') }}</p>
+      <small>{{ todayLabel() }}</small>
     </div>
-    <div class="hero-queue">
+    <div class="hero-status-card">
       <span>{{ t('commandCenterStatus') }}</span>
-      <strong>{{ approvalQueueCount() + urgentReminderCount() + unreadNotificationCount() }}</strong>
-      <small>{{ t('itemsNeedAttention') }}</small>
-      <div class="hero-status-list">
-        <span>{{ t('approvalQueue') }} <strong>{{ approvalQueueCount() }}</strong></span>
-        <span>{{ t('unreadNotifications') }} <strong>{{ unreadNotificationCount() }}</strong></span>
-        <span>{{ t('recentOperationsActivity') }} <strong>{{ recentActivity().length }}</strong></span>
+      <div class="status-metrics">
+        <div><strong>{{ activeStaffCount() }}</strong><small>{{ t('activeStaff') }}</small></div>
+        <div><strong>{{ activeAssignmentCount() }}</strong><small>{{ t('activeAssignments') }}</small></div>
+        <div><strong>{{ unreadNotificationCount() }}</strong><small>{{ t('unreadNotifications') }}</small></div>
       </div>
     </div>
   </div>
 
-  <section class="summary-section overview-kpis">
-    <div class="operations-section-head">
-      <div>
-        <span>{{ t('overview') }}</span>
-        <h3>{{ t('todayOperationalPulse') }}</h3>
-        <p>{{ t('todayOperationalPulseHelp') }}</p>
-      </div>
+  <section class="overview-block">
+    <div class="block-head">
+      <span>{{ t('overview') }}</span>
+      <h3>{{ t('todayOperationalPulse') }}</h3>
     </div>
-    <div class="summary-grid six-up">
-      <article class="operations-stat">
-        <span class="stat-mark">{{ t('assignmentStatMark') }}</span>
-        <div><strong>{{ activeAssignmentCount() }}</strong><span>{{ t('activeAssignments') }}</span><small>{{ t('assignmentQueueHint') }}</small></div>
+    <div class="kpi-grid">
+      <article class="kpi-card accent-red">
+        <div><strong>{{ activeStaffCount() }}</strong><span>{{ t('activeStaff') }}</span></div>
+        <i>◎</i>
       </article>
-      <article class="operations-stat">
-        <span class="stat-mark">{{ t('staffStatMark') }}</span>
-        <div><strong>{{ activeStaffCount() }}</strong><span>{{ t('activeStaff') }}</span><small>{{ t('staffCoverageHint') }}</small></div>
+      <article class="kpi-card accent-dark">
+        <div><strong>{{ activeAssignmentCount() }}</strong><span>{{ t('activeAssignments') }}</span></div>
+        <i>◆</i>
       </article>
-      <article class="operations-stat urgent-stat">
-        <span class="stat-mark">{{ t('approvalStatMark') }}</span>
-        <div><strong>{{ approvalQueueCount() }}</strong><span>{{ t('approvalQueue') }}</span><small>{{ t('approvalQueueHint') }}</small></div>
+      <article class="kpi-card accent-amber">
+        <div><strong>{{ approvalQueueCount() }}</strong><span>{{ t('approvalQueue') }}</span></div>
+        <i>◈</i>
       </article>
-      <article class="operations-stat urgent-stat">
-        <span class="stat-mark">{{ t('pendingPaymentStatMark') }}</span>
-        <div><strong>{{ formatMoney(pendingPaymentAmount()) }}</strong><span>{{ t('pendingPaymentAmount') }}</span><small>{{ t('pendingPaymentAmountHint') }}</small></div>
+      <article class="kpi-card accent-red">
+        <div><strong>{{ formatMoney(pendingPaymentAmount()) }}</strong><span>{{ t('pendingPaymentAmount') }}</span></div>
+        <i>◉</i>
       </article>
-      <article class="operations-stat urgent-stat">
-        <span class="stat-mark">{{ t('reminderStatMark') }}</span>
-        <div><strong>{{ urgentReminderCount() }}</strong><span>{{ t('urgentReminders') }}</span><small>{{ t('urgentRemindersHint') }}</small></div>
+      <article class="kpi-card accent-amber">
+        <div><strong>{{ urgentReminderCount() }}</strong><span>{{ t('urgentReminders') }}</span></div>
+        <i>◆</i>
       </article>
-      <article class="operations-stat">
-        <span class="stat-mark">{{ t('expenseStatMark') }}</span>
-        <div><strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong><span>{{ t('monthlyExpenses') }}</span><small>{{ t('monthlyExpensesHint') }}</small></div>
+      <article class="kpi-card accent-dark">
+        <div><strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong><span>{{ t('monthlyExpenses') }}</span></div>
+        <i>◎</i>
       </article>
     </div>
   </section>
 
-  <section class="analytics-section">
-    <div class="operations-section-head">
-      <div>
-        <span>{{ t('analyticsOverview') }}</span>
-        <h3>{{ t('operationsAnalytics') }}</h3>
-        <p>{{ t('operationsAnalyticsHelp') }}</p>
-      </div>
+  <section class="overview-block">
+    <div class="block-head">
+      <span>{{ t('analyticsOverview') }}</span>
+      <h3>{{ t('operationsAnalytics') }}</h3>
     </div>
-
-    <div class="analytics-grid compact-analytics">
+    <div class="analytics-grid">
       <article class="analytics-card">
         <div class="analytics-head">
           <span>{{ t('revenueOverview') }}</span>
@@ -75,19 +62,24 @@
         </div>
         <div class="bar-list">
           <div class="bar-row">
-            <span>{{ t('totalInvoiceAmount') }}</span>
+            <span>{{ t('totalInvoiced') }}</span>
             <strong>{{ formatMoney(totalInvoiceAmount()) }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(totalInvoiceAmount(), revenueOverviewMax())"></i></div>
+            <div class="bar-track"><i class="fill-dark" [style.width]="barWidth(totalInvoiceAmount(), revenueOverviewMax())"></i></div>
           </div>
-          <div class="bar-row warn">
-            <span>{{ t('pendingPaymentAmount') }}</span>
+          <div class="bar-row">
+            <span>{{ t('paidAmount') }}</span>
+            <strong>{{ formatMoney(paidInvoiceAmount()) }}</strong>
+            <div class="bar-track"><i class="fill-red" [style.width]="barWidth(paidInvoiceAmount(), revenueOverviewMax())"></i></div>
+          </div>
+          <div class="bar-row">
+            <span>{{ t('unpaidAmount') }}</span>
             <strong>{{ formatMoney(pendingPaymentAmount()) }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(pendingPaymentAmount(), revenueOverviewMax())"></i></div>
+            <div class="bar-track"><i class="fill-muted" [style.width]="barWidth(pendingPaymentAmount(), revenueOverviewMax())"></i></div>
           </div>
           <div class="bar-row">
             <span>{{ t('monthlyExpenses') }}</span>
             <strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(monthlyExpenseTotal(), revenueOverviewMax())"></i></div>
+            <div class="bar-track"><i class="fill-amber" [style.width]="barWidth(monthlyExpenseTotal(), revenueOverviewMax())"></i></div>
           </div>
         </div>
       </article>
@@ -97,11 +89,10 @@
           <span>{{ t('workflowOverview') }}</span>
           <strong>{{ approvalQueueCount() + urgentReminderCount() + unreadNotificationCount() }}</strong>
         </div>
-        <div class="tile-grid">
-          <div class="status-tile"><span>{{ t('approvalQueue') }}</span><strong>{{ approvalQueueCount() }}</strong></div>
-          <div class="status-tile"><span>{{ t('urgentReminders') }}</span><strong>{{ urgentReminderCount() }}</strong></div>
-          <div class="status-tile"><span>{{ t('unreadNotifications') }}</span><strong>{{ unreadNotificationCount() }}</strong></div>
-          <div class="status-tile"><span>{{ t('recentOperationsActivity') }}</span><strong>{{ recentActivity().length }}</strong></div>
+        <div class="pill-list">
+          <span><i class="pill-red"></i>{{ t('approvalQueue') }} <strong>{{ approvalQueueCount() }}</strong></span>
+          <span><i class="pill-amber"></i>{{ t('urgentReminders') }} <strong>{{ urgentReminderCount() }}</strong></span>
+          <span><i class="pill-blue"></i>{{ t('unreadNotifications') }} <strong>{{ unreadNotificationCount() }}</strong></span>
         </div>
       </article>
 
@@ -111,140 +102,83 @@
           <strong>{{ activeStaffCount() }}</strong>
         </div>
         <div class="bar-list">
-          <div class="bar-row">
-            <span>{{ t('activeStaff') }}</span>
-            <strong>{{ activeStaffCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(activeStaffCount(), operationsOverviewMax())"></i></div>
-          </div>
-          <div class="bar-row">
-            <span>{{ t('activeAssignments') }}</span>
-            <strong>{{ activeAssignmentCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(activeAssignmentCount(), operationsOverviewMax())"></i></div>
-          </div>
-          <div class="bar-row">
-            <span>{{ t('todayScheduledDuties') }}</span>
-            <strong>{{ todayScheduledDutyCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(todayScheduledDutyCount(), operationsOverviewMax())"></i></div>
-          </div>
-          <div class="bar-row">
-            <span>{{ t('presentToday') }}</span>
-            <strong>{{ presentTodayCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(presentTodayCount(), operationsOverviewMax())"></i></div>
-          </div>
+          <div class="bar-row"><span>{{ t('activeStaff') }}</span><strong>{{ activeStaffCount() }}</strong><div class="bar-track"><i class="fill-red" [style.width]="barWidth(activeStaffCount(), operationsOverviewMax())"></i></div></div>
+          <div class="bar-row"><span>{{ t('activeAssignments') }}</span><strong>{{ activeAssignmentCount() }}</strong><div class="bar-track"><i class="fill-dark" [style.width]="barWidth(activeAssignmentCount(), operationsOverviewMax())"></i></div></div>
+          <div class="bar-row"><span>{{ t('presentToday') }}</span><strong>{{ presentTodayCount() }}</strong><div class="bar-track"><i class="fill-blue" [style.width]="barWidth(presentTodayCount(), operationsOverviewMax())"></i></div></div>
         </div>
       </article>
 
       <article class="analytics-card">
         <div class="analytics-head">
-          <span>{{ t('assetProcurementOverview') }}</span>
-          <strong>{{ availableAssetCount() + assignedAssetCount() }}</strong>
+          <span>{{ t('assetOverview') }}</span>
+          <strong>{{ availableAssetCount() + assignedAssetCount() + maintenanceAssetCount() }}</strong>
         </div>
         <div class="bar-list">
-          <div class="bar-row">
-            <span>{{ t('availableAssets') }}</span>
-            <strong>{{ availableAssetCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(availableAssetCount(), assetProcurementOverviewMax())"></i></div>
-          </div>
-          <div class="bar-row">
-            <span>{{ t('assignedAssets') }}</span>
-            <strong>{{ assignedAssetCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(assignedAssetCount(), assetProcurementOverviewMax())"></i></div>
-          </div>
-          <div class="bar-row warn">
-            <span>{{ t('openPurchaseRequests') }}</span>
-            <strong>{{ openPurchaseRequestCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(openPurchaseRequestCount(), assetProcurementOverviewMax())"></i></div>
-          </div>
-          <div class="bar-row">
-            <span>{{ t('placedPurchaseOrders') }}</span>
-            <strong>{{ placedPurchaseOrderCount() }}</strong>
-            <div class="bar-track"><i [style.width]="barWidth(placedPurchaseOrderCount(), assetProcurementOverviewMax())"></i></div>
-          </div>
+          <div class="bar-row"><span>{{ t('availableAssets') }}</span><strong>{{ availableAssetCount() }}</strong><div class="bar-track"><i class="fill-red" [style.width]="barWidth(availableAssetCount(), assetProcurementOverviewMax())"></i></div></div>
+          <div class="bar-row"><span>{{ t('assignedAssets') }}</span><strong>{{ assignedAssetCount() }}</strong><div class="bar-track"><i class="fill-dark" [style.width]="barWidth(assignedAssetCount(), assetProcurementOverviewMax())"></i></div></div>
+          <div class="bar-row"><span>{{ t('underMaintenance') }}</span><strong>{{ maintenanceAssetCount() }}</strong><div class="bar-track"><i class="fill-amber" [style.width]="barWidth(maintenanceAssetCount(), assetProcurementOverviewMax())"></i></div></div>
         </div>
       </article>
     </div>
   </section>
 
-  <section class="cms-panel operations-panel">
-    <div class="operations-section-head">
-      <div>
-        <span>{{ t('commandCenter') }}</span>
-        <h3>{{ t('commandCenterSnapshot') }}</h3>
-        <p>{{ t('commandCenterSnapshotHelp') }}</p>
-      </div>
+  <section class="overview-block">
+    <div class="block-head">
+      <span>{{ t('commandCenter') }}</span>
+      <h3>{{ t('commandCenterSnapshot') }}</h3>
     </div>
-
     <div class="command-grid">
-      <article class="preview-card">
-        <div class="preview-head">
-          <h4>{{ t('recentOperationsActivity') }}</h4>
-        </div>
+      <article class="snapshot-panel">
+        <header><span>{{ t('recentOperationsActivity') }}</span><strong>{{ recentActivity().length }}</strong></header>
         @if (activityLoadError()) {
-          <div class="operations-alert">{{ t('operationsSectionLoadError') }}</div>
-        } @else if (loading()) {
-          <div class="operations-muted">{{ t('operationsLoading') }}</div>
+          <div class="panel-empty">{{ t('operationsSectionLoadError') }}</div>
         } @else if (recentActivity().length > 0) {
-          <div class="activity-list compact-list">
+          <div class="snapshot-list">
             @for (item of recentActivity(); track item.id) {
-              <article class="activity-row compact-row">
-                <span class="ops-badge {{ activityActionClass(item.actionType) }}">{{ activityActionLabel(item.actionType) }}</span>
-                <div class="activity-main">
-                  <strong>{{ item.title }}</strong>
-                  <span>{{ item.moduleName }}</span>
-                </div>
-              </article>
+              <div><strong>{{ item.title }}</strong><span>{{ item.moduleName }}</span></div>
             }
           </div>
         } @else {
-          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noOperationsActivity') }}</h3></div>
+          <div class="panel-empty">{{ t('allClear') }}</div>
         }
       </article>
 
-      <article class="preview-card">
-        <div class="preview-head">
-          <h4>{{ t('pendingApprovalsPreview') }}</h4>
-          <button type="button" class="text-link" routerLink="/admin/media-operations/approvals">{{ t('viewAll') }}</button>
-        </div>
+      <article class="snapshot-panel">
+        <header><span>{{ t('pendingApprovalsPreview') }}</span><strong>{{ approvalQueue().length }}</strong></header>
         @if (approvalQueue().length > 0) {
-          <div class="mini-list">
+          <div class="snapshot-list">
             @for (item of approvalQueue().slice(0, 5); track item.id) {
-              <div class="mini-row"><strong>{{ item.title }}</strong><span>{{ item.moduleName }} &middot; {{ item.status }}</span></div>
+              <div><strong>{{ item.title }}</strong><span>{{ item.moduleName }}</span></div>
             }
           </div>
         } @else {
-          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noApprovalItemsFound') }}</h3></div>
+          <div class="panel-empty">{{ t('allClear') }}</div>
         }
       </article>
 
-      <article class="preview-card">
-        <div class="preview-head">
-          <h4>{{ t('upcomingReminders') }}</h4>
-          <button type="button" class="text-link" routerLink="/admin/media-operations/reminders">{{ t('viewAll') }}</button>
-        </div>
+      <article class="snapshot-panel">
+        <header><span>{{ t('remindersDueSoon') }}</span><strong>{{ recentReminders().length }}</strong></header>
         @if (recentReminders().length > 0) {
-          <div class="mini-list">
+          <div class="snapshot-list">
             @for (reminder of recentReminders().slice(0, 5); track reminder.id) {
-              <div class="mini-row"><strong>{{ reminder.title }}</strong><span>{{ reminder.moduleName }} &middot; {{ formatReminderDate(reminder.dueDate) }}</span></div>
+              <div><strong>{{ reminder.title }}</strong><span>{{ formatReminderDate(reminder.dueDate) }}</span></div>
             }
           </div>
         } @else {
-          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noRemindersFound') }}</h3></div>
+          <div class="panel-empty">{{ t('allClear') }}</div>
         }
       </article>
 
-      <article class="preview-card">
-        <div class="preview-head">
-          <h4>{{ t('recentNotifications') }}</h4>
-          <button type="button" class="text-link" routerLink="/admin/media-operations/notifications">{{ t('viewAll') }}</button>
-        </div>
+      <article class="snapshot-panel">
+        <header><span>{{ t('recentNotifications') }}</span><strong>{{ recentNotifications().length }}</strong></header>
         @if (recentNotifications().length > 0) {
-          <div class="mini-list">
+          <div class="snapshot-list">
             @for (notification of recentNotifications().slice(0, 5); track notification.id) {
-              <div class="mini-row"><strong>{{ notification.title }}</strong><span>{{ notification.notificationType }} &middot; {{ notification.readStatus }}</span></div>
+              <div><strong>{{ notification.title }}</strong><span>{{ notification.notificationType }}</span></div>
             }
           </div>
         } @else {
-          <div class="empty-state visible operations-empty compact-empty"><span>0</span><h3>{{ t('noNotificationsFound') }}</h3></div>
+          <div class="panel-empty">{{ t('allClear') }}</div>
         }
       </article>
     </div>

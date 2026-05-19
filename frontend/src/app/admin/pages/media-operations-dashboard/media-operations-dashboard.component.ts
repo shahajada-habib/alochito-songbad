@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import {
@@ -16,7 +15,7 @@ import {
 @Component({
   selector: 'app-media-operations-dashboard',
   standalone: true,
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './media-operations-dashboard.component.html',
   styleUrl: './media-operations-dashboard.component.css'
 })
@@ -78,6 +77,9 @@ export class MediaOperationsDashboardComponent {
   protected readonly paidInvoiceCount = computed(() =>
     this.invoices().filter((item) => item.paymentStatus === 'PAID').length
   );
+  protected readonly paidInvoiceAmount = computed(() =>
+    this.invoices().filter((item) => item.paymentStatus !== 'CANCELLED').reduce((sum, item) => sum + item.paidAmount, 0)
+  );
   protected readonly totalInvoiceAmount = computed(() =>
     this.invoices().filter((item) => item.paymentStatus !== 'CANCELLED').reduce((sum, item) => sum + item.amount, 0)
   );
@@ -99,6 +101,9 @@ export class MediaOperationsDashboardComponent {
   );
   protected readonly assignedAssetCount = computed(() =>
     this.assets().filter((item) => item.availabilityStatus === 'ASSIGNED').length
+  );
+  protected readonly maintenanceAssetCount = computed(() =>
+    this.assets().filter((item) => item.availabilityStatus === 'UNDER_MAINTENANCE').length
   );
   protected readonly activeDepartmentCount = computed(() =>
     this.departments().filter((item) => item.status === 'ACTIVE').length
@@ -139,6 +144,7 @@ export class MediaOperationsDashboardComponent {
     Math.max(
       this.availableAssetCount(),
       this.assignedAssetCount(),
+      this.maintenanceAssetCount(),
       this.openPurchaseRequestCount(),
       this.placedPurchaseOrderCount(),
       this.activeVendorCount(),
@@ -241,6 +247,15 @@ export class MediaOperationsDashboardComponent {
       currency: 'BDT',
       maximumFractionDigits: 2
     }).format(value || 0);
+  }
+
+  protected todayLabel(): string {
+    return new Intl.DateTimeFormat(this.i18n.language() === 'bn' ? 'bn-BD' : 'en-GB', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(new Date());
   }
 
   protected barWidth(value: number, max: number): string {

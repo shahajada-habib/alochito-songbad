@@ -1,8 +1,13 @@
-<section class="media-operations-workspace">
+<section class="media-operations-workspace" [class.bangla-mode]="i18n.language() === 'bn'">
   <aside class="operations-subnav" aria-label="Media Operations navigation">
     <div class="subnav-head">
-      <span>{{ t('mediaOperations') }}</span>
-      <p>{{ t('mediaOperationsWorkspaceHelp') }}</p>
+      <div class="subnav-brand">
+        <span class="subnav-icon">O</span>
+        <div>
+          <strong>{{ t('mediaOperations') }}</strong>
+          <p>{{ t('newsroomCommandCenter') }}</p>
+        </div>
+      </div>
     </div>
 
     <nav class="subnav-groups">
@@ -16,13 +21,15 @@
                 routerLinkActive="active"
                 [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
               >
-                {{ t(item.label) }}
+                <span class="nav-icon">{{ item.icon }}</span>
+                <span class="nav-label">{{ t(item.label) }}</span>
               </a>
             }
           </div>
         </section>
       }
     </nav>
+    <div class="subnav-version">{{ t('mediaOperationsVersion') }}</div>
   </aside>
 
   <main class="operations-workspace-main">
