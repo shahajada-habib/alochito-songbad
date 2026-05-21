@@ -253,7 +253,7 @@
   color: var(--color-muted);
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1500px) {
   .ad-client-card {
     grid-template-columns: 48px minmax(0, 1fr) minmax(170px, auto);
   }

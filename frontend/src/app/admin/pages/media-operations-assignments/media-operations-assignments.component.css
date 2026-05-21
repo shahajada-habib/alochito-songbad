@@ -271,7 +271,7 @@
   color: var(--color-muted);
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1500px) {
   .assignment-card {
     grid-template-columns: minmax(0, 1fr) minmax(160px, 0.55fr) minmax(170px, auto);
   }

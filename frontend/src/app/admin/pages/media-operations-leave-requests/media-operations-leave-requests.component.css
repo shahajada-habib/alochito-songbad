@@ -53,5 +53,6 @@
 .operations-muted { border-radius: var(--space-1); padding: var(--space-3); font-weight: 800; }
 .operations-alert { border: 1px solid #f4d2cb; background: #fff2ef; color: #b42318; }
 .operations-muted { border: 1px solid #e3e8e5; background: var(--color-surface-soft); color: var(--color-muted); }
+@media (max-width: 1500px) { .operations-card { grid-template-columns: minmax(0, 1fr) auto; } }
 @media (max-width: 980px) { .operations-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .wide-field { grid-column: 1 / -1; } }
 @media (max-width: 760px) { .operations-heading, .form-panel-head, .operations-section-head { flex-direction: column; } .operations-toolbar, .operations-form, .operations-card { grid-template-columns: 1fr; } .operations-btn { width: 100%; } }

@@ -250,7 +250,7 @@
   color: var(--color-muted);
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1500px) {
   .staff-card {
     grid-template-columns: 44px minmax(180px, 1fr) minmax(160px, 0.8fr) auto;
   }

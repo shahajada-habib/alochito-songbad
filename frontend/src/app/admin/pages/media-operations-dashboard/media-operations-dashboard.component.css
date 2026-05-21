@@ -1,14 +1,18 @@
 .operations-overview-page {
   gap: 18px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   color: #374151;
 }
 
 .overview-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: clamp(14px, 2vw, 24px);
   align-items: stretch;
-  padding: 32px;
+  min-width: 0;
+  padding: clamp(22px, 2.4vw, 32px);
   border-bottom: 1px solid #e5e7eb;
   background: #ffffff;
 }
@@ -102,8 +106,10 @@
 }
 
 .overview-block {
-  margin: 0 18px;
-  padding: 24px;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 clamp(14px, 2vw, 18px);
+  padding: clamp(18px, 2vw, 24px);
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   background: #ffffff;
@@ -124,7 +130,7 @@
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: 14px;
 }
 
@@ -192,7 +198,7 @@
 .analytics-grid,
 .command-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 16px;
 }
 
@@ -216,6 +222,8 @@
   justify-content: space-between;
   gap: 12px;
   align-items: flex-start;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .analytics-head strong {
@@ -234,7 +242,7 @@
 
 .bar-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
   gap: 7px 12px;
   align-items: center;
 }
@@ -303,6 +311,7 @@
   color: #374151;
   font-size: 13px;
   font-weight: 700;
+  min-width: 0;
 }
 
 .pill-list i {
@@ -342,6 +351,14 @@
   align-items: center;
   padding: 14px 16px;
   border-bottom: 1px solid #e5e7eb;
+  min-width: 0;
+}
+
+.snapshot-panel header span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .snapshot-panel header strong {
@@ -403,7 +420,7 @@
   text-align: center;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1500px) {
   .overview-hero,
   .analytics-grid,
   .command-grid {

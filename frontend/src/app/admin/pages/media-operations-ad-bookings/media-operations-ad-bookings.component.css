@@ -265,7 +265,7 @@
   color: var(--color-muted);
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 1500px) {
   .ad-booking-card {
     grid-template-columns: minmax(0, 1fr) minmax(170px, 0.55fr) minmax(170px, auto);
   }
