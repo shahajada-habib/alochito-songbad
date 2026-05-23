@@ -152,6 +152,41 @@ function DateTimeValue {
     return (Get-Date).Date.AddDays($DaysFromToday).AddHours($Hour).AddMinutes($Minute).ToString("yyyy-MM-ddTHH:mm:ss")
 }
 
+function New-NewsImageUrl {
+    param(
+        [string]$Category,
+        [string]$Slug
+    )
+
+    $seedCategory = if ($Category) { $Category } else { "general" }
+    $seedSlug = if ($Slug) { $Slug } else { [guid]::NewGuid().ToString("N") }
+    return "https://picsum.photos/seed/alochito-$seedCategory-$seedSlug/1200/675"
+}
+
+function Has-UsableImageUrl {
+    param([string]$Url)
+
+    if (-not $Url) {
+        return $false
+    }
+
+    $trimmed = $Url.Trim()
+    return $trimmed.StartsWith("http://") -or $trimmed.StartsWith("https://") -or $trimmed.StartsWith("/")
+}
+
+function Should-RefreshDemoImageUrl {
+    param([string]$Url)
+
+    if (-not (Has-UsableImageUrl $Url)) {
+        return $true
+    }
+
+    return $Url.Contains("dummyimage.com") -or
+        $Url.Contains("placehold.co") -or
+        $Url.Contains("?text=") -or
+        $Url.Contains("&text=")
+}
+
 function Ensure-Category {
     param(
         [array]$ExistingCategories,
@@ -261,6 +296,15 @@ function Ensure-News {
     if ($found) {
         $script:NewsSkippedDuplicates++
         Write-Host "Skipped duplicate news: $slug"
+        $existingImageUrl = Get-PropertyValue $found @("imageUrl")
+        if (Should-RefreshDemoImageUrl $existingImageUrl) {
+            Write-Host "Updating missing/broken image for existing news: $slug"
+            $updated = Invoke-DemoApi -Method "PUT" -Path "/api/news/$($found.id)" -Body $Payload
+            if ($updated -and $updated.id) {
+                Write-Host "Updated news image: $slug"
+                return $updated
+            }
+        }
         return $found
     }
 
@@ -279,6 +323,15 @@ function Ensure-News {
     if ($foundAfterReload) {
         $script:NewsSkippedDuplicates++
         Write-Host "Skipped duplicate news after reload: $slug"
+        $existingImageUrl = Get-PropertyValue $foundAfterReload @("imageUrl")
+        if (Should-RefreshDemoImageUrl $existingImageUrl) {
+            Write-Host "Updating missing/broken image for existing news after reload: $slug"
+            $updated = Invoke-DemoApi -Method "PUT" -Path "/api/news/$($foundAfterReload.id)" -Body $Payload
+            if ($updated -and $updated.id) {
+                Write-Host "Updated news image: $slug"
+                return $updated
+            }
+        }
         return $foundAfterReload
     }
 
@@ -397,7 +450,7 @@ foreach ($key in $categoryAliases.Keys) {
 }
 
 # Edit journalist names, bios, and avatar URLs here.
-# Avatar URLs use generated placeholders, not real people or copyrighted profile photos.
+# Avatar URLs use generated illustration avatars, not real people or copyrighted profile photos.
 $journalists = @(
     @{
         username = "mahir-hasan"
@@ -407,7 +460,7 @@ $journalists = @(
         displayName = "মাহির হাসান"
         designation = "সিনিয়র রিপোর্টার"
         bio = "জাতীয় রাজনীতি, প্রশাসন ও নীতি-নির্ধারণী ইস্যু নিয়ে নিয়মিত প্রতিবেদন করেন। মাঠপর্যায়ের তথ্য যাচাই ও বিশ্লেষণধর্মী সংবাদ তৈরিতে তাঁর বিশেষ আগ্রহ রয়েছে।"
-        profileImageUrl = "https://placehold.co/240x240/e5e7eb/334155/png?text=MH"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=mahir-hasan"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "mahir@alochitosongbad.demo"
@@ -421,7 +474,7 @@ $journalists = @(
         displayName = "সাবিহা রহমান"
         designation = "স্টাফ রিপোর্টার"
         bio = "নগর জীবন, সিটি করপোরেশন, নাগরিক সমস্যা ও জনসেবামূলক বিষয় নিয়ে কাজ করেন। সাধারণ মানুষের অভিজ্ঞতা তুলে ধরতে তিনি মাঠভিত্তিক রিপোর্টিংকে গুরুত্ব দেন।"
-        profileImageUrl = "https://placehold.co/240x240/fce7f3/831843/png?text=SR"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=sabiha-rahman"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "sabiha@alochitosongbad.demo"
@@ -435,7 +488,7 @@ $journalists = @(
         displayName = "আরিফুল ইসলাম"
         designation = "বিশেষ প্রতিনিধি"
         bio = "অনুসন্ধানী প্রতিবেদন, জনসেবা, দুর্নীতি ও স্থানীয় প্রশাসনের কার্যক্রম নিয়ে কাজ করেন। তথ্য-প্রমাণভিত্তিক রিপোর্টিংয়ে তিনি মনোযোগী।"
-        profileImageUrl = "https://placehold.co/240x240/dbeafe/1e40af/png?text=AI"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=ariful-islam"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "ariful@alochitosongbad.demo"
@@ -449,7 +502,7 @@ $journalists = @(
         displayName = "নুসরাত জাহান"
         designation = "বিনোদন প্রতিবেদক"
         bio = "চলচ্চিত্র, নাটক, ওটিটি, সংস্কৃতি ও তারকাজগতের খবর নিয়ে নিয়মিত লেখেন। বিনোদন অঙ্গনের পরিবর্তন ও দর্শক প্রবণতা নিয়ে তাঁর আগ্রহ বেশি।"
-        profileImageUrl = "https://placehold.co/240x240/fef3c7/92400e/png?text=NJ"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nusrat-jahan"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "nusrat@alochitosongbad.demo"
@@ -463,7 +516,7 @@ $journalists = @(
         displayName = "তানভীর আহমেদ"
         designation = "ক্রীড়া প্রতিবেদক"
         bio = "ক্রিকেট, ফুটবল ও দেশের ক্রীড়া প্রশাসন নিয়ে কাজ করেন। মাঠের খেলা ও পর্দার আড়ালের সিদ্ধান্ত—দুই দিকই তাঁর প্রতিবেদনে গুরুত্ব পায়।"
-        profileImageUrl = "https://placehold.co/240x240/d1fae5/065f46/png?text=TA"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=tanvir-ahmed"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "tanvir@alochitosongbad.demo"
@@ -477,7 +530,7 @@ $journalists = @(
         displayName = "রাইয়ান কবির"
         designation = "আন্তর্জাতিক ডেস্ক"
         bio = "দক্ষিণ এশিয়া, মধ্যপ্রাচ্য ও বৈশ্বিক রাজনীতি নিয়ে সংবাদ বিশ্লেষণ করেন। আন্তর্জাতিক ঘটনার স্থানীয় প্রভাব ব্যাখ্যা করাই তাঁর প্রতিবেদনের মূল লক্ষ্য।"
-        profileImageUrl = "https://placehold.co/240x240/e0e7ff/3730a3/png?text=RK"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=raiyan-kabir"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "raiyan@alochitosongbad.demo"
@@ -491,7 +544,7 @@ $journalists = @(
         displayName = "ফারহানা মিম"
         designation = "অর্থনীতি প্রতিবেদক"
         bio = "বাজার, ব্যাংক, ব্যবসা, ভোক্তা অধিকার ও অর্থনৈতিক নীতি নিয়ে প্রতিবেদন করেন। জটিল অর্থনৈতিক বিষয় সহজ ভাষায় তুলে ধরতে তিনি আগ্রহী।"
-        profileImageUrl = "https://placehold.co/240x240/fae8ff/86198f/png?text=FM"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=farhana-mim"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "farhana@alochitosongbad.demo"
@@ -505,7 +558,7 @@ $journalists = @(
         displayName = "ইমরান হোসেন"
         designation = "ফটো সাংবাদিক"
         bio = "ফটো স্টোরি, মাঠ প্রতিবেদন ও ভিজ্যুয়াল সাংবাদিকতায় কাজ করেন। গুরুত্বপূর্ণ ঘটনার মানবিক দিক ক্যামেরার ভাষায় তুলে ধরাই তাঁর লক্ষ্য।"
-        profileImageUrl = "https://placehold.co/240x240/fee2e2/991b1b/png?text=IH"
+        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=imran-hossain"
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "imran@alochitosongbad.demo"
@@ -539,8 +592,7 @@ if ($journalistIndex.Count -eq 0) {
 }
 
 # Edit news titles, content, tags, and images here.
-# imageUrl values use neutral placeholder images.
-$imageBase = "https://placehold.co/1200x675/f1f5f9/334155"
+# imageUrl values use seeded generic photos without visible text.
 $articles = @(
     @{
         authorUsername = "mahir-hasan"; category = "national"; slug = "proshasonik-sebay-goti-ante-notun-nirdeshona"; title = "প্রশাসনিক সেবায় গতি আনতে নতুন নির্দেশনা"; subtitle = "জনসেবা সহজ করতে মাঠ প্রশাসনে সমন্বয় বাড়ানোর নির্দেশ দেওয়া হয়েছে।"; tags = @("প্রশাসন", "জনসেবা", "জাতীয়"); publishOffset = -1
@@ -761,9 +813,9 @@ foreach ($article in $articles) {
         title = $article.title
         subtitle = $article.subtitle
         content = $article.content
-        imageUrl = "$imageBase?text=$($article.category)"
-        imageCaption = "আলোচিত সংবাদ ডেমো ছবি"
-        imageSource = "Alochito Songbad demo placeholder"
+        imageUrl = New-NewsImageUrl -Category $article.category -Slug $article.slug
+        imageCaption = "আলোচিত সংবাদের ডেমো ফিচার ছবি"
+        imageSource = "Alochito Songbad demo image"
         imageAlt = $article.title
         status = "published"
         category = $categoryIndex[$article.category]
