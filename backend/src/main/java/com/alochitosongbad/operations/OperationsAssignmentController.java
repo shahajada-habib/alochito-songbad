@@ -47,4 +47,19 @@ public class OperationsAssignmentController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/mark-assigned")
+    public ResponseEntity<OperationsAssignmentResponseDto> markAssigned(@PathVariable Long id) {
+        return assignmentService.markAssigned(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-in-progress")
+    public ResponseEntity<OperationsAssignmentResponseDto> markInProgress(@PathVariable Long id) {
+        return assignmentService.markInProgress(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-completed")
+    public ResponseEntity<OperationsAssignmentResponseDto> markCompleted(@PathVariable Long id) {
+        return assignmentService.markCompleted(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

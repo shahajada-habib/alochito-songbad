@@ -90,6 +90,17 @@
               <strong>{{ formatMoney(asset.purchasePrice) }}</strong>
             </div>
             <span class="ops-badge {{ availabilityClass(asset.availabilityStatus) }}">{{ availabilityLabel(asset.availabilityStatus) }}</span>
+            @if (asset.availabilityStatus !== 'RETIRED') {
+              @if (asset.availabilityStatus !== 'AVAILABLE') {
+                <button type="button" class="operations-btn secondary compact" (click)="markAvailable(asset)">{{ t('markAvailable') }}</button>
+              }
+              @if (asset.availabilityStatus !== 'ASSIGNED') {
+                <button type="button" class="operations-btn secondary compact" (click)="markAssigned(asset)">{{ t('markAssigned') }}</button>
+              }
+              @if (asset.availabilityStatus !== 'UNDER_MAINTENANCE') {
+                <button type="button" class="operations-btn secondary compact" (click)="markMaintenance(asset)">{{ t('markMaintenance') }}</button>
+              }
+            }
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(asset)">{{ t('editAsset') }}</button>
             @if (asset.availabilityStatus !== 'RETIRED') {
               <button type="button" class="operations-btn secondary compact" (click)="archive(asset)">{{ t('retire') }}</button>

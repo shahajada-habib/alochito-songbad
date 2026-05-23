@@ -79,6 +79,17 @@
               <strong>{{ formatMoney(invoice.amount) }}</strong>
             </div>
             <span class="ops-badge {{ paymentStatusClass(invoice.paymentStatus) }}">{{ paymentStatusLabel(invoice.paymentStatus) }}</span>
+            @if (invoice.paymentStatus !== 'CANCELLED') {
+              @if (invoice.paymentStatus !== 'PAID') {
+                <button type="button" class="operations-btn primary compact" (click)="markPaid(invoice)">{{ t('markPaid') }}</button>
+              }
+              @if (invoice.paymentStatus !== 'PARTIAL') {
+                <button type="button" class="operations-btn secondary compact" (click)="markPartial(invoice)">{{ t('markPartial') }}</button>
+              }
+              @if (invoice.paymentStatus !== 'UNPAID') {
+                <button type="button" class="operations-btn secondary compact" (click)="markUnpaid(invoice)">{{ t('markUnpaid') }}</button>
+              }
+            }
             <button type="button" class="operations-btn secondary compact print-trigger" (click)="openPrintInvoice(invoice)">{{ t('printInvoice') }}</button>
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(invoice)">{{ t('editInvoice') }}</button>
             @if (invoice.paymentStatus !== 'CANCELLED') {

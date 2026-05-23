@@ -172,6 +172,20 @@ export class MediaOperationsLeaveRequestsComponent implements OnInit {
     });
   }
 
+  protected approve(leaveRequest: MediaOperationsLeaveRequest): void {
+    this.operations.approveLeaveRequest(leaveRequest.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected reject(leaveRequest: MediaOperationsLeaveRequest): void {
+    this.operations.rejectLeaveRequest(leaveRequest.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-leave-requests.csv', [
       this.t('assignedStaff'),

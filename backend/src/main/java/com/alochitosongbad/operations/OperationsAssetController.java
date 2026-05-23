@@ -47,4 +47,19 @@ public class OperationsAssetController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/mark-available")
+    public ResponseEntity<OperationsAssetResponseDto> markAvailable(@PathVariable Long id) {
+        return assetService.markAvailable(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-assigned")
+    public ResponseEntity<OperationsAssetResponseDto> markAssigned(@PathVariable Long id) {
+        return assetService.markAssigned(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-maintenance")
+    public ResponseEntity<OperationsAssetResponseDto> markMaintenance(@PathVariable Long id) {
+        return assetService.markMaintenance(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

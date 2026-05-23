@@ -67,6 +67,34 @@ public class OperationsLeaveRequestService {
         });
     }
 
+    public Optional<OperationsLeaveRequestResponseDto> approve(Long id) {
+        currentUserService.requireEditorOrAdmin("approve operations leave requests");
+        return leaveRequestRepository.findById(id).map((leaveRequest) -> {
+            requirePending(leaveRequest, "Only pending leave requests can be approved");
+            leaveRequest.setStatus(OperationsLeaveStatus.APPROVED);
+            OperationsLeaveRequest saved = leaveRequestRepository.save(leaveRequest);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Leave request approved");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsLeaveRequestResponseDto> reject(Long id) {
+        currentUserService.requireEditorOrAdmin("reject operations leave requests");
+        return leaveRequestRepository.findById(id).map((leaveRequest) -> {
+            requirePending(leaveRequest, "Only pending leave requests can be rejected");
+            leaveRequest.setStatus(OperationsLeaveStatus.REJECTED);
+            OperationsLeaveRequest saved = leaveRequestRepository.save(leaveRequest);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Leave request rejected");
+            return toResponse(saved);
+        });
+    }
+
+    private void requirePending(OperationsLeaveRequest leaveRequest, String message) {
+        if (leaveRequest.getStatus() != OperationsLeaveStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
     private void applyRequest(OperationsLeaveRequest leaveRequest, OperationsLeaveRequestRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

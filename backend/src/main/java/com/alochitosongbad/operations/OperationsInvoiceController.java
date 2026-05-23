@@ -47,4 +47,27 @@ public class OperationsInvoiceController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/mark-paid")
+    public ResponseEntity<OperationsInvoiceResponseDto> markPaid(@PathVariable Long id) {
+        return invoiceService.markPaid(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-unpaid")
+    public ResponseEntity<OperationsInvoiceResponseDto> markUnpaid(@PathVariable Long id) {
+        return invoiceService.markUnpaid(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-partial")
+    public ResponseEntity<OperationsInvoiceResponseDto> markPartial(
+            @PathVariable Long id,
+            @RequestBody OperationsInvoicePartialPaymentRequestDto request) {
+        return invoiceService.markPartial(id, request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

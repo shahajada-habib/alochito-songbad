@@ -70,6 +70,34 @@ public class OperationsPurchaseRequestService {
         });
     }
 
+    public Optional<OperationsPurchaseRequestResponseDto> approve(Long id) {
+        currentUserService.requireEditorOrAdmin("approve operations purchase requests");
+        return purchaseRequestRepository.findById(id).map((purchaseRequest) -> {
+            requireReviewable(purchaseRequest, "Cancelled purchase requests cannot be approved");
+            purchaseRequest.setStatus(OperationsPurchaseRequestStatus.APPROVED);
+            OperationsPurchaseRequest saved = purchaseRequestRepository.save(purchaseRequest);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Purchase request approved");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsPurchaseRequestResponseDto> reject(Long id) {
+        currentUserService.requireEditorOrAdmin("reject operations purchase requests");
+        return purchaseRequestRepository.findById(id).map((purchaseRequest) -> {
+            requireReviewable(purchaseRequest, "Cancelled purchase requests cannot be rejected");
+            purchaseRequest.setStatus(OperationsPurchaseRequestStatus.REJECTED);
+            OperationsPurchaseRequest saved = purchaseRequestRepository.save(purchaseRequest);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Purchase request rejected");
+            return toResponse(saved);
+        });
+    }
+
+    private void requireReviewable(OperationsPurchaseRequest purchaseRequest, String message) {
+        if (purchaseRequest.getStatus() == OperationsPurchaseRequestStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
     private void applyRequest(OperationsPurchaseRequest purchaseRequest, OperationsPurchaseRequestRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

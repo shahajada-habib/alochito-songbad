@@ -75,6 +75,35 @@ public class OperationsAssetService {
                 });
     }
 
+    public Optional<OperationsAssetResponseDto> markAvailable(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations asset available");
+        return updateAvailability(id, OperationsAssetAvailabilityStatus.AVAILABLE, "Asset marked available");
+    }
+
+    public Optional<OperationsAssetResponseDto> markAssigned(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations asset assigned");
+        return updateAvailability(id, OperationsAssetAvailabilityStatus.ASSIGNED, "Asset marked assigned");
+    }
+
+    public Optional<OperationsAssetResponseDto> markMaintenance(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations asset maintenance");
+        return updateAvailability(id, OperationsAssetAvailabilityStatus.UNDER_MAINTENANCE, "Asset marked under maintenance");
+    }
+
+    private Optional<OperationsAssetResponseDto> updateAvailability(Long id, OperationsAssetAvailabilityStatus status, String description) {
+        return assetRepository.findById(id)
+                .map((asset) -> {
+                    if (asset.getAvailabilityStatus() == OperationsAssetAvailabilityStatus.RETIRED
+                            || asset.getConditionStatus() == OperationsAssetConditionStatus.RETIRED) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Retired assets cannot be assigned without restore support");
+                    }
+                    asset.setAvailabilityStatus(status);
+                    OperationsAsset saved = assetRepository.save(asset);
+                    record(saved, OperationsActivityActionType.STATUS_CHANGED, description);
+                    return toResponse(saved);
+                });
+    }
+
     private void applyRequest(OperationsAsset asset, OperationsAssetRequestDto request, Long currentId) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");
@@ -128,5 +157,13 @@ public class OperationsAssetService {
         response.setCreatedAt(asset.getCreatedAt());
         response.setUpdatedAt(asset.getUpdatedAt());
         return response;
+    }
+
+    private void record(OperationsAsset asset, OperationsActivityActionType action, String description) {
+        try {
+            activityLogService.record("Assets", asset.getId(), action, asset.getAssetName(), description);
+        } catch (RuntimeException ignored) {
+            // Activity logging must not block the operational workflow.
+        }
     }
 }

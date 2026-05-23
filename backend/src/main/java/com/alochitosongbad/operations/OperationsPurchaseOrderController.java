@@ -41,4 +41,19 @@ public class OperationsPurchaseOrderController {
     public ResponseEntity<OperationsPurchaseOrderResponseDto> archive(@PathVariable Long id) {
         return purchaseOrderService.archive(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/mark-placed")
+    public ResponseEntity<OperationsPurchaseOrderResponseDto> markPlaced(@PathVariable Long id) {
+        return purchaseOrderService.markPlaced(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-received")
+    public ResponseEntity<OperationsPurchaseOrderResponseDto> markReceived(@PathVariable Long id) {
+        return purchaseOrderService.markReceived(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-paid")
+    public ResponseEntity<OperationsPurchaseOrderResponseDto> markPaid(@PathVariable Long id) {
+        return purchaseOrderService.markPaid(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

@@ -161,6 +161,27 @@ export class MediaOperationsPurchaseOrdersComponent implements OnInit {
     });
   }
 
+  protected markPlaced(order: MediaOperationsPurchaseOrder): void {
+    this.operations.markPurchaseOrderPlaced(order.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markReceived(order: MediaOperationsPurchaseOrder): void {
+    this.operations.markPurchaseOrderReceived(order.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markPaid(order: MediaOperationsPurchaseOrder): void {
+    this.operations.markPurchaseOrderPaid(order.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-purchase-orders.csv', [
       this.t('orderNumber'),

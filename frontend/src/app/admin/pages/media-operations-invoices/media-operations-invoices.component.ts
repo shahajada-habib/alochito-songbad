@@ -190,6 +190,36 @@ export class MediaOperationsInvoicesComponent implements OnInit, OnDestroy {
     });
   }
 
+  protected markPaid(invoice: MediaOperationsInvoice): void {
+    this.operations.markInvoicePaid(invoice.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markUnpaid(invoice: MediaOperationsInvoice): void {
+    this.operations.markInvoiceUnpaid(invoice.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markPartial(invoice: MediaOperationsInvoice): void {
+    const rawValue = window.prompt(this.t('partialAmountPrompt'), String(invoice.paidAmount || 0));
+    if (rawValue === null) {
+      return;
+    }
+    const paidAmount = Number(rawValue);
+    if (!Number.isFinite(paidAmount) || paidAmount < 0 || paidAmount > Number(invoice.amount || 0)) {
+      this.toast.error(this.t('workflowActionFailed'));
+      return;
+    }
+    this.operations.markInvoicePartial(invoice.id, paidAmount).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-invoices.csv', [
       this.t('invoiceNumber'),

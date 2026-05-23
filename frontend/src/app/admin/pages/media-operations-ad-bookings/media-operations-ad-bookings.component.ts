@@ -195,6 +195,27 @@ export class MediaOperationsAdBookingsComponent implements OnInit {
     });
   }
 
+  protected markRunning(adBooking: MediaOperationsAdBooking): void {
+    this.operations.markAdBookingRunning(adBooking.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markCompleted(adBooking: MediaOperationsAdBooking): void {
+    this.operations.markAdBookingCompleted(adBooking.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markPaid(adBooking: MediaOperationsAdBooking): void {
+    this.operations.markAdBookingPaid(adBooking.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-ad-bookings.csv', [
       this.t('title'),

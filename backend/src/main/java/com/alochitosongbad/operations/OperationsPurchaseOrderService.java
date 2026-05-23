@@ -71,6 +71,46 @@ public class OperationsPurchaseOrderService {
         });
     }
 
+    public Optional<OperationsPurchaseOrderResponseDto> markPlaced(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations purchase order placed");
+        return purchaseOrderRepository.findById(id).map((purchaseOrder) -> {
+            requireActive(purchaseOrder, "Cancelled purchase orders cannot be marked placed");
+            purchaseOrder.setOrderStatus(OperationsPurchaseOrderStatus.PLACED);
+            OperationsPurchaseOrder saved = purchaseOrderRepository.save(purchaseOrder);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Purchase order marked placed");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsPurchaseOrderResponseDto> markReceived(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations purchase order received");
+        return purchaseOrderRepository.findById(id).map((purchaseOrder) -> {
+            requireActive(purchaseOrder, "Cancelled purchase orders cannot be marked received");
+            purchaseOrder.setOrderStatus(OperationsPurchaseOrderStatus.RECEIVED);
+            OperationsPurchaseOrder saved = purchaseOrderRepository.save(purchaseOrder);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Purchase order marked received");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsPurchaseOrderResponseDto> markPaid(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations purchase order paid");
+        return purchaseOrderRepository.findById(id).map((purchaseOrder) -> {
+            requireActive(purchaseOrder, "Cancelled purchase orders cannot be marked paid");
+            purchaseOrder.setPaymentStatus(OperationsPurchaseOrderPaymentStatus.PAID);
+            OperationsPurchaseOrder saved = purchaseOrderRepository.save(purchaseOrder);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Purchase order marked paid");
+            return toResponse(saved);
+        });
+    }
+
+    private void requireActive(OperationsPurchaseOrder purchaseOrder, String message) {
+        if (purchaseOrder.getOrderStatus() == OperationsPurchaseOrderStatus.CANCELLED
+                || purchaseOrder.getPaymentStatus() == OperationsPurchaseOrderPaymentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
     private void applyRequest(OperationsPurchaseOrder purchaseOrder, OperationsPurchaseOrderRequestDto request, Long currentId) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");

@@ -73,6 +73,32 @@ public class OperationsAssignmentService {
                 });
     }
 
+    public Optional<OperationsAssignmentResponseDto> markAssigned(Long id) {
+        return updateStatus(id, OperationsAssignmentStatus.ASSIGNED, "mark operations assignment assigned", "Assignment marked assigned");
+    }
+
+    public Optional<OperationsAssignmentResponseDto> markInProgress(Long id) {
+        return updateStatus(id, OperationsAssignmentStatus.IN_PROGRESS, "mark operations assignment in progress", "Assignment marked in progress");
+    }
+
+    public Optional<OperationsAssignmentResponseDto> markCompleted(Long id) {
+        return updateStatus(id, OperationsAssignmentStatus.COMPLETED, "mark operations assignment completed", "Assignment marked completed");
+    }
+
+    private Optional<OperationsAssignmentResponseDto> updateStatus(Long id, OperationsAssignmentStatus status, String permission, String description) {
+        currentUserService.requireEditorOrAdmin(permission);
+        return assignmentRepository.findById(id)
+                .map((assignment) -> {
+                    if (assignment.getStatus() == OperationsAssignmentStatus.CANCELLED) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cancelled assignments cannot be updated");
+                    }
+                    assignment.setStatus(status);
+                    OperationsAssignment saved = assignmentRepository.save(assignment);
+                    record(saved, OperationsActivityActionType.STATUS_CHANGED, description);
+                    return toResponse(saved);
+                });
+    }
+
     private void applyRequest(OperationsAssignment assignment, OperationsAssignmentRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");
@@ -109,5 +135,13 @@ public class OperationsAssignmentService {
         response.setCreatedAt(assignment.getCreatedAt());
         response.setUpdatedAt(assignment.getUpdatedAt());
         return response;
+    }
+
+    private void record(OperationsAssignment assignment, OperationsActivityActionType action, String description) {
+        try {
+            activityLogService.record("Assignments", assignment.getId(), action, assignment.getTitle(), description);
+        } catch (RuntimeException ignored) {
+            // Activity logging must not block the operational workflow.
+        }
     }
 }

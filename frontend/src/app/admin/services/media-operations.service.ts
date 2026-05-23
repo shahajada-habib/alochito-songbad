@@ -535,6 +535,18 @@ export class MediaOperationsService {
     );
   }
 
+  markAssignmentAssigned(id: number): Observable<MediaOperationsAssignment> {
+    return this.assignmentAction(id, 'mark-assigned');
+  }
+
+  markAssignmentInProgress(id: number): Observable<MediaOperationsAssignment> {
+    return this.assignmentAction(id, 'mark-in-progress');
+  }
+
+  markAssignmentCompleted(id: number): Observable<MediaOperationsAssignment> {
+    return this.assignmentAction(id, 'mark-completed');
+  }
+
   createAdClient(value: AdClientFormValue): Observable<MediaOperationsAdClient> {
     this.errorSignal.set('');
 
@@ -601,6 +613,18 @@ export class MediaOperationsService {
       )),
       tap(() => this.refreshActivityLog())
     );
+  }
+
+  markAdBookingRunning(id: number): Observable<MediaOperationsAdBooking> {
+    return this.adBookingAction(id, 'mark-running');
+  }
+
+  markAdBookingCompleted(id: number): Observable<MediaOperationsAdBooking> {
+    return this.adBookingAction(id, 'mark-completed');
+  }
+
+  markAdBookingPaid(id: number): Observable<MediaOperationsAdBooking> {
+    return this.adBookingAction(id, 'mark-paid');
   }
 
   createExpense(value: ExpenseFormValue): Observable<MediaOperationsExpense> {
@@ -671,6 +695,18 @@ export class MediaOperationsService {
     );
   }
 
+  markInvoicePaid(id: number): Observable<MediaOperationsInvoice> {
+    return this.invoiceAction(id, 'mark-paid');
+  }
+
+  markInvoiceUnpaid(id: number): Observable<MediaOperationsInvoice> {
+    return this.invoiceAction(id, 'mark-unpaid');
+  }
+
+  markInvoicePartial(id: number, paidAmount: number): Observable<MediaOperationsInvoice> {
+    return this.invoiceAction(id, 'mark-partial', { paidAmount });
+  }
+
   createAttendance(value: AttendanceFormValue): Observable<MediaOperationsAttendance> {
     this.errorSignal.set('');
 
@@ -739,6 +775,18 @@ export class MediaOperationsService {
     );
   }
 
+  markAssetAvailable(id: number): Observable<MediaOperationsAsset> {
+    return this.assetAction(id, 'mark-available');
+  }
+
+  markAssetAssigned(id: number): Observable<MediaOperationsAsset> {
+    return this.assetAction(id, 'mark-assigned');
+  }
+
+  markAssetMaintenance(id: number): Observable<MediaOperationsAsset> {
+    return this.assetAction(id, 'mark-maintenance');
+  }
+
   createDepartment(value: DepartmentFormValue): Observable<MediaOperationsDepartment> {
     this.errorSignal.set('');
     return this.http.post<MediaOperationsDepartment>(`${OPERATIONS_API_URL}/departments`, value).pipe(
@@ -791,6 +839,14 @@ export class MediaOperationsService {
       tap((updated) => this.leaveRequestsSignal.update((items) => items.map((item) => (item.id === id ? updated : item)))),
       tap(() => this.refreshActivityLog())
     );
+  }
+
+  approveLeaveRequest(id: number): Observable<MediaOperationsLeaveRequest> {
+    return this.leaveRequestAction(id, 'approve');
+  }
+
+  rejectLeaveRequest(id: number): Observable<MediaOperationsLeaveRequest> {
+    return this.leaveRequestAction(id, 'reject');
   }
 
   createStaffDocument(value: StaffDocumentFormValue): Observable<MediaOperationsStaffDocument> {
@@ -874,6 +930,14 @@ export class MediaOperationsService {
     );
   }
 
+  approvePurchaseRequest(id: number): Observable<MediaOperationsPurchaseRequest> {
+    return this.purchaseRequestAction(id, 'approve');
+  }
+
+  rejectPurchaseRequest(id: number): Observable<MediaOperationsPurchaseRequest> {
+    return this.purchaseRequestAction(id, 'reject');
+  }
+
   createPurchaseOrder(value: PurchaseOrderFormValue): Observable<MediaOperationsPurchaseOrder> {
     this.errorSignal.set('');
     return this.http.post<MediaOperationsPurchaseOrder>(`${OPERATIONS_API_URL}/purchase-orders`, value).pipe(
@@ -901,6 +965,18 @@ export class MediaOperationsService {
     );
   }
 
+  markPurchaseOrderPlaced(id: number): Observable<MediaOperationsPurchaseOrder> {
+    return this.purchaseOrderAction(id, 'mark-placed');
+  }
+
+  markPurchaseOrderReceived(id: number): Observable<MediaOperationsPurchaseOrder> {
+    return this.purchaseOrderAction(id, 'mark-received');
+  }
+
+  markPurchaseOrderPaid(id: number): Observable<MediaOperationsPurchaseOrder> {
+    return this.purchaseOrderAction(id, 'mark-paid');
+  }
+
   createNotification(value: NotificationFormValue): Observable<MediaOperationsNotification> {
     this.errorSignal.set('');
     return this.http.post<MediaOperationsNotification>(`${OPERATIONS_API_URL}/notifications`, value).pipe(
@@ -925,6 +1001,69 @@ export class MediaOperationsService {
       map((items) => items.map((item) => this.normalizeNotification(item))),
       tap((items) => this.notificationsSignal.set(items)),
       tap(() => this.refreshActivityLog())
+    );
+  }
+
+  private assignmentAction(actionId: number, action: string): Observable<MediaOperationsAssignment> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsAssignment>(`${OPERATIONS_API_URL}/assignments/${actionId}/${action}`, {}).pipe(
+      map((updated) => this.normalizeAssignment(updated)),
+      tap((updated) => this.assignmentsSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
+    );
+  }
+
+  private adBookingAction(actionId: number, action: string): Observable<MediaOperationsAdBooking> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsAdBooking>(`${OPERATIONS_API_URL}/ad-bookings/${actionId}/${action}`, {}).pipe(
+      map((updated) => this.normalizeAdBooking(updated)),
+      tap((updated) => this.adBookingsSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
+    );
+  }
+
+  private invoiceAction(actionId: number, action: string, body: Record<string, number> = {}): Observable<MediaOperationsInvoice> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsInvoice>(`${OPERATIONS_API_URL}/invoices/${actionId}/${action}`, body).pipe(
+      map((updated) => this.normalizeInvoice(updated)),
+      tap((updated) => this.invoicesSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
+    );
+  }
+
+  private assetAction(actionId: number, action: string): Observable<MediaOperationsAsset> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsAsset>(`${OPERATIONS_API_URL}/assets/${actionId}/${action}`, {}).pipe(
+      map((updated) => this.normalizeAsset(updated)),
+      tap((updated) => this.assetsSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
+    );
+  }
+
+  private leaveRequestAction(actionId: number, action: string): Observable<MediaOperationsLeaveRequest> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsLeaveRequest>(`${OPERATIONS_API_URL}/leave-requests/${actionId}/${action}`, {}).pipe(
+      map((updated) => this.normalizeLeaveRequest(updated)),
+      tap((updated) => this.leaveRequestsSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
+    );
+  }
+
+  private purchaseRequestAction(actionId: number, action: string): Observable<MediaOperationsPurchaseRequest> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsPurchaseRequest>(`${OPERATIONS_API_URL}/purchase-requests/${actionId}/${action}`, {}).pipe(
+      map((updated) => this.normalizePurchaseRequest(updated)),
+      tap((updated) => this.purchaseRequestsSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
+    );
+  }
+
+  private purchaseOrderAction(actionId: number, action: string): Observable<MediaOperationsPurchaseOrder> {
+    this.errorSignal.set('');
+    return this.http.put<MediaOperationsPurchaseOrder>(`${OPERATIONS_API_URL}/purchase-orders/${actionId}/${action}`, {}).pipe(
+      map((updated) => this.normalizePurchaseOrder(updated)),
+      tap((updated) => this.purchaseOrdersSignal.update((items) => items.map((item) => (item.id === actionId ? updated : item)))),
+      tap(() => this.refreshWorkflowData())
     );
   }
 
@@ -1244,6 +1383,19 @@ export class MediaOperationsService {
       })
     ).subscribe((items) => {
       this.activityLogSignal.set(items);
+    });
+  }
+
+  private refreshWorkflowData(): void {
+    this.refreshActivityLog();
+    forkJoin({
+      approvalQueue: this.http.get<MediaOperationsApprovalItem[]>(`${OPERATIONS_API_URL}/approval-queue`).pipe(catchError(() => of([] as MediaOperationsApprovalItem[]))),
+      reminders: this.http.get<MediaOperationsReminder[]>(`${OPERATIONS_API_URL}/reminders`).pipe(catchError(() => of([] as MediaOperationsReminder[]))),
+      notifications: this.http.get<MediaOperationsNotification[]>(`${OPERATIONS_API_URL}/notifications`).pipe(catchError(() => of([] as MediaOperationsNotification[])))
+    }).subscribe(({ approvalQueue, reminders, notifications }) => {
+      this.approvalQueueSignal.set(approvalQueue.map((item) => this.normalizeApprovalItem(item)));
+      this.remindersSignal.set(reminders.map((item) => this.normalizeReminder(item)));
+      this.notificationsSignal.set(notifications.map((item) => this.normalizeNotification(item)));
     });
   }
 

@@ -193,6 +193,27 @@ export class MediaOperationsAssignmentsComponent implements OnInit {
     });
   }
 
+  protected markAssigned(assignment: MediaOperationsAssignment): void {
+    this.operations.markAssignmentAssigned(assignment.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markInProgress(assignment: MediaOperationsAssignment): void {
+    this.operations.markAssignmentInProgress(assignment.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markCompleted(assignment: MediaOperationsAssignment): void {
+    this.operations.markAssignmentCompleted(assignment.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-assignments.csv', [
       this.t('title'),

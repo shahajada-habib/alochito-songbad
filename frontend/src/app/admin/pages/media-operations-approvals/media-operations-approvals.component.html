@@ -37,6 +37,17 @@
                 </div>
               </div>
               <span class="ops-badge {{ statusClass(item.status) }}">{{ item.status }}</span>
+              @if (canApproveLeave(item)) {
+                <button type="button" class="operations-btn primary compact" (click)="approveLeave(item)">{{ t('approve') }}</button>
+                <button type="button" class="operations-btn secondary compact" (click)="rejectLeave(item)">{{ t('reject') }}</button>
+              }
+              @if (canApprovePurchase(item)) {
+                <button type="button" class="operations-btn primary compact" (click)="approvePurchase(item)">{{ t('approve') }}</button>
+                <button type="button" class="operations-btn secondary compact" (click)="rejectPurchase(item)">{{ t('reject') }}</button>
+              }
+              @if (canMarkInvoicePaid(item)) {
+                <button type="button" class="operations-btn primary compact" (click)="markInvoicePaid(item)">{{ t('markPaid') }}</button>
+              }
             </article>
           }
         </div>

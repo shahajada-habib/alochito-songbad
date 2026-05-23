@@ -81,6 +81,10 @@
             </div>
             <span class="ops-badge {{ statusClass(request.status) }}">{{ statusLabel(request.status) }}</span>
             <span class="ops-badge priority-{{ request.priority.toLowerCase() }}">{{ priorityLabel(request.priority) }}</span>
+            @if (request.status === 'DRAFT' || request.status === 'SUBMITTED') {
+              <button type="button" class="operations-btn primary compact" (click)="approve(request)">{{ t('approve') }}</button>
+              <button type="button" class="operations-btn secondary compact" (click)="reject(request)">{{ t('reject') }}</button>
+            }
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(request)">{{ t('editPurchaseRequest') }}</button>
             @if (request.status !== 'CANCELLED') {
               <button type="button" class="operations-btn secondary compact" (click)="archive(request)">{{ t('cancelRecord') }}</button>

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { MediaOperationsApprovalItem, MediaOperationsService } from '../../services/media-operations.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-media-operations-approvals',
@@ -11,6 +12,7 @@ import { MediaOperationsApprovalItem, MediaOperationsService } from '../../servi
 })
 export class MediaOperationsApprovalsComponent {
   private readonly operations = inject(MediaOperationsService);
+  private readonly toast = inject(ToastService);
   protected readonly approvalQueue = this.operations.approvalQueue;
   protected readonly loading = this.operations.loading;
   protected readonly error = () => this.operations.errorFor('approvalQueue');
@@ -55,5 +57,52 @@ export class MediaOperationsApprovalsComponent {
       currency: 'BDT',
       maximumFractionDigits: 2
     }).format(value);
+  }
+
+  protected canApproveLeave(item: MediaOperationsApprovalItem): boolean {
+    return item.moduleName === 'Leave Requests' && item.status === 'PENDING';
+  }
+
+  protected canApprovePurchase(item: MediaOperationsApprovalItem): boolean {
+    return item.moduleName === 'Purchase Requests' && (item.status === 'DRAFT' || item.status === 'SUBMITTED');
+  }
+
+  protected canMarkInvoicePaid(item: MediaOperationsApprovalItem): boolean {
+    return item.moduleName === 'Invoices' && (item.status === 'UNPAID' || item.status === 'PARTIAL' || item.status === 'OVERDUE');
+  }
+
+  protected approveLeave(item: MediaOperationsApprovalItem): void {
+    this.operations.approveLeaveRequest(item.entityId).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected rejectLeave(item: MediaOperationsApprovalItem): void {
+    this.operations.rejectLeaveRequest(item.entityId).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected approvePurchase(item: MediaOperationsApprovalItem): void {
+    this.operations.approvePurchaseRequest(item.entityId).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected rejectPurchase(item: MediaOperationsApprovalItem): void {
+    this.operations.rejectPurchaseRequest(item.entityId).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markInvoicePaid(item: MediaOperationsApprovalItem): void {
+    this.operations.markInvoicePaid(item.entityId).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
   }
 }

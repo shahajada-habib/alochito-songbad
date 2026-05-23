@@ -41,4 +41,14 @@ public class OperationsPurchaseRequestController {
     public ResponseEntity<OperationsPurchaseRequestResponseDto> archive(@PathVariable Long id) {
         return purchaseRequestService.archive(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<OperationsPurchaseRequestResponseDto> approve(@PathVariable Long id) {
+        return purchaseRequestService.approve(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<OperationsPurchaseRequestResponseDto> reject(@PathVariable Long id) {
+        return purchaseRequestService.reject(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

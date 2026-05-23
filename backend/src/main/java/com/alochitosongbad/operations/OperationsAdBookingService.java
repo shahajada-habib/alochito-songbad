@@ -74,6 +74,45 @@ public class OperationsAdBookingService {
                 });
     }
 
+    public Optional<OperationsAdBookingResponseDto> markRunning(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations ad booking running");
+        return adBookingRepository.findById(id).map((adBooking) -> {
+            requireActive(adBooking, "Cancelled ad bookings cannot be marked running");
+            adBooking.setPublishStatus(OperationsAdPublishStatus.RUNNING);
+            OperationsAdBooking saved = adBookingRepository.save(adBooking);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Ad booking marked running");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsAdBookingResponseDto> markCompleted(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations ad booking completed");
+        return adBookingRepository.findById(id).map((adBooking) -> {
+            requireActive(adBooking, "Cancelled ad bookings cannot be marked completed");
+            adBooking.setPublishStatus(OperationsAdPublishStatus.COMPLETED);
+            OperationsAdBooking saved = adBookingRepository.save(adBooking);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Ad booking marked completed");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsAdBookingResponseDto> markPaid(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations ad booking paid");
+        return adBookingRepository.findById(id).map((adBooking) -> {
+            requireActive(adBooking, "Cancelled ad bookings cannot be marked paid");
+            adBooking.setPaymentStatus(OperationsAdPaymentStatus.PAID);
+            OperationsAdBooking saved = adBookingRepository.save(adBooking);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Ad booking marked paid");
+            return toResponse(saved);
+        });
+    }
+
+    private void requireActive(OperationsAdBooking adBooking, String message) {
+        if (adBooking.getPublishStatus() == OperationsAdPublishStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
     private void applyRequest(OperationsAdBooking adBooking, OperationsAdBookingRequestDto request) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");
@@ -130,5 +169,13 @@ public class OperationsAdBookingService {
         response.setCreatedAt(adBooking.getCreatedAt());
         response.setUpdatedAt(adBooking.getUpdatedAt());
         return response;
+    }
+
+    private void record(OperationsAdBooking adBooking, OperationsActivityActionType action, String description) {
+        try {
+            activityLogService.record("Ad Bookings", adBooking.getId(), action, adBooking.getTitle(), description);
+        } catch (RuntimeException ignored) {
+            // Activity logging must not block the operational workflow.
+        }
     }
 }

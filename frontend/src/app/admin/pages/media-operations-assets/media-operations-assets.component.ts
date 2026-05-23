@@ -191,6 +191,27 @@ export class MediaOperationsAssetsComponent implements OnInit {
     });
   }
 
+  protected markAvailable(asset: MediaOperationsAsset): void {
+    this.operations.markAssetAvailable(asset.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markAssigned(asset: MediaOperationsAsset): void {
+    this.operations.markAssetAssigned(asset.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected markMaintenance(asset: MediaOperationsAsset): void {
+    this.operations.markAssetMaintenance(asset.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-assets.csv', [
       this.t('assetName'),

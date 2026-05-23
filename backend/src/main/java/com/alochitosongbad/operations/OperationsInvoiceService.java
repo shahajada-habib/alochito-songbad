@@ -77,6 +77,62 @@ public class OperationsInvoiceService {
                 });
     }
 
+    public Optional<OperationsInvoiceResponseDto> markPaid(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations invoice paid");
+        return invoiceRepository.findById(id).map((invoice) -> {
+            requireActive(invoice, "Cancelled invoices cannot be marked paid");
+            if (invoice.getAmount() == null || invoice.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invoice amount must be valid");
+            }
+            invoice.setPaymentStatus(OperationsInvoicePaymentStatus.PAID);
+            invoice.setPaidAmount(invoice.getAmount());
+            OperationsInvoice saved = invoiceRepository.save(invoice);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Invoice marked paid");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsInvoiceResponseDto> markUnpaid(Long id) {
+        currentUserService.requireEditorOrAdmin("mark operations invoice unpaid");
+        return invoiceRepository.findById(id).map((invoice) -> {
+            requireActive(invoice, "Cancelled invoices cannot be marked unpaid");
+            invoice.setPaymentStatus(OperationsInvoicePaymentStatus.UNPAID);
+            invoice.setPaidAmount(BigDecimal.ZERO);
+            OperationsInvoice saved = invoiceRepository.save(invoice);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Invoice marked unpaid");
+            return toResponse(saved);
+        });
+    }
+
+    public Optional<OperationsInvoiceResponseDto> markPartial(Long id, OperationsInvoicePartialPaymentRequestDto request) {
+        currentUserService.requireEditorOrAdmin("mark operations invoice partial");
+        return invoiceRepository.findById(id).map((invoice) -> {
+            requireActive(invoice, "Cancelled invoices cannot be marked partial");
+            if (request == null || request.getPaidAmount() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "paidAmount is required");
+            }
+            BigDecimal paidAmount = request.getPaidAmount();
+            if (paidAmount.compareTo(BigDecimal.ZERO) < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "paidAmount must not be negative");
+            }
+            BigDecimal amount = invoice.getAmount() == null ? BigDecimal.ZERO : invoice.getAmount();
+            if (paidAmount.compareTo(amount) > 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "paidAmount must not be greater than amount");
+            }
+            invoice.setPaymentStatus(OperationsInvoicePaymentStatus.PARTIAL);
+            invoice.setPaidAmount(paidAmount);
+            OperationsInvoice saved = invoiceRepository.save(invoice);
+            record(saved, OperationsActivityActionType.STATUS_CHANGED, "Invoice marked partial");
+            return toResponse(saved);
+        });
+    }
+
+    private void requireActive(OperationsInvoice invoice, String message) {
+        if (invoice.getPaymentStatus() == OperationsInvoicePaymentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
     private void applyRequest(OperationsInvoice invoice, OperationsInvoiceRequestDto request, Long currentId) {
         if (request == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "request body is required");
@@ -149,5 +205,13 @@ public class OperationsInvoiceService {
         response.setCreatedAt(invoice.getCreatedAt());
         response.setUpdatedAt(invoice.getUpdatedAt());
         return response;
+    }
+
+    private void record(OperationsInvoice invoice, OperationsActivityActionType action, String description) {
+        try {
+            activityLogService.record("Invoices", invoice.getId(), action, invoice.getInvoiceNumber(), description);
+        } catch (RuntimeException ignored) {
+            // Activity logging must not block the operational workflow.
+        }
     }
 }

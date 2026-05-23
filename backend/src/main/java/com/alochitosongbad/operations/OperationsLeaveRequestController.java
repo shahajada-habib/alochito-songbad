@@ -41,4 +41,14 @@ public class OperationsLeaveRequestController {
     public ResponseEntity<OperationsLeaveRequestResponseDto> archive(@PathVariable Long id) {
         return leaveRequestService.archive(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<OperationsLeaveRequestResponseDto> approve(@PathVariable Long id) {
+        return leaveRequestService.approve(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<OperationsLeaveRequestResponseDto> reject(@PathVariable Long id) {
+        return leaveRequestService.reject(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

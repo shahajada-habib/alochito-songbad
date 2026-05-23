@@ -47,4 +47,19 @@ public class OperationsAdBookingController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}/mark-running")
+    public ResponseEntity<OperationsAdBookingResponseDto> markRunning(@PathVariable Long id) {
+        return adBookingService.markRunning(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-completed")
+    public ResponseEntity<OperationsAdBookingResponseDto> markCompleted(@PathVariable Long id) {
+        return adBookingService.markCompleted(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/mark-paid")
+    public ResponseEntity<OperationsAdBookingResponseDto> markPaid(@PathVariable Long id) {
+        return adBookingService.markPaid(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

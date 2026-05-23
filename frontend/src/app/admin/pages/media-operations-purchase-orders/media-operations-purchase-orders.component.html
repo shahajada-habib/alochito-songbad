@@ -69,12 +69,23 @@
                 <small>{{ t('totalAmount') }}: {{ order.totalAmount }}</small>
                 <small>{{ t('paymentStatus') }}: {{ paymentStatusLabel(order.paymentStatus) }}</small>
               </div>
-            </div>
-            <span class="ops-badge {{ statusClass(order.orderStatus) }}">{{ orderStatusLabel(order.orderStatus) }}</span>
-            <button type="button" class="operations-btn secondary compact" (click)="startEdit(order)">{{ t('editPurchaseOrder') }}</button>
-            @if (order.orderStatus !== 'CANCELLED') {
-              <button type="button" class="operations-btn secondary compact" (click)="archive(order)">{{ t('cancelRecord') }}</button>
-            }
+        </div>
+        <span class="ops-badge {{ statusClass(order.orderStatus) }}">{{ orderStatusLabel(order.orderStatus) }}</span>
+        @if (order.orderStatus !== 'CANCELLED') {
+          @if (order.orderStatus === 'DRAFT') {
+            <button type="button" class="operations-btn secondary compact" (click)="markPlaced(order)">{{ t('markPlaced') }}</button>
+          }
+          @if (order.orderStatus !== 'RECEIVED') {
+            <button type="button" class="operations-btn primary compact" (click)="markReceived(order)">{{ t('markReceived') }}</button>
+          }
+          @if (order.paymentStatus !== 'PAID') {
+            <button type="button" class="operations-btn secondary compact" (click)="markPaid(order)">{{ t('markPaid') }}</button>
+          }
+        }
+        <button type="button" class="operations-btn secondary compact" (click)="startEdit(order)">{{ t('editPurchaseOrder') }}</button>
+        @if (order.orderStatus !== 'CANCELLED') {
+          <button type="button" class="operations-btn secondary compact" (click)="archive(order)">{{ t('cancelRecord') }}</button>
+        }
           </article>
         }
       </div>

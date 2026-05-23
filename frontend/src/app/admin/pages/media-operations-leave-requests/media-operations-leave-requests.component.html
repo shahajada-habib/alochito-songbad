@@ -72,6 +72,10 @@
               </div>
             </div>
             <span class="ops-badge {{ statusClass(leaveRequest.status) }}">{{ statusLabel(leaveRequest.status) }}</span>
+            @if (leaveRequest.status === 'PENDING') {
+              <button type="button" class="operations-btn primary compact" (click)="approve(leaveRequest)">{{ t('approve') }}</button>
+              <button type="button" class="operations-btn secondary compact" (click)="reject(leaveRequest)">{{ t('reject') }}</button>
+            }
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(leaveRequest)">{{ t('editLeaveRequest') }}</button>
             @if (leaveRequest.status !== 'CANCELLED') {
               <button type="button" class="operations-btn secondary compact" (click)="archive(leaveRequest)">{{ t('cancelRecord') }}</button>

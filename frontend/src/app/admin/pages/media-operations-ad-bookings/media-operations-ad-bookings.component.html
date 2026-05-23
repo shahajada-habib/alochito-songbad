@@ -91,6 +91,17 @@
               <span class="ops-badge {{ paymentStatusClass(adBooking.paymentStatus) }}">{{ paymentStatusLabel(adBooking.paymentStatus) }}</span>
               <span class="ops-badge {{ publishStatusClass(adBooking.publishStatus) }}">{{ publishStatusLabel(adBooking.publishStatus) }}</span>
             </div>
+            @if (adBooking.publishStatus !== 'CANCELLED') {
+              @if (adBooking.publishStatus !== 'RUNNING' && adBooking.publishStatus !== 'COMPLETED') {
+                <button type="button" class="operations-btn secondary compact" (click)="markRunning(adBooking)">{{ t('markRunning') }}</button>
+              }
+              @if (adBooking.publishStatus !== 'COMPLETED') {
+                <button type="button" class="operations-btn primary compact" (click)="markCompleted(adBooking)">{{ t('markCompleted') }}</button>
+              }
+              @if (adBooking.paymentStatus !== 'PAID') {
+                <button type="button" class="operations-btn secondary compact" (click)="markPaid(adBooking)">{{ t('markPaid') }}</button>
+              }
+            }
             <button type="button" class="operations-btn secondary compact" (click)="startEdit(adBooking)">{{ t('editAdBooking') }}</button>
             @if (adBooking.publishStatus !== 'CANCELLED') {
               <button type="button" class="operations-btn secondary compact" (click)="archive(adBooking)">{{ t('cancelRecord') }}</button>

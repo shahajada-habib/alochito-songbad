@@ -163,6 +163,20 @@ export class MediaOperationsPurchaseRequestsComponent implements OnInit {
     });
   }
 
+  protected approve(request: MediaOperationsPurchaseRequest): void {
+    this.operations.approvePurchaseRequest(request.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
+  protected reject(request: MediaOperationsPurchaseRequest): void {
+    this.operations.rejectPurchaseRequest(request.id).subscribe({
+      next: () => this.toast.success(this.t('workflowActionSucceeded')),
+      error: () => this.toast.error(this.t('workflowActionFailed'))
+    });
+  }
+
   protected exportCsv(): void {
     this.csvExport.export('media-operations-purchase-requests.csv', [
       this.t('title'),
