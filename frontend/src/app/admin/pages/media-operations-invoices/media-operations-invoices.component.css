@@ -129,7 +129,11 @@
   z-index: 1000;
   display: grid;
   place-items: center;
-  padding: 28px;
+  width: 100%;
+  max-width: 100vw;
+  padding: 24px 16px;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .invoice-print-backdrop {
@@ -142,14 +146,17 @@
 .invoice-print-panel {
   position: relative;
   z-index: 1;
-  width: min(920px, 100%);
+  width: min(900px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
   max-height: calc(100vh - 56px);
   display: grid;
   gap: 14px;
   overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 16px;
   background: #f8f7f4;
   box-shadow: 0 24px 80px rgba(15, 23, 42, 0.32);
+  box-sizing: border-box;
 }
 
 .invoice-print-actions {
@@ -163,6 +170,7 @@
   padding: 16px 18px;
   border-bottom: 1px solid #e5e7eb;
   background: rgba(255, 255, 255, 0.96);
+  box-sizing: border-box;
 }
 
 .invoice-print-actions h3 {
@@ -178,20 +186,30 @@
 }
 
 .invoice-print-surface {
-  margin: 0 18px 18px;
-  padding: 42px;
+  width: min(794px, calc(100% - 36px));
+  max-width: calc(100% - 36px);
+  margin: 0 auto 18px;
+  padding: 34px;
   background: #ffffff;
   color: #111827;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
 }
 
 .invoice-print-header,
 .invoice-print-parties {
   display: flex;
   justify-content: space-between;
-  gap: 28px;
+  gap: 24px;
+  min-width: 0;
+}
+
+.invoice-print-header > *,
+.invoice-print-parties > * {
+  min-width: 0;
 }
 
 .invoice-print-header {
@@ -203,9 +221,10 @@
 .invoice-print-header h1 {
   margin: 0;
   color: #111827;
-  font-size: 30px;
+  font-size: 28px;
   letter-spacing: 0.04em;
   line-height: 1.1;
+  overflow-wrap: normal;
 }
 
 .invoice-print-header p,
@@ -221,12 +240,14 @@
   display: grid;
   gap: 8px;
   text-align: right;
+  min-width: 0;
 }
 
 .invoice-print-title strong {
   color: #dc2626;
-  font-size: 34px;
+  font-size: 32px;
   letter-spacing: 0.08em;
+  overflow-wrap: normal;
 }
 
 .invoice-print-title span {
@@ -271,8 +292,10 @@
 
 .invoice-print-table {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   border: 1px solid #e5e7eb;
+  table-layout: fixed;
 }
 
 .invoice-print-table th,
@@ -284,7 +307,7 @@
 }
 
 .invoice-print-table th {
-  width: 220px;
+  width: 34%;
   background: #f9fafb;
   color: #374151;
   font-weight: 900;
@@ -293,6 +316,8 @@
 .invoice-print-table td {
   color: #111827;
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .invoice-print-table tr:last-child th,
@@ -325,7 +350,10 @@
     position: static;
     inset: auto;
     display: block;
-    padding: 0;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
   }
 
   .invoice-print-backdrop,
@@ -334,20 +362,34 @@
   }
 
   .invoice-print-panel {
-    width: auto;
+    width: 100% !important;
+    max-width: none !important;
     max-height: none;
-    overflow: visible;
+    overflow: visible !important;
     border-radius: 0;
     background: #ffffff;
     box-shadow: none;
   }
 
   .invoice-print-surface {
-    margin: 0;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto;
     padding: 0;
     border: 0;
     border-radius: 0;
     box-shadow: none;
+    overflow: visible !important;
+  }
+
+  .invoice-print-header,
+  .invoice-print-parties {
+    break-inside: avoid;
+  }
+
+  .invoice-print-table {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
@@ -370,7 +412,16 @@
   .finance-card { grid-template-columns: 1fr; }
   .operations-btn { width: 100%; }
   .invoice-print-modal { padding: 12px; }
-  .invoice-print-surface { padding: 24px; margin: 0 12px 12px; }
+  .invoice-print-panel {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+  }
+  .invoice-print-surface {
+    width: calc(100% - 24px);
+    max-width: calc(100% - 24px);
+    padding: 24px;
+    margin: 0 auto 12px;
+  }
   .invoice-print-title,
   .invoice-print-status { text-align: left; justify-items: start; }
   .invoice-print-table th,

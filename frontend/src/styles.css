@@ -121,6 +121,17 @@ img {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body.invoice-printing {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
   body.invoice-printing {
     background: #ffffff;
   }
@@ -146,7 +157,8 @@ img {
   body.invoice-printing app-media-operations-invoices {
     display: block !important;
     min-height: 0 !important;
-    width: auto !important;
+    width: 100% !important;
+    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
@@ -157,9 +169,20 @@ img {
 
   body.invoice-printing .invoice-print-modal {
     display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
   }
 
-  @page {
-    margin: 16mm;
+  body.invoice-printing .invoice-print-panel,
+  body.invoice-printing .invoice-print-surface {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    overflow: visible !important;
+    transform: none !important;
+    box-shadow: none !important;
   }
 }
