@@ -35,6 +35,7 @@ export class JournalistProfileComponent {
   protected readonly profile = signal<Journalist | null>(null);
   protected readonly articles = signal<News[]>([]);
   protected readonly notFound = signal(false);
+  protected readonly profileImageFailed = signal(false);
   protected page = 0;
   protected last = true;
   private readonly username = this.route.snapshot.paramMap.get('username') || '';
@@ -56,6 +57,14 @@ export class JournalistProfileComponent {
     return this.displayName().trim().slice(0, 1) || 'আ';
   }
 
+  protected hasProfileImage(journalist: Journalist): boolean {
+    return !!journalist.profileImageUrl && !this.profileImageFailed();
+  }
+
+  protected markProfileImageFailed(): void {
+    this.profileImageFailed.set(true);
+  }
+
   protected excerpt(news: News): string {
     return createExcerpt(news.subtitle || news.content || news.title, 120);
   }
@@ -74,6 +83,7 @@ export class JournalistProfileComponent {
   private loadProfile(): void {
     this.http.get<Journalist>(`${this.apiBaseUrl}/api/public/journalists/${encodeURIComponent(this.username)}`).subscribe({
       next: (profile) => {
+        this.profileImageFailed.set(false);
         this.profile.set(profile);
         const name = profile.displayName || profile.username;
         this.title.setTitle(`${name} - আলোচিত সংবাদ`);

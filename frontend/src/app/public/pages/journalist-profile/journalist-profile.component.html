@@ -3,8 +3,8 @@
     <div class="profile-empty">সাংবাদিক পাওয়া যায়নি</div>
   } @else if (profile(); as journalist) {
     <header class="profile-card">
-      @if (journalist.profileImageUrl) {
-        <img [src]="journalist.profileImageUrl" [alt]="displayName()">
+      @if (hasProfileImage(journalist)) {
+        <img [src]="journalist.profileImageUrl" [alt]="displayName()" (error)="markProfileImageFailed()">
       } @else {
         <div class="profile-initials">{{ initials() }}</div>
       }

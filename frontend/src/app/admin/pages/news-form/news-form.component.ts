@@ -16,6 +16,7 @@ import { ToastService } from '../../services/toast.service';
 const SELECTED_MEDIA_STORAGE_KEY = 'alochito_selected_article_image';
 const NEWS_PREVIEW_STORAGE_KEY = 'alochito_news_preview';
 const UNSAVED_CHANGES_MESSAGE = 'You have unsaved changes. Are you sure you want to leave?';
+const CUSTOM_REPORTER_SELECTION = 'custom';
 
 type QuillSelection = {
   index: number;
@@ -28,6 +29,8 @@ type QuillEditorInstance = {
   insertEmbed(index: number, type: string, value: string, source?: string): void;
   setSelection(index: number, length?: number, source?: string): void;
 };
+
+type ReporterSelection = number | typeof CUSTOM_REPORTER_SELECTION | null;
 
 @Component({
   selector: 'app-news-form',
@@ -70,6 +73,17 @@ export class NewsFormComponent {
   protected readonly canArchive = this.auth.isAdmin() || this.auth.isEditor();
   protected sourceMode = '';
   protected sourceCustomValue = '';
+  protected reporterSelection: ReporterSelection = null;
+  protected customReporterName = '';
+  protected readonly customReporterSelection = CUSTOM_REPORTER_SELECTION;
+  protected readonly quickReporterNames = [
+    'নিজস্ব প্রতিবেদক',
+    'ডেস্ক রিপোর্ট',
+    'অনলাইন ডেস্ক',
+    'বাসস',
+    'প্রতিনিধি',
+    'সংবাদদাতা'
+  ];
   protected tagInput = '';
   protected readonly reporters = this.teamService.reporters;
 
@@ -166,14 +180,19 @@ export class NewsFormComponent {
     }
 
     this.syncSourceSelectionFromForm();
+    this.syncReporterSelectionFromForm();
     this.teamService.loadReporters();
     effect(() => {
-      if (this.form.authorId || !this.form.reporterName) {
+      if (this.reporterSelection === CUSTOM_REPORTER_SELECTION || this.form.authorId || !this.form.reporterName) {
         return;
       }
       const reporter = this.reporters().find((item) => item.username === this.form.reporterName);
       if (reporter) {
         this.form.authorId = reporter.id;
+        this.reporterSelection = reporter.id;
+      } else if (this.form.reporterName) {
+        this.reporterSelection = CUSTOM_REPORTER_SELECTION;
+        this.customReporterName = this.form.reporterName;
       }
     });
     this.markPristine();
@@ -205,6 +224,7 @@ export class NewsFormComponent {
   }
 
   protected preview(): void {
+    this.applyReporterSelection();
     this.applySourceSelection();
     const slug = this.createPreviewSlug();
     const previewNews = {
@@ -263,6 +283,7 @@ export class NewsFormComponent {
       return;
     }
 
+    this.applyReporterSelection();
     this.applySourceSelection();
 
     if (!this.form.title.trim()) {
@@ -287,6 +308,7 @@ export class NewsFormComponent {
         this.isSaving = false;
         this.form = this.formFromNews(savedNews);
         this.syncSourceSelectionFromForm();
+        this.syncReporterSelectionFromForm();
         this.markPristine();
         this.navigationAfterSave = true;
         this.toast.success(this.successMessageForStatus(savedNews.status));
@@ -412,10 +434,40 @@ export class NewsFormComponent {
     return this.sourceMode === 'Reporter Name' || this.sourceMode === 'Other';
   }
 
-  protected selectReporter(authorId: number | null): void {
+  protected selectReporter(selection: ReporterSelection): void {
+    this.reporterSelection = selection;
+
+    if (selection === CUSTOM_REPORTER_SELECTION) {
+      this.form.authorId = null;
+      this.form.reporterName = this.customReporterName.trim();
+      this.markDirty();
+      return;
+    }
+
+    const authorId = selection === null ? null : Number(selection);
     this.form.authorId = authorId;
-    const reporter = this.reporters().find((item) => item.id === Number(authorId));
+    const reporter = this.reporters().find((item) => item.id === authorId);
     this.form.reporterName = reporter?.username ?? '';
+    this.customReporterName = '';
+    this.markDirty();
+  }
+
+  protected showCustomReporterInput(): boolean {
+    return this.reporterSelection === CUSTOM_REPORTER_SELECTION;
+  }
+
+  protected onCustomReporterNameChange(value: string): void {
+    this.customReporterName = value;
+    if (this.reporterSelection === CUSTOM_REPORTER_SELECTION) {
+      this.form.authorId = null;
+      this.form.reporterName = value.trim();
+    }
+    this.markDirty();
+  }
+
+  protected useQuickReporterName(value: string): void {
+    this.reporterSelection = CUSTOM_REPORTER_SELECTION;
+    this.onCustomReporterNameChange(value);
     this.markDirty();
   }
 
@@ -481,6 +533,41 @@ export class NewsFormComponent {
 
     this.sourceMode = '';
     this.sourceCustomValue = '';
+  }
+
+  private syncReporterSelectionFromForm(): void {
+    if (this.form.authorId) {
+      this.reporterSelection = this.form.authorId;
+      this.customReporterName = '';
+      return;
+    }
+
+    if (this.form.reporterName) {
+      this.reporterSelection = CUSTOM_REPORTER_SELECTION;
+      this.customReporterName = this.form.reporterName;
+      return;
+    }
+
+    this.reporterSelection = null;
+    this.customReporterName = '';
+  }
+
+  private applyReporterSelection(): void {
+    if (this.reporterSelection === CUSTOM_REPORTER_SELECTION) {
+      this.form.authorId = null;
+      this.form.reporterName = this.customReporterName.trim();
+      return;
+    }
+
+    if (this.reporterSelection === null) {
+      this.form.authorId = null;
+      this.form.reporterName = '';
+      return;
+    }
+
+    const reporter = this.reporters().find((item) => item.id === Number(this.reporterSelection));
+    this.form.authorId = reporter?.id ?? Number(this.reporterSelection);
+    this.form.reporterName = reporter?.username ?? this.form.reporterName;
   }
 
   private applySourceSelection(): void {

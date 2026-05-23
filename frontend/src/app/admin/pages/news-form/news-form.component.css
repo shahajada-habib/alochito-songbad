@@ -260,6 +260,13 @@
   min-width: 0;
 }
 
+.quick-reporter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
 .tag-chip {
   display: inline-flex;
   align-items: center;
@@ -274,6 +281,24 @@
   font: inherit;
   font-size: 12px;
   font-weight: 800;
+}
+
+.quick-reporter-chip {
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid #f2b8af;
+  border-radius: 999px;
+  background: #fff7f5;
+  color: var(--color-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.quick-reporter-chip:hover {
+  border-color: var(--color-primary);
+  background: #fff2ef;
 }
 
 .tag-chip span {

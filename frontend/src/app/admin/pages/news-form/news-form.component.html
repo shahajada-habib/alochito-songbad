@@ -37,13 +37,28 @@
         <div class="metadata-grid">
           <label class="premium-field">
             <span>{{ t('reporterName') }}</span>
-            <select name="authorId" [(ngModel)]="form.authorId" (ngModelChange)="selectReporter($event ? +$event : null)">
+            <select name="reporterSelection" [(ngModel)]="reporterSelection" (ngModelChange)="selectReporter($event)">
               <option [ngValue]="null">প্রতিবেদক নির্বাচন করুন</option>
               @for (reporter of reporters(); track reporter.id) {
                 <option [ngValue]="reporter.id">{{ reporterLabel(reporter) }}</option>
               }
+              <option [ngValue]="customReporterSelection">Custom reporter / Other</option>
             </select>
             <small>প্রতিবেদক নির্বাচন করলে লেখক প্রোফাইল সংবাদে যুক্ত হবে।</small>
+            @if (showCustomReporterInput()) {
+              <input
+                type="text"
+                name="customReporterName"
+                [ngModel]="customReporterName"
+                (ngModelChange)="onCustomReporterNameChange($event)"
+                placeholder="নিজস্ব প্রতিবেদক / ডেস্ক রিপোর্ট / প্রতিনিধি"
+              >
+              <div class="quick-reporter-list">
+                @for (name of quickReporterNames; track name) {
+                  <button type="button" class="quick-reporter-chip" (click)="useQuickReporterName(name)">{{ name }}</button>
+                }
+              </div>
+            }
           </label>
 
         <label class="premium-field">
