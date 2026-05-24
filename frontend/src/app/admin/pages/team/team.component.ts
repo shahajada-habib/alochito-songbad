@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { MediaLibraryService } from '../../services/media-library.service';
 import { TeamMember, TeamMemberFormValue, TeamService } from '../../services/team.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -15,6 +16,7 @@ import { ToastService } from '../../services/toast.service';
 })
 export class TeamComponent {
   private readonly teamService = inject(TeamService);
+  private readonly mediaService = inject(MediaLibraryService);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly toast = inject(ToastService);
   protected readonly auth = inject(AuthService);
@@ -25,6 +27,8 @@ export class TeamComponent {
   protected form: TeamMemberFormValue = this.emptyForm();
   protected editForm: TeamMemberFormValue = this.emptyForm();
   protected profileForm = this.emptyProfileForm();
+  protected isUploadingProfilePhoto = false;
+  protected profilePreviewFailed = false;
   protected readonly designationOptions = [
     'স্টাফ রিপোর্টার',
     'সিনিয়র রিপোর্টার',
@@ -98,6 +102,7 @@ export class TeamComponent {
 
   protected startProfileEdit(member: TeamMember): void {
     this.profileEditingId = member.id;
+    this.profilePreviewFailed = false;
     this.profileForm = {
       displayName: member.displayName || member.name,
       designation: member.designation,
@@ -123,6 +128,49 @@ export class TeamComponent {
   protected cancelProfileEdit(): void {
     this.profileEditingId = null;
     this.profileForm = this.emptyProfileForm();
+    this.isUploadingProfilePhoto = false;
+    this.profilePreviewFailed = false;
+  }
+
+  protected uploadProfilePhoto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    if (!this.isSupportedImage(file)) {
+      this.toast.error('Only JPG, PNG, WebP, or GIF images are allowed');
+      return;
+    }
+
+    this.isUploadingProfilePhoto = true;
+    this.mediaService.upload(file, file.name).subscribe({
+      next: (item) => {
+        this.profileForm.profileImageUrl = item.imageUrl;
+        this.profilePreviewFailed = false;
+        this.isUploadingProfilePhoto = false;
+        this.toast.success(this.t('mediaReadyForArticle'));
+      },
+      error: () => {
+        this.isUploadingProfilePhoto = false;
+        this.toast.error(this.t('actionFailed'));
+      }
+    });
+  }
+
+  protected profilePreviewUrl(): string {
+    return this.profilePreviewFailed ? '' : (this.profileForm.profileImageUrl || '').trim();
+  }
+
+  protected markProfilePreviewFailed(): void {
+    this.profilePreviewFailed = true;
+  }
+
+  protected profileInitials(): string {
+    return (this.profileForm.displayName || '').trim().slice(0, 1) || 'আ';
   }
 
   protected async deleteMember(member: TeamMember): Promise<void> {
@@ -170,5 +218,9 @@ export class TeamComponent {
       emailPublic: '',
       isPublic: true
     };
+  }
+
+  private isSupportedImage(file: File): boolean {
+    return ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type);
   }
 }
