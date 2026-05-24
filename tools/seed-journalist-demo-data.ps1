@@ -449,8 +449,9 @@ foreach ($key in $categoryAliases.Keys) {
     }
 }
 
-# Edit journalist names, bios, and avatar URLs here.
-# Avatar URLs use generated illustration avatars, not real people or copyrighted profile photos.
+# Edit journalist names and bios here.
+# Demo journalists intentionally leave profileImageUrl empty so the public portal uses
+# its clean editorial initials avatar instead of robot/cartoon placeholders.
 $journalists = @(
     @{
         username = "mahir-hasan"
@@ -460,7 +461,7 @@ $journalists = @(
         displayName = "মাহির হাসান"
         designation = "সিনিয়র রিপোর্টার"
         bio = "জাতীয় রাজনীতি, প্রশাসন ও নীতি-নির্ধারণী ইস্যু নিয়ে নিয়মিত প্রতিবেদন করেন। মাঠপর্যায়ের তথ্য যাচাই ও বিশ্লেষণধর্মী সংবাদ তৈরিতে তাঁর বিশেষ আগ্রহ রয়েছে।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=mahir-hasan"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "mahir@alochitosongbad.demo"
@@ -474,7 +475,7 @@ $journalists = @(
         displayName = "সাবিহা রহমান"
         designation = "স্টাফ রিপোর্টার"
         bio = "নগর জীবন, সিটি করপোরেশন, নাগরিক সমস্যা ও জনসেবামূলক বিষয় নিয়ে কাজ করেন। সাধারণ মানুষের অভিজ্ঞতা তুলে ধরতে তিনি মাঠভিত্তিক রিপোর্টিংকে গুরুত্ব দেন।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=sabiha-rahman"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "sabiha@alochitosongbad.demo"
@@ -488,7 +489,7 @@ $journalists = @(
         displayName = "আরিফুল ইসলাম"
         designation = "বিশেষ প্রতিনিধি"
         bio = "অনুসন্ধানী প্রতিবেদন, জনসেবা, দুর্নীতি ও স্থানীয় প্রশাসনের কার্যক্রম নিয়ে কাজ করেন। তথ্য-প্রমাণভিত্তিক রিপোর্টিংয়ে তিনি মনোযোগী।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=ariful-islam"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "ariful@alochitosongbad.demo"
@@ -502,7 +503,7 @@ $journalists = @(
         displayName = "নুসরাত জাহান"
         designation = "বিনোদন প্রতিবেদক"
         bio = "চলচ্চিত্র, নাটক, ওটিটি, সংস্কৃতি ও তারকাজগতের খবর নিয়ে নিয়মিত লেখেন। বিনোদন অঙ্গনের পরিবর্তন ও দর্শক প্রবণতা নিয়ে তাঁর আগ্রহ বেশি।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=nusrat-jahan"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "nusrat@alochitosongbad.demo"
@@ -516,7 +517,7 @@ $journalists = @(
         displayName = "তানভীর আহমেদ"
         designation = "ক্রীড়া প্রতিবেদক"
         bio = "ক্রিকেট, ফুটবল ও দেশের ক্রীড়া প্রশাসন নিয়ে কাজ করেন। মাঠের খেলা ও পর্দার আড়ালের সিদ্ধান্ত—দুই দিকই তাঁর প্রতিবেদনে গুরুত্ব পায়।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=tanvir-ahmed"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "tanvir@alochitosongbad.demo"
@@ -530,7 +531,7 @@ $journalists = @(
         displayName = "রাইয়ান কবির"
         designation = "আন্তর্জাতিক ডেস্ক"
         bio = "দক্ষিণ এশিয়া, মধ্যপ্রাচ্য ও বৈশ্বিক রাজনীতি নিয়ে সংবাদ বিশ্লেষণ করেন। আন্তর্জাতিক ঘটনার স্থানীয় প্রভাব ব্যাখ্যা করাই তাঁর প্রতিবেদনের মূল লক্ষ্য।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=raiyan-kabir"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "raiyan@alochitosongbad.demo"
@@ -544,7 +545,7 @@ $journalists = @(
         displayName = "ফারহানা মিম"
         designation = "অর্থনীতি প্রতিবেদক"
         bio = "বাজার, ব্যাংক, ব্যবসা, ভোক্তা অধিকার ও অর্থনৈতিক নীতি নিয়ে প্রতিবেদন করেন। জটিল অর্থনৈতিক বিষয় সহজ ভাষায় তুলে ধরতে তিনি আগ্রহী।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=farhana-mim"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "farhana@alochitosongbad.demo"
@@ -558,7 +559,7 @@ $journalists = @(
         displayName = "ইমরান হোসেন"
         designation = "ফটো সাংবাদিক"
         bio = "ফটো স্টোরি, মাঠ প্রতিবেদন ও ভিজ্যুয়াল সাংবাদিকতায় কাজ করেন। গুরুত্বপূর্ণ ঘটনার মানবিক দিক ক্যামেরার ভাষায় তুলে ধরাই তাঁর লক্ষ্য।"
-        profileImageUrl = "https://api.dicebear.com/9.x/bottts-neutral/svg?seed=imran-hossain"
+        profileImageUrl = ""
         facebookUrl = ""
         twitterUrl = ""
         emailPublic = "imran@alochitosongbad.demo"
