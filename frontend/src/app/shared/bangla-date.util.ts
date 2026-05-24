@@ -40,6 +40,35 @@ export function buildBanglaDate(date = new Date()): string {
   return `${weekday}, ${day} ${BANGLA_MONTHS[monthIndex]} ${year}`;
 }
 
+export type PublicDateLine = {
+  gregorian: string;
+  bengaliCalendar: string;
+  hijri: string;
+};
+
+export function buildPublicDateLine(date = new Date()): PublicDateLine {
+  return {
+    gregorian: buildBanglaDate(date),
+    bengaliCalendar: formatCalendarDate(date, 'bn-BD-u-ca-beng', 'বাংলা সন'),
+    hijri: formatCalendarDate(date, 'bn-BD-u-ca-islamic', 'হিজরি')
+  };
+}
+
+function formatCalendarDate(date: Date, locale: string, suffix: string): string {
+  try {
+    const formatted = new Intl.DateTimeFormat(locale, {
+      timeZone: 'Asia/Dhaka',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
+
+    return formatted ? `${formatted} ${suffix}` : '';
+  } catch {
+    return '';
+  }
+}
+
 function toBanglaDigits(value: string): string {
   return value.replace(/\d/g, (digit) => BANGLA_DIGITS[Number(digit)]);
 }

@@ -1,5 +1,6 @@
 .site-header {
-  background: rgba(255, 255, 255, 0.96);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 253, 249, 0.97) 100%);
   border-bottom: 1px solid var(--color-border);
   box-shadow: 0 4px 14px rgba(23, 32, 38, 0.035);
   backdrop-filter: blur(10px);
@@ -20,7 +21,7 @@
 .header-top {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 20px var(--space-3) var(--space-3);
+  padding: 14px var(--space-3) 11px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -36,9 +37,9 @@
 }
 
 .brand {
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  padding: 2px 0;
+  padding: 4px 0;
   transition: transform 180ms ease;
 }
 
@@ -53,8 +54,8 @@
 }
 
 .brand-mark {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -62,7 +63,7 @@
   background: linear-gradient(145deg, #d92d20, var(--color-primary-dark));
   color: var(--color-surface);
   box-shadow: 0 10px 22px rgba(180, 35, 24, 0.22);
-  font-size: 29px;
+  font-size: 27px;
   font-weight: 700;
   line-height: 1;
   transition: width 180ms ease, height 180ms ease, font-size 180ms ease, box-shadow 180ms ease;
@@ -71,7 +72,7 @@
 .brand strong {
   display: block;
   font-family: var(--font-public-heading);
-  font-size: 34px;
+  font-size: 31px;
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: 0;
@@ -81,18 +82,18 @@
 
 .brand small {
   display: block;
-  margin-top: var(--space-1);
+  margin-top: 3px;
   color: var(--color-muted);
-  font-size: 13.5px;
+  font-size: 12.5px;
   line-height: 1.2;
   transition: opacity 180ms ease, margin-top 180ms ease;
 }
 
 .header-actions {
   justify-content: flex-end;
-  gap: var(--space-3);
+  gap: 10px;
   color: var(--color-muted);
-  font-size: 14px;
+  font-size: 13px;
   white-space: nowrap;
   transition: gap 180ms ease;
 }
@@ -101,14 +102,14 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  min-width: min(320px, 32vw);
+  min-width: min(248px, 24vw);
 }
 
 .site-search input {
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: 999px;
-  padding: 10px var(--space-3);
+  padding: 8px 13px;
   background: var(--color-surface-soft);
   font: inherit;
   transition: padding 180ms ease, background-color 180ms ease, border-color 180ms ease;
@@ -122,7 +123,7 @@
 .site-search button {
   border: 0;
   border-radius: 999px;
-  padding: 10px var(--space-3);
+  padding: 8px 13px;
   background: var(--color-primary);
   color: var(--color-surface);
   cursor: pointer;
@@ -135,18 +136,32 @@
   transform: translateY(-1px);
 }
 
-.header-actions > span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0 var(--space-2);
+.date-stack {
+  display: grid;
+  gap: 1px;
+  min-height: 30px;
+  max-width: 260px;
+  padding: 0 10px;
   border-left: 1px solid var(--color-border);
   color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: right;
   transition: min-height 180ms ease, padding 180ms ease;
 }
 
+.date-stack small {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 3px 8px;
+  color: #8a7464;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
 .header-actions .cms-link {
-  padding: 10px var(--space-3);
+  padding: 8px 13px;
   border-radius: 999px;
   border: 1px solid var(--color-primary);
   background: transparent;
@@ -181,7 +196,7 @@
   padding: 0 var(--space-3);
   gap: 2px;
   overflow-x: auto;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid rgba(230, 224, 215, 0.82);
   scrollbar-width: thin;
   transition: padding 180ms ease;
 }
@@ -189,8 +204,8 @@
 .category-nav a {
   position: relative;
   flex: 0 0 auto;
-  padding: 14px var(--space-3) 11px;
-  font-size: 15px;
+  padding: 12px var(--space-3) 10px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--color-text);
   transition: color 160ms ease, background 160ms ease;
@@ -202,14 +217,14 @@
 }
 
 .site-header.scrolled .brand-mark {
-  width: 46px;
-  height: 46px;
-  font-size: 26px;
+  width: 42px;
+  height: 42px;
+  font-size: 24px;
   box-shadow: 0 8px 18px rgba(180, 35, 24, 0.18);
 }
 
 .site-header.scrolled .brand strong {
-  font-size: 31px;
+  font-size: 28px;
   line-height: 1.02;
 }
 
@@ -228,8 +243,8 @@
   padding-bottom: 8px;
 }
 
-.site-header.scrolled .header-actions > span {
-  min-height: 34px;
+.site-header.scrolled .date-stack {
+  min-height: 28px;
 }
 
 .site-header.scrolled .category-nav {
@@ -300,10 +315,15 @@
     min-width: 0;
   }
 
-  .header-actions > span {
+  .date-stack {
     min-height: 0;
     padding-left: 0;
     border-left: 0;
+    text-align: left;
+  }
+
+  .date-stack small {
+    justify-content: flex-start;
   }
 
   .category-nav {
@@ -321,5 +341,94 @@
 
   .site-header.scrolled .brand strong {
     font-size: 27px;
+  }
+}
+
+.site-footer {
+  margin-top: 18px;
+  border-top: 4px solid var(--color-primary);
+  background:
+    radial-gradient(circle at top left, rgba(199, 36, 26, 0.18), transparent 30%),
+    linear-gradient(135deg, #171f24 0%, #0f1720 100%);
+  color: #f8f4ee;
+}
+
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+  gap: var(--space-5);
+  padding-top: 42px;
+  padding-bottom: 42px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.footer-mark {
+  width: 46px;
+  height: 46px;
+  box-shadow: none;
+}
+
+.site-footer h2,
+.site-footer h3,
+.site-footer p {
+  margin-top: 0;
+}
+
+.site-footer h2 {
+  margin-bottom: 8px;
+  font-size: 26px;
+}
+
+.site-footer h3 {
+  margin-bottom: 12px;
+  color: #ffffff;
+  font-family: var(--font-ui);
+  font-size: 15px;
+}
+
+.site-footer p,
+.footer-links a {
+  color: #d5ddd8;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.footer-links {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-social a {
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+@media (max-width: 900px) {
+  .footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
   }
 }
