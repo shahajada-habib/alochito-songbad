@@ -1,5 +1,5 @@
 .operations-overview-page {
-  gap: 18px;
+  gap: 16px;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -12,7 +12,7 @@
   gap: clamp(14px, 2vw, 24px);
   align-items: stretch;
   min-width: 0;
-  padding: clamp(22px, 2.4vw, 32px);
+  padding: clamp(18px, 2vw, 26px);
   border-bottom: 1px solid #e5e7eb;
   background: #ffffff;
 }
@@ -109,7 +109,7 @@
   min-width: 0;
   max-width: 100%;
   margin: 0 clamp(14px, 2vw, 18px);
-  padding: clamp(18px, 2vw, 24px);
+  padding: clamp(16px, 1.7vw, 21px);
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   background: #ffffff;
@@ -130,18 +130,18 @@
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 205px), 1fr));
+  gap: 12px;
 }
 
 .kpi-card {
-  height: 100px;
+  min-height: 92px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
   align-items: center;
   min-width: 0;
-  padding: 16px 18px;
+  padding: 14px 16px;
   border: 1px solid #e5e7eb;
   border-left-width: 4px;
   border-radius: 10px;
@@ -171,12 +171,19 @@
   display: block;
 }
 
+.kpi-card div {
+  min-width: 0;
+}
+
 .kpi-card strong {
   color: #111827;
-  font-size: 32px;
+  max-width: 100%;
+  font-size: clamp(18px, 1.85vw, 28px);
   font-weight: 800;
   line-height: 1;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .kpi-card span {
@@ -199,7 +206,7 @@
 .command-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .analytics-card,
@@ -213,8 +220,8 @@
 
 .analytics-card {
   display: grid;
-  gap: 16px;
-  padding: 20px;
+  gap: 14px;
+  padding: 16px;
 }
 
 .analytics-head {
@@ -228,10 +235,13 @@
 
 .analytics-head strong {
   color: #111827;
-  font-size: 20px;
+  max-width: 100%;
+  font-size: clamp(16px, 1.6vw, 19px);
   font-weight: 800;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-align: right;
 }
 
@@ -242,7 +252,7 @@
 
 .bar-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(68px, auto);
   gap: 7px 12px;
   align-items: center;
 }
@@ -259,6 +269,10 @@
 
 .bar-row strong {
   color: #374151;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bar-track {
@@ -436,10 +450,53 @@
   .overview-hero,
   .overview-block {
     margin: 0;
-    padding: 22px;
+    padding: 16px;
+  }
+
+  .overview-hero {
+    gap: 14px;
+  }
+
+  .hero-copy h2 {
+    font-size: 26px;
+  }
+
+  .hero-status-card {
+    padding: 16px;
+  }
+
+  .status-metrics strong {
+    font-size: 22px;
   }
 
   .kpi-grid {
     grid-template-columns: 1fr;
+  }
+
+  .kpi-card {
+    min-height: 82px;
+    padding: 12px 14px;
+  }
+
+  .kpi-card strong {
+    font-size: clamp(18px, 7vw, 24px);
+  }
+
+  .analytics-card {
+    padding: 14px;
+  }
+
+  .analytics-head strong,
+  .bar-row strong {
+    max-width: 140px;
+  }
+
+  .bar-row {
+    grid-template-columns: minmax(0, 1fr) minmax(74px, auto);
+    gap: 6px 10px;
+  }
+
+  .snapshot-panel {
+    height: 220px;
   }
 }

@@ -227,7 +227,7 @@
 
     <div class="category-grid">
       @if (categories.length > 0) {
-        @for (category of categories; track category.name) {
+        @for (category of categories; track category.name + '-' + $index) {
         <section class="category-block">
           <h3 class="category-title-bar">
             <a [routerLink]="['/category', category.name]">{{ category.name }}</a>
