@@ -100,6 +100,25 @@
                   <input type="url" name="profileImageUrl{{ member.id }}" [(ngModel)]="profileForm.profileImageUrl">
                 </label>
                 <label>
+                  <span>Upload profile photo</span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
+                    [disabled]="isUploadingProfilePhoto"
+                    (change)="uploadProfilePhoto($event)">
+                </label>
+                <div class="profile-photo-preview full-width">
+                  @if (profilePreviewUrl()) {
+                    <img [src]="profilePreviewUrl()" [alt]="profileForm.displayName || member.name" (error)="markProfilePreviewFailed()">
+                  } @else {
+                    <div class="profile-photo-fallback" aria-hidden="true">{{ profileInitials() }}</div>
+                  }
+                  <div>
+                    <strong>Profile photo preview</strong>
+                    <p>{{ isUploadingProfilePhoto ? 'Uploading photo...' : 'Upload a JPG, PNG, WebP, or GIF, or keep using a manual image URL.' }}</p>
+                  </div>
+                </div>
+                <label>
                   <span>Facebook URL</span>
                   <input type="url" name="facebookUrl{{ member.id }}" [(ngModel)]="profileForm.facebookUrl">
                 </label>

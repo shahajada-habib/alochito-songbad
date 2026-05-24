@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../../auth/auth.service';
+import { MediaLibraryService } from '../../services/media-library.service';
 import { TeamMember, TeamService } from '../../services/team.service';
 import { ToastService } from '../../services/toast.service';
 
@@ -13,8 +14,11 @@ import { ToastService } from '../../services/toast.service';
 })
 export class ProfileComponent {
   private readonly auth = inject(AuthService);
+  private readonly mediaService = inject(MediaLibraryService);
   private readonly teamService = inject(TeamService);
   private readonly toast = inject(ToastService);
+  protected isUploadingProfilePhoto = false;
+  protected profilePreviewFailed = false;
 
   protected profileForm: Partial<TeamMember> = {
     displayName: this.auth.username() || '',
@@ -52,5 +56,50 @@ export class ProfileComponent {
       },
       error: () => this.toast.error('প্রোফাইল সংরক্ষণ করা যায়নি')
     });
+  }
+
+  protected uploadProfilePhoto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    if (!this.isSupportedImage(file)) {
+      this.toast.error('Only JPG, PNG, WebP, or GIF images are allowed');
+      return;
+    }
+
+    this.isUploadingProfilePhoto = true;
+    this.mediaService.upload(file, file.name).subscribe({
+      next: (item) => {
+        this.profileForm.profileImageUrl = item.imageUrl;
+        this.profilePreviewFailed = false;
+        this.isUploadingProfilePhoto = false;
+        this.toast.success('Profile photo uploaded');
+      },
+      error: () => {
+        this.isUploadingProfilePhoto = false;
+        this.toast.error('Profile photo upload failed');
+      }
+    });
+  }
+
+  protected profilePreviewUrl(): string {
+    return this.profilePreviewFailed ? '' : (this.profileForm.profileImageUrl || '').trim();
+  }
+
+  protected markProfilePreviewFailed(): void {
+    this.profilePreviewFailed = true;
+  }
+
+  protected profileInitials(): string {
+    return (this.profileForm.displayName || this.auth.username() || '').trim().slice(0, 1) || 'আ';
+  }
+
+  private isSupportedImage(file: File): boolean {
+    return ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type);
   }
 }
