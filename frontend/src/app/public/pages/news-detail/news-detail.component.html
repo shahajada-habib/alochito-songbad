@@ -95,7 +95,7 @@
         @if (articleData.tagNames.length > 0) {
           <nav class="article-tags" aria-label="Article tags">
             @for (tag of articleData.tagNames; track tag) {
-              <a class="article-tag" routerLink="/news" [queryParams]="{ q: tag }">{{ tag }}</a>
+              <a class="article-tag" [routerLink]="['/tag', tag]">{{ tag }}</a>
             }
           </nav>
         }

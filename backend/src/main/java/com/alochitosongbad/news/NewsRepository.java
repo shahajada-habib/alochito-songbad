@@ -117,6 +117,34 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     @Query("""
             SELECT n FROM News n
+            JOIN n.tagEntities t
+            WHERE n.status = :status
+              AND COALESCE(n.publishDate, n.scheduledAt, n.createdAt) <= :now
+              AND LOWER(t.name) = LOWER(:tagName)
+            ORDER BY COALESCE(n.publishDate, n.scheduledAt, n.createdAt) DESC, n.id DESC
+            """)
+    Page<News> findVisiblePublishedByTagName(
+            @Param("status") String status,
+            @Param("now") LocalDateTime now,
+            @Param("tagName") String tagName,
+            Pageable pageable);
+
+    @Query("""
+            SELECT n FROM News n
+            JOIN n.category c
+            WHERE n.status = :status
+              AND COALESCE(n.publishDate, n.scheduledAt, n.createdAt) <= :now
+              AND (LOWER(c.slug) = LOWER(:category) OR LOWER(c.name) = LOWER(:category))
+            ORDER BY COALESCE(n.publishDate, n.scheduledAt, n.createdAt) DESC, n.id DESC
+            """)
+    Page<News> findVisiblePublishedByCategory(
+            @Param("status") String status,
+            @Param("now") LocalDateTime now,
+            @Param("category") String category,
+            Pageable pageable);
+
+    @Query("""
+            SELECT n FROM News n
             WHERE n.status = :status
               AND COALESCE(n.publishDate, n.scheduledAt, n.createdAt) <= :now
               AND (
@@ -143,4 +171,17 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     @Modifying
     @Query("UPDATE News n SET n.viewCount = n.viewCount + 1 WHERE n.id = :id")
     void incrementViewCount(@Param("id") Long id);
+
+    @Modifying
+    @Query("""
+            UPDATE News n
+            SET n.viewCount = n.viewCount + 1
+            WHERE n.id = :id
+              AND n.status = :status
+              AND COALESCE(n.publishDate, n.scheduledAt, n.createdAt) <= :now
+            """)
+    int incrementVisiblePublishedViewCount(
+            @Param("id") Long id,
+            @Param("status") String status,
+            @Param("now") LocalDateTime now);
 }

@@ -286,6 +286,89 @@ class NewsSecurityIntegrationTests {
     }
 
     @Test
+    void publicTagAndCategoryNewsEndpointsReturnOnlyDuePublishedNews() throws Exception {
+        String adminToken = login("admin");
+        Map<String, Object> duePayload = newsPayload("Tagged public story", "tagged-public-story", "published");
+        duePayload.put("tagNames", List.of("Election"));
+        duePayload.put("publishDate", "2026-01-01T10:00");
+        Map<String, Object> futurePayload = newsPayload("Tagged future story", "tagged-future-story", "published");
+        futurePayload.put("tagNames", List.of("Election"));
+        futurePayload.put("publishDate", "2099-01-01T10:00");
+        Map<String, Object> draftPayload = newsPayload("Tagged draft story", "tagged-draft-story", "draft");
+        draftPayload.put("tagNames", List.of("Election"));
+
+        mockMvc.perform(post("/api/news")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(duePayload)))
+                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/news")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(futurePayload)))
+                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/news")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(draftPayload)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/public/tags/{name}/news", "Election")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].slug").value("tagged-public-story"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+
+        mockMvc.perform(get("/api/public/news/by-tag/{name}", "Election")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].slug").value("tagged-public-story"));
+
+        mockMvc.perform(get("/api/public/categories/{slugOrName}/news", "National")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].slug").value("tagged-public-story"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void publicViewCountEndpointIncrementsOnlyDuePublishedNews() throws Exception {
+        String adminToken = login("admin");
+        long dueNewsId = createNews(adminToken, "Viewed public story", "viewed-public-story", "published");
+
+        Map<String, Object> futurePayload = newsPayload("Viewed future story", "viewed-future-story", "published");
+        futurePayload.put("publishDate", "2099-01-01T10:00");
+        MvcResult futureResult = mockMvc.perform(post("/api/news")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(futurePayload)))
+                .andExpect(status().isOk())
+                .andReturn();
+        long futureNewsId = objectMapper.readTree(futureResult.getResponse().getContentAsString()).get("id").asLong();
+        long draftNewsId = createNews(adminToken, "Viewed draft story", "viewed-draft-story", "draft");
+
+        mockMvc.perform(patch("/api/public/news/{id}/view", dueNewsId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.newsId").value(dueNewsId))
+                .andExpect(jsonPath("$.viewCount").value(1));
+
+        mockMvc.perform(get("/api/public/news/viewed-public-story"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.viewCount").value(1));
+
+        mockMvc.perform(patch("/api/public/news/{id}/view", futureNewsId))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(patch("/api/public/news/{id}/view", draftNewsId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void adminUserManagementDoesNotExposePasswordHash() throws Exception {
         String adminToken = login("admin");
 

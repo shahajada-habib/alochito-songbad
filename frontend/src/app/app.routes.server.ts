@@ -14,7 +14,15 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'search',
+    renderMode: RenderMode.Server
+  },
+  {
     path: 'news/:slug',
+    renderMode: RenderMode.Server
+  },
+  {
+    path: 'tag/:name',
     renderMode: RenderMode.Server
   },
   {

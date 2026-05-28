@@ -140,6 +140,17 @@ public class NewsService {
         return newsRepository.findById(id).map(this::toResponseDto);
     }
 
+    public Optional<PublicViewCountResponse> incrementPublishedViewCount(Long id) {
+        int updated = newsRepository.incrementVisiblePublishedViewCount(id, NewsStatus.PUBLISHED, LocalDateTime.now());
+        if (updated == 0) {
+            return Optional.empty();
+        }
+
+        return newsRepository.findById(id)
+                .filter(this::isPubliclyVisible)
+                .map((news) -> new PublicViewCountResponse(news.getId(), news.getViewCount()));
+    }
+
     public Object getPublishedNews(Integer page, Integer size) {
         if (page != null || size != null) {
             PageRequest pageRequest = createPublicPageRequest(page, size);
@@ -160,6 +171,26 @@ public class NewsService {
         }
 
         Page<News> newsPage = newsRepository.searchVisiblePublished(NewsStatus.PUBLISHED, LocalDateTime.now(), normalizedQuery, pageRequest);
+        return toPageResponse(newsPage);
+    }
+
+    public PageResponse<NewsResponseDto> getPublishedNewsByTag(String tagName, Integer page, Integer size) {
+        String normalizedTag = normalizeLookupValue(tagName, "tag is required");
+        Page<News> newsPage = newsRepository.findVisiblePublishedByTagName(
+                NewsStatus.PUBLISHED,
+                LocalDateTime.now(),
+                normalizedTag,
+                createPublicPageRequest(page, size));
+        return toPageResponse(newsPage);
+    }
+
+    public PageResponse<NewsResponseDto> getPublishedNewsByCategory(String category, Integer page, Integer size) {
+        String normalizedCategory = normalizeLookupValue(category, "category is required");
+        Page<News> newsPage = newsRepository.findVisiblePublishedByCategory(
+                NewsStatus.PUBLISHED,
+                LocalDateTime.now(),
+                normalizedCategory,
+                createPublicPageRequest(page, size));
         return toPageResponse(newsPage);
     }
 
@@ -477,6 +508,15 @@ public class NewsService {
 
         String sanitized = sanitizer.plainText(query).trim().replaceAll("\\s+", " ");
         return sanitized.substring(0, Math.min(120, sanitized.length()));
+    }
+
+    private String normalizeLookupValue(String value, String message) {
+        String normalized = sanitizer.plainText(value == null ? "" : value).trim().replaceAll("\\s+", " ");
+        if (normalized.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+
+        return normalized.substring(0, Math.min(120, normalized.length()));
     }
 
     private void requireText(String value, String message) {

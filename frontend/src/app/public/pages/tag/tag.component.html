@@ -1,8 +1,8 @@
 <section class="page news-page">
   <div class="page-heading">
-    <span>সংবাদ বিভাগ</span>
-    <h1>{{ categoryTitle() }}</h1>
-    <p>আলোচিত সংবাদে প্রকাশিত এই বিভাগের সর্বশেষ খবরগুলো দেখুন।</p>
+    <span>ট্যাগ</span>
+    <h1>ট্যাগ: {{ tagName() }}</h1>
+    <p>এই ট্যাগে প্রকাশিত সর্বশেষ সংবাদগুলো দেখুন।</p>
   </div>
 
   @if (isLoading()) {
@@ -53,8 +53,8 @@
   } @else {
     <div class="news-empty-state">
       <span aria-hidden="true"></span>
-      <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
-      <p>এই বিভাগে নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
+      <strong>এই ট্যাগে কোনো সংবাদ নেই</strong>
+      <p>নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
     </div>
   }
 </section>

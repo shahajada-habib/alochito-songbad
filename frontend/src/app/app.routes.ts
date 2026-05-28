@@ -33,9 +33,17 @@ export const routes: Routes = [
     loadComponent: () => import('./public/pages/news-list/news-list.component').then((m) => m.NewsListComponent)
   },
   {
+    path: 'search',
+    loadComponent: () => import('./public/pages/search/search.component').then((m) => m.SearchComponent)
+  },
+  {
     path: 'news/:slug',
     resolve: { article: publicArticleResolver },
     loadComponent: () => import('./public/pages/news-detail/news-detail.component').then((m) => m.NewsDetailComponent)
+  },
+  {
+    path: 'tag/:name',
+    loadComponent: () => import('./public/pages/tag/tag.component').then((m) => m.TagComponent)
   },
   {
     path: 'category/:name',

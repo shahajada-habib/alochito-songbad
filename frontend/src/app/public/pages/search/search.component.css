@@ -1,11 +1,8 @@
 @import '../news-list/news-list.component.css';
 
-.news-card .category-link {
-  color: var(--color-primary);
+.page-heading strong {
+  color: var(--color-text);
   font-weight: 700;
-  text-decoration: none;
-  display: inline-flex;
-  width: fit-content;
 }
 
 .load-more-row {

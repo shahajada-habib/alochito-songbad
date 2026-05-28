@@ -1,8 +1,12 @@
 <section class="page news-page">
   <div class="page-heading">
-    <span>সংবাদ বিভাগ</span>
-    <h1>{{ categoryTitle() }}</h1>
-    <p>আলোচিত সংবাদে প্রকাশিত এই বিভাগের সর্বশেষ খবরগুলো দেখুন।</p>
+    <span>অনুসন্ধান</span>
+    <h1>অনুসন্ধান</h1>
+    @if (query()) {
+      <p>"{{ query() }}" দিয়ে খোঁজার ফলাফল@if (!isLoading() && !errorMessage()) { <strong> - {{ resultCountLabel() }}টি সংবাদ</strong> }</p>
+    } @else {
+      <p>খবর খুঁজতে উপরের সার্চ বক্সে শব্দ লিখুন।</p>
+    }
   </div>
 
   @if (isLoading()) {
@@ -23,10 +27,10 @@
   } @else if (errorMessage()) {
     <div class="news-empty-state">
       <span aria-hidden="true"></span>
-      <strong>সংবাদ দেখানো যাচ্ছে না</strong>
+      <strong>ফলাফল দেখানো যাচ্ছে না</strong>
       <p>{{ errorMessage() }}</p>
     </div>
-  } @else if (hasNews()) {
+  } @else if (hasResults()) {
     <div class="news-grid">
       @for (item of news(); track item.slug) {
         <article class="news-card">
@@ -53,8 +57,8 @@
   } @else {
     <div class="news-empty-state">
       <span aria-hidden="true"></span>
-      <strong>এই মুহূর্তে কোনো সংবাদ নেই</strong>
-      <p>এই বিভাগে নতুন সংবাদ প্রকাশ হলে এখানে দেখা যাবে।</p>
+      <strong>কোনো ফলাফল পাওয়া যায়নি</strong>
+      <p>ভিন্ন শব্দ দিয়ে আবার খুঁজে দেখুন।</p>
     </div>
   }
 </section>

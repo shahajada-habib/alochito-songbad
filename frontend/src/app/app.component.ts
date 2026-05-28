@@ -31,7 +31,7 @@ export class AppComponent {
   protected submitSearch(): void {
     const query = this.searchTerm.trim();
 
-    void this.router.navigate(['/news'], {
+    void this.router.navigate(['/search'], {
       queryParams: query ? { q: query } : {}
     });
   }

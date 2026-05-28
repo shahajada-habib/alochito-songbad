@@ -70,6 +70,11 @@ export interface PageResponse<T> {
   last: boolean;
 }
 
+export interface PublicViewCountResponse {
+  newsId: number;
+  viewCount: number;
+}
+
 const API_URL = `${environment.apiBaseUrl}/api/news`;
 const PUBLIC_API_URL = `${environment.apiBaseUrl}/api/public/news`;
 
@@ -127,6 +132,18 @@ export class NewsService {
         ]);
       })
     );
+  }
+
+  getPublicByTag(tagName: string, page = 0, size = 20): Observable<PageResponse<News>> {
+    const endpoint = `${PUBLIC_API_URL}/by-tag/${encodeURIComponent(tagName)}?page=${page}&size=${size}`;
+
+    return this.getPublicPage(endpoint);
+  }
+
+  getPublicByCategory(category: string, page = 0, size = 20): Observable<PageResponse<News>> {
+    const endpoint = `${environment.apiBaseUrl}/api/public/categories/${encodeURIComponent(category)}/news?page=${page}&size=${size}`;
+
+    return this.getPublicPage(endpoint);
   }
 
   create(news: NewsFormValue): News {
@@ -290,6 +307,13 @@ export class NewsService {
 
     this.incrementViewCountLocal(id);
     if (!this.auth.isAuthenticated()) {
+      this.http.patch<PublicViewCountResponse>(`${PUBLIC_API_URL}/${id}/view`, {}).subscribe({
+        next: (response) => this.applyViewCount(response.newsId, response.viewCount),
+        error: (error) => {
+          this.handleApiError('View count update failed', error);
+          this.newsSignal.set(previousNews);
+        }
+      });
       return;
     }
 
@@ -308,6 +332,21 @@ export class NewsService {
   reactToPublicNews(id: number, reactionType: ReactionType): Observable<ReactionResponse> {
     return this.http.post<ReactionResponse>(`${PUBLIC_API_URL}/${id}/reaction`, { reactionType }).pipe(
       tap((response) => this.applyReactionCounts(response))
+    );
+  }
+
+  private getPublicPage(endpoint: string): Observable<PageResponse<News>> {
+    return this.http.get<PageResponse<News>>(endpoint).pipe(
+      map((response) => ({
+        ...response,
+        content: response.content.map((item) => this.normalizeNews(item))
+      })),
+      tap((response) => {
+        this.newsSignal.update((items) => [
+          ...response.content,
+          ...items.filter((item) => !response.content.some((result) => result.id === item.id))
+        ]);
+      })
     );
   }
 
@@ -475,6 +514,12 @@ export class NewsService {
           dislikeCount: response.dislikeCount
         };
       })
+    );
+  }
+
+  private applyViewCount(newsId: number, viewCount: number): void {
+    this.newsSignal.update((items) =>
+      items.map((item) => (item.id === newsId ? { ...item, viewCount } : item))
     );
   }
 
