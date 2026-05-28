@@ -898,7 +898,7 @@
 
 @media (max-width: 640px) {
   .article-page {
-    padding-top: var(--space-4);
+    padding-top: var(--space-3);
   }
 
   .floating-share-bar {
@@ -906,13 +906,13 @@
   }
 
   .article-header h1 {
-    font-size: 1.72rem;
-    line-height: 1.34;
+    font-size: clamp(1.52rem, 7vw, 1.72rem);
+    line-height: 1.36;
   }
 
   .article-header p {
-    font-size: 19px;
-    line-height: 1.55;
+    font-size: 16.5px;
+    line-height: 1.58;
     -webkit-line-clamp: 2;
   }
 
@@ -931,8 +931,18 @@
   }
 
   .share-row {
+    gap: 6px;
     margin-top: var(--space-3);
     margin-bottom: var(--space-4);
+  }
+
+  .share-row span {
+    flex: 1 1 100%;
+  }
+
+  .share-button {
+    padding: 5px 9px;
+    font-size: 11.5px;
   }
 
   .article-media {
@@ -965,7 +975,7 @@
   }
 
   .article-main {
-    padding: 18px;
+    padding: 16px;
     border-radius: 14px;
   }
 
@@ -979,9 +989,9 @@
 
   .article-body p,
   :host ::ng-deep .article-body p {
-    font-size: 18px;
-    line-height: 1.95;
-    margin-bottom: 1.35rem;
+    font-size: 17px;
+    line-height: 1.9;
+    margin-bottom: 1.25rem;
   }
 
   .related-grid {
@@ -989,7 +999,39 @@
   }
 
   .related-card {
-    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-columns: 88px minmax(0, 1fr);
+    padding: 8px;
+  }
+}
+
+@media (max-width: 430px) {
+  .article-main {
+    padding: 14px;
+  }
+
+  .article-header {
+    gap: 12px;
+  }
+
+  .byline-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .post-card {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .post-card img,
+  .related-card img {
+    width: 100%;
+  }
+
+  .post-card h3,
+  .related-card h3 {
+    font-size: 14px;
   }
 }
 
