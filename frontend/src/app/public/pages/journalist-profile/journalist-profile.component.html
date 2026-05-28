@@ -3,8 +3,8 @@
     <div class="profile-empty">সাংবাদিক পাওয়া যায়নি</div>
   } @else if (profile(); as journalist) {
     <header class="profile-card">
-      @if (journalist.profileImageUrl) {
-        <img [src]="journalist.profileImageUrl" [alt]="displayName()">
+      @if (hasProfileImage(journalist)) {
+        <img [src]="journalist.profileImageUrl" [alt]="displayName()" (error)="markProfileImageFailed()">
       } @else {
         <div class="profile-initials">{{ initials() }}</div>
       }
@@ -36,20 +36,9 @@
         <div class="article-list">
           @for (article of articles(); track article.id) {
             <article class="article-card">
-              @if (article.imageUrl) {
-                <a class="article-card-thumb" [routerLink]="['/news', article.slug]" [attr.aria-label]="article.title">
-                  <img [src]="article.imageUrl" [alt]="article.imageAlt || article.title">
-                </a>
-              } @else {
-                <a class="article-card-thumb article-card-thumb-fallback" [routerLink]="['/news', article.slug]" [attr.aria-label]="article.title">
-                  <span>{{ article.category || 'সংবাদ' }}</span>
-                </a>
-              }
-              <div>
-                <h3><a [routerLink]="['/news', article.slug]">{{ article.title }}</a></h3>
-                <p>{{ excerpt(article) }}</p>
-                <time>{{ (article.publishDate || article.scheduledAt || article.createdAt) | banglaDate }}</time>
-              </div>
+              <h3><a [routerLink]="['/news', article.slug]">{{ article.title }}</a></h3>
+              <p>{{ excerpt(article) }}</p>
+              <time>{{ (article.publishDate || article.scheduledAt || article.createdAt) | banglaDate }}</time>
             </article>
           }
         </div>

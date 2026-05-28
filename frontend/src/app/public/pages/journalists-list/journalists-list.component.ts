@@ -24,6 +24,7 @@ export class JournalistsListComponent {
   private readonly http = inject(HttpClient);
   private readonly title = inject(Title);
   protected readonly journalists = signal<Journalist[]>([]);
+  protected readonly brokenImages = signal<Set<string>>(new Set());
   private readonly apiBaseUrl =
     environment.apiBaseUrl ||
     (typeof process !== 'undefined' ? process.env['API_ORIGIN'] || 'http://localhost:8080' : '');
@@ -42,6 +43,18 @@ export class JournalistsListComponent {
 
   protected initials(journalist: Journalist): string {
     return this.displayName(journalist).trim().slice(0, 1) || 'আ';
+  }
+
+  protected hasProfileImage(journalist: Journalist): boolean {
+    return !!journalist.profileImageUrl && !this.brokenImages().has(journalist.username);
+  }
+
+  protected markImageBroken(journalist: Journalist): void {
+    this.brokenImages.update((items) => {
+      const next = new Set(items);
+      next.add(journalist.username);
+      return next;
+    });
   }
 
   protected bioPreview(journalist: Journalist): string {
