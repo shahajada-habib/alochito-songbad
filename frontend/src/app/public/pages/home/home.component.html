@@ -1,3 +1,4 @@
+@if (breakingNews.length > 0) {
 <section class="breaking-bar">
   <div class="page breaking-inner">
     <strong>ব্রেকিং</strong>
@@ -13,6 +14,7 @@
     </div>
   </div>
 </section>
+}
 
 <section class="page home-page">
   <div class="hero-grid">
@@ -139,6 +141,7 @@
     </section>
   }
 
+  @if (latestNews.length > 0 || isLoading()) {
   <section class="content-section">
     <div class="section-heading">
       <h2>সর্বশেষ সংবাদ</h2>
@@ -188,6 +191,7 @@
       }
     </div>
   </section>
+  }
 
   @if (trendingNews.length > 0) {
   <section class="content-section">

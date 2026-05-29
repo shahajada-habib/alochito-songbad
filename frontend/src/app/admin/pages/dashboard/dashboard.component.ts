@@ -8,8 +8,7 @@ import { AdminTranslationService, TranslationKey } from '../../i18n/admin-transl
 import { NewsActivityAction, NewsService } from '../../services/news.service';
 
 type DashboardStat = {
-  labelKey?: TranslationKey;
-  label?: string;
+  labelKey: TranslationKey;
   count: number;
   trendKey: TranslationKey;
 };
@@ -124,7 +123,7 @@ export class DashboardComponent {
         trendKey: 'reviewTrend'
       },
       {
-        label: 'Today published',
+        labelKey: 'todayPublished',
         count: stats.todayPublished,
         trendKey: 'publishedTrend'
       }
@@ -258,5 +257,9 @@ export class DashboardComponent {
 
   protected toBanglaDigits(value: number): string {
     return String(value).replace(/\d/g, (digit) => BANGLA_DIGITS[Number(digit)]);
+  }
+
+  protected formatNumber(value: number): string {
+    return this.i18n.language() === 'bn' ? this.toBanglaDigits(value) : String(value);
   }
 }

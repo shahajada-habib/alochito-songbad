@@ -1,0 +1,38 @@
+<section class="page trust-page">
+  <div class="page-heading">
+    <span>{{ settings().siteName }}</span>
+    <h1>{{ title() }}</h1>
+    <p>{{ settings().tagline }}</p>
+  </div>
+
+  <article class="trust-content">
+    @switch (pageType()) {
+      @case ('contact') {
+        <p>পাঠক, সংবাদদাতা ও বিজ্ঞাপন সংক্রান্ত যোগাযোগের জন্য নিচের তথ্য ব্যবহার করুন।</p>
+        @if (settings().contactEmail) {
+          <p><strong>ইমেইল:</strong> {{ settings().contactEmail }}</p>
+        }
+        @if (settings().contactPhone) {
+          <p><strong>ফোন:</strong> {{ settings().contactPhone }}</p>
+        }
+        @if (settings().address) {
+          <p><strong>ঠিকানা:</strong> {{ settings().address }}</p>
+        }
+      }
+      @case ('privacy') {
+        <p>আমরা পাঠকের ব্যক্তিগত তথ্যের প্রতি শ্রদ্ধাশীল। যোগাযোগ ফর্ম, মন্তব্য বা বিশ্লেষণ সংক্রান্ত প্রয়োজন ছাড়া অপ্রয়োজনীয় তথ্য সংগ্রহের উদ্দেশ্য নেই।</p>
+        <p>সাইট উন্নয়ন, নিরাপত্তা এবং পাঠক অভিজ্ঞতা বোঝার জন্য সীমিত প্রযুক্তিগত তথ্য ব্যবহৃত হতে পারে।</p>
+      }
+      @case ('editorial') {
+        <p>প্রকাশিত সংবাদে যথাসম্ভব যাচাই, প্রাসঙ্গিকতা এবং জনস্বার্থকে অগ্রাধিকার দেওয়া হয়। ভুল ধরা পড়লে সংশোধনের বিষয়টি সম্পাদকীয়ভাবে বিবেচনা করা হয়।</p>
+        <p>মতামত, বিশ্লেষণ ও সংবাদ কনটেন্টের প্রকৃতি পাঠকের কাছে স্পষ্ট রাখাই আমাদের লক্ষ্য।</p>
+      }
+      @default {
+        <p>{{ settings().aboutText || 'নির্ভরযোগ্য সংবাদ, বিশ্লেষণ ও নাগরিক কণ্ঠের ডিজিটাল প্ল্যাটফর্ম।' }}</p>
+        <p>{{ settings().siteName }} পাঠকের কাছে প্রয়োজনীয় ও প্রাসঙ্গিক সংবাদ পৌঁছে দিতে কাজ করে।</p>
+      }
+    }
+
+    <a class="back-link" routerLink="/">প্রচ্ছদে ফিরুন</a>
+  </article>
+</section>

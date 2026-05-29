@@ -5,55 +5,110 @@
     <p>{{ t('websiteInfoHelp') }}</p>
   </div>
 
-  <div class="website-info-grid">
-    <section class="cms-panel logo-preview-card">
-      <div class="panel-heading">
-        <h3>{{ t('logoPreview') }}</h3>
-        <p>{{ t('logoPreviewHelp') }}</p>
-      </div>
-      <div class="logo-preview">
-        <span>আ</span>
-        <div>
-          <strong>{{ t('siteName') }}</strong>
-          <small>সবার আগে সত্য খবর</small>
-        </div>
-      </div>
+  @if (isLoading()) {
+    <section class="cms-panel">
+      <p>লোড হচ্ছে...</p>
     </section>
-
-    <form class="cms-panel cms-form website-form">
-      <label>
-        <span>{{ t('siteName') }}</span>
-        <input type="text" [value]="t('siteName')">
-      </label>
-
-      <label>
-        <span>{{ t('tagline') }}</span>
-        <input type="text" value="সবার আগে সত্য খবর">
-      </label>
-
-      <label class="full-width">
-        <span>{{ t('logoUrl') }}</span>
-        <input type="url" placeholder="/brand/logo.png">
-      </label>
-
-      <div class="social-links-section full-width">
+  } @else {
+    <div class="website-info-grid">
+      <section class="cms-panel logo-preview-card">
         <div class="panel-heading">
-          <h3>{{ t('socialLinks') }}</h3>
-          <p>{{ t('socialLinksHelp') }}</p>
+          <h3>{{ t('logoPreview') }}</h3>
+          <p>{{ t('logoPreviewHelp') }}</p>
         </div>
-        <label>
-          <span>{{ t('facebookLink') }}</span>
-          <input type="url" placeholder="https://facebook.com/alochitosongbad">
-        </label>
-        <label>
-          <span>{{ t('youtubeLink') }}</span>
-          <input type="url" placeholder="https://youtube.com/@alochitosongbad">
-        </label>
-      </div>
+        <div class="logo-preview">
+          @if (form.logoUrl) {
+            <img class="settings-logo-preview" [src]="form.logoUrl" [alt]="form.siteName">
+          } @else {
+            <span>{{ form.siteName.slice(0, 1) || 'আ' }}</span>
+          }
+          <div>
+            <strong>{{ form.siteName }}</strong>
+            <small>{{ form.tagline }}</small>
+          </div>
+        </div>
+        @if (successMessage()) {
+          <p class="settings-success">{{ successMessage() }}</p>
+        }
+        @if (errorMessage()) {
+          <p class="settings-error">{{ errorMessage() }}</p>
+        }
+      </section>
 
-      <div class="form-actions full-width">
-        <button type="button" class="admin-btn">{{ t('save') }}</button>
-      </div>
-    </form>
-  </div>
+      <form class="cms-panel cms-form website-form" (ngSubmit)="saveSettings()">
+        <label>
+          <span>{{ t('siteName') }}</span>
+          <input type="text" name="siteName" [(ngModel)]="form.siteName" required>
+        </label>
+
+        <label>
+          <span>{{ t('tagline') }}</span>
+          <input type="text" name="tagline" [(ngModel)]="form.tagline" required>
+        </label>
+
+        <label class="full-width">
+          <span>{{ t('logoUrl') }}</span>
+          <input type="url" name="logoUrl" [(ngModel)]="form.logoUrl" placeholder="/brand/logo.png">
+        </label>
+
+        <label>
+          <span>{{ t('faviconUrl') }}</span>
+          <input type="url" name="faviconUrl" [(ngModel)]="form.faviconUrl" placeholder="/favicon.ico">
+        </label>
+
+        <label>
+          <span>{{ t('footerLogoUrl') }}</span>
+          <input type="url" name="footerLogoUrl" [(ngModel)]="form.footerLogoUrl" placeholder="/brand/footer-logo.png">
+        </label>
+
+        <label>
+          <span>{{ t('contactEmail') }}</span>
+          <input type="email" name="contactEmail" [(ngModel)]="form.contactEmail" placeholder="info@example.com">
+        </label>
+
+        <label>
+          <span>{{ t('contactPhone') }}</span>
+          <input type="text" name="contactPhone" [(ngModel)]="form.contactPhone" placeholder="+880...">
+        </label>
+
+        <label class="full-width">
+          <span>{{ t('address') }}</span>
+          <textarea name="address" rows="2" [(ngModel)]="form.address"></textarea>
+        </label>
+
+        <label class="full-width">
+          <span>{{ t('aboutText') }}</span>
+          <textarea name="aboutText" rows="4" [(ngModel)]="form.aboutText"></textarea>
+        </label>
+
+        <div class="social-links-section full-width">
+          <div class="panel-heading">
+            <h3>{{ t('socialLinks') }}</h3>
+            <p>{{ t('socialLinksHelp') }}</p>
+          </div>
+          <label>
+            <span>{{ t('facebookLink') }}</span>
+            <input type="url" name="facebookUrl" [(ngModel)]="form.facebookUrl" placeholder="https://facebook.com/alochitosongbad">
+          </label>
+          <label>
+            <span>{{ t('youtubeLink') }}</span>
+            <input type="url" name="youtubeUrl" [(ngModel)]="form.youtubeUrl" placeholder="https://youtube.com/@alochitosongbad">
+          </label>
+          <label>
+            <span>{{ t('twitterLink') }}</span>
+            <input type="url" name="twitterUrl" [(ngModel)]="form.twitterUrl" placeholder="https://x.com/alochitosongbad">
+          </label>
+          <label>
+            <span>{{ t('linkedinLink') }}</span>
+            <input type="url" name="linkedinUrl" [(ngModel)]="form.linkedinUrl" placeholder="https://linkedin.com/company/...">
+          </label>
+        </div>
+
+        <div class="form-actions full-width">
+          <button type="submit" class="admin-btn" [disabled]="isSaving()">{{ isSaving() ? t('saving') : t('save') }}</button>
+          <button type="button" class="admin-btn secondary" (click)="loadSettings()" [disabled]="isSaving()">{{ t('reset') }}</button>
+        </div>
+      </form>
+    </div>
+  }
 </section>

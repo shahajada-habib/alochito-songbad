@@ -2,14 +2,14 @@
 .journalist-articles,
 .article-list {
   display: grid;
-  gap: 22px;
+  gap: 24px;
 }
 
 .profile-card {
   display: grid;
-  grid-template-columns: 124px minmax(0, 1fr);
-  gap: 24px;
-  padding: 28px;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 26px;
+  padding: 30px;
   border: 1px solid var(--color-border);
   border-radius: 18px;
   background:
@@ -20,8 +20,8 @@
 
 .profile-card img,
 .profile-initials {
-  width: 124px;
-  height: 124px;
+  width: 132px;
+  height: 132px;
   border-radius: 50%;
 }
 
@@ -88,7 +88,7 @@
 }
 
 .journalist-articles {
-  padding: 20px;
+  padding: 24px;
   border: 1px solid rgba(230, 224, 215, 0.82);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.78);
@@ -97,6 +97,9 @@
 
 .journalist-articles h2 {
   margin: 0;
+  font-family: var(--font-public-heading);
+  font-size: 24px;
+  line-height: 1.25;
 }
 
 .article-card,
@@ -109,8 +112,8 @@
 
 .article-card {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 156px minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
@@ -124,7 +127,7 @@
 .article-card-thumb img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   background: var(--color-border);
 }
@@ -132,7 +135,7 @@
 .article-card-thumb-fallback {
   display: grid;
   place-items: center;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   background:
     linear-gradient(135deg, rgba(180, 35, 24, 0.9), rgba(36, 48, 54, 0.94));
   color: #fff;
@@ -150,10 +153,40 @@
 
 .article-card h3 {
   margin: 0;
+  font-family: var(--font-public-heading);
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.article-card h3 a {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.article-card h3 a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.article-card-content {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
 }
 
 .article-card p {
+  display: -webkit-box;
+  overflow: hidden;
   color: var(--color-text-secondary);
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .article-card time {
@@ -183,6 +216,16 @@
   }
 
   .article-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .article-card h3 {
+    font-size: 16px;
+  }
+
+  .article-card p {
+    display: none;
   }
 }

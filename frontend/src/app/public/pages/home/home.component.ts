@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { BreakingNewsService } from '../../../admin/services/breaking-news.service';
 import { CategoryService } from '../../../admin/services/category.service';
 import { News, NewsService } from '../../../admin/services/news.service';
+import { HomepageSettingsService } from '../../services/homepage-settings.service';
 import { createExcerpt, formatNewsDate, formatViewCount, getReadingTime } from '../../../shared/news-format.util';
 
 const LOCAL_PLACEHOLDER_IMAGE = '/assets/news-placeholder.svg';
@@ -45,6 +46,7 @@ export class HomeComponent {
   private readonly newsService = inject(NewsService);
   private readonly breakingNewsService = inject(BreakingNewsService);
   private readonly categoryService = inject(CategoryService);
+  private readonly homepageSettingsService = inject(HomepageSettingsService);
 
   protected breakingNews: string[] = ['এই মুহূর্তে কোনো সংবাদ নেই'];
   protected leadStory: NewsItem | null = null;
@@ -81,20 +83,22 @@ export class HomeComponent {
   }
 
   constructor() {
+    this.homepageSettingsService.loadPublicSettings().subscribe();
     setTimeout(() => this.isLoading.set(false), 850);
 
     effect(() => {
       const allNews = this.newsService.news();
+      const settings = this.homepageSettingsService.settings();
       const publishedNews = this.getPublishedNews();
 
       if (allNews.length > 0) {
         this.isLoading.set(false);
       }
 
-      this.breakingNews = this.getBreakingTickerItems();
+      this.breakingNews = settings.breakingTickerEnabled ? this.getBreakingTickerItems() : [];
 
       const usedSlugs = new Set<string>();
-      const heroLead = this.selectHeroLead(publishedNews);
+      const heroLead = this.selectConfiguredStory(publishedNews, settings.leadStoryId) || this.selectHeroLead(publishedNews);
 
       this.leadStory = heroLead ? this.toNewsItem(heroLead) : null;
       if (this.leadStory) {
@@ -103,16 +107,21 @@ export class HomeComponent {
 
       this.topStories = this.pickNewsItems(publishedNews, usedSlugs, 4).map((item) => this.toNewsItem(item));
 
-      const featuredNews = this.pickNewsItems(publishedNews, usedSlugs, 3, (item) => !!item.featured);
+      const configuredFeatured = this.pickConfiguredStories(publishedNews, usedSlugs, settings.featuredStoryIds, 3);
+      const featuredNews = configuredFeatured.length > 0
+        ? configuredFeatured
+        : this.pickNewsItems(publishedNews, usedSlugs, 3, (item) => !!item.featured);
       this.editorPicks = featuredNews.length > 0
         ? featuredNews.map((item) => this.toNewsItem(item))
         : this.pickNewsItems(publishedNews, usedSlugs, 3).map((item) => this.toNewsItem(item));
 
-      this.categories = this.buildCategorySections(publishedNews, usedSlugs);
+      this.categories = this.buildCategorySections(publishedNews, usedSlugs, settings.visibleCategorySections);
       const latestPool = this.pickNewsItems(publishedNews, usedSlugs, 8);
       const latestFallback = latestPool.length > 0 ? latestPool : publishedNews.slice(0, 8);
-      this.latestNews = latestFallback.map((item) => this.toNewsItem(item));
-      this.trendingNews = this.pickTrendingNews(publishedNews, usedSlugs, 6).map((item) => this.toNewsItem(item));
+      this.latestNews = settings.latestSectionEnabled ? latestFallback.map((item) => this.toNewsItem(item)) : [];
+      this.trendingNews = settings.mostReadEnabled
+        ? this.pickTrendingNews(publishedNews, usedSlugs, 6).map((item) => this.toNewsItem(item))
+        : [];
     });
   }
 
@@ -128,14 +137,16 @@ export class HomeComponent {
     return activeItems.length > 0 ? activeItems.map((item) => item.text) : ['এই মুহূর্তে কোনো সংবাদ নেই'];
   }
 
-  private buildCategorySections(items: News[], usedSlugs: Set<string>): CategorySection[] {
+  private buildCategorySections(items: News[], usedSlugs: Set<string>, configuredCategories: string[] = []): CategorySection[] {
     const activeCategoryNames = this.categoryService
       .categories()
       .filter((category) => category.status === 'active')
       .map((category) => category.name)
       .filter((name) => !!name);
     const newsCategoryNames = Array.from(new Set(items.map((item) => item.category).filter((name) => !!name)));
-    const categoryNames = activeCategoryNames.length > 0 ? activeCategoryNames : newsCategoryNames;
+    const categoryNames = configuredCategories.length > 0
+      ? configuredCategories
+      : activeCategoryNames.length > 0 ? activeCategoryNames : newsCategoryNames;
 
     return categoryNames
       .map((name) => {
@@ -174,6 +185,32 @@ export class HomeComponent {
 
   private selectHeroLead(items: News[]): News | null {
     return items.find((item) => item.breaking) || items.find((item) => item.featured) || items[0] || null;
+  }
+
+  private selectConfiguredStory(items: News[], id: number | null): News | null {
+    return id ? items.find((item) => item.id === id) || null : null;
+  }
+
+  private pickConfiguredStories(items: News[], usedSlugs: Set<string>, ids: number[], limit: number): News[] {
+    const selected: News[] = [];
+    for (const id of ids) {
+      const item = items.find((news) => news.id === id);
+      if (!item) {
+        continue;
+      }
+
+      const slug = this.cleanSlug(item.slug || item.title || `news-${item.id}`);
+      if (usedSlugs.has(slug)) {
+        continue;
+      }
+
+      selected.push(item);
+      usedSlugs.add(slug);
+      if (selected.length >= limit) {
+        break;
+      }
+    }
+    return selected;
   }
 
   private pickNewsItems(

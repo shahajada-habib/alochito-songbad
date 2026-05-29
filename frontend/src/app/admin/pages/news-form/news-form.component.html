@@ -38,24 +38,24 @@
           <label class="premium-field">
             <span>{{ t('reporterName') }}</span>
             <select name="reporterSelection" [(ngModel)]="reporterSelection" (ngModelChange)="selectReporter($event)">
-              <option [ngValue]="null">প্রতিবেদক নির্বাচন করুন</option>
+              <option [ngValue]="null">{{ t('selectReporter') }}</option>
               @for (reporter of reporters(); track reporter.id) {
                 <option [ngValue]="reporter.id">{{ reporterLabel(reporter) }}</option>
               }
-              <option [ngValue]="customReporterSelection">Custom reporter / Other</option>
+              <option [ngValue]="customReporterSelection">{{ t('customReporterOther') }}</option>
             </select>
-            <small>প্রতিবেদক নির্বাচন করলে লেখক প্রোফাইল সংবাদে যুক্ত হবে।</small>
+            <small>{{ t('reporterProfileHelp') }}</small>
             @if (showCustomReporterInput()) {
               <input
                 type="text"
                 name="customReporterName"
                 [ngModel]="customReporterName"
                 (ngModelChange)="onCustomReporterNameChange($event)"
-                placeholder="নিজস্ব প্রতিবেদক / ডেস্ক রিপোর্ট / প্রতিনিধি"
+                [placeholder]="t('customReporterPlaceholder')"
               >
               <div class="quick-reporter-list">
-                @for (name of quickReporterNames; track name) {
-                  <button type="button" class="quick-reporter-chip" (click)="useQuickReporterName(name)">{{ name }}</button>
+                @for (name of quickReporterNames; track name.value) {
+                  <button type="button" class="quick-reporter-chip" (click)="useQuickReporterName(name.value)">{{ localizedOptionLabel(name) }}</button>
                 }
               </div>
             }
@@ -64,23 +64,23 @@
         <label class="premium-field">
           <span>{{ t('source') }}</span>
           <select name="sourceMode" [(ngModel)]="sourceMode" (ngModelChange)="onSourceModeChange($event)">
-            <option value="">Select source type</option>
+            <option value="">{{ t('selectSourceType') }}</option>
             @for (option of sourceOptions; track option.value) {
-              <option [value]="option.value">{{ option.label }}</option>
+              <option [value]="option.value">{{ sourceOptionLabel(option) }}</option>
             }
           </select>
-          <small>Choose a desk label or switch to custom attribution.</small>
+          <small>{{ t('sourceHelp') }}</small>
         </label>
 
         @if (showCustomSourceInput()) {
           <label class="premium-field">
-            <span>{{ sourceMode === 'Reporter Name' ? 'Reporter name' : 'Custom source' }}</span>
+            <span>{{ sourceMode === 'Reporter Name' ? t('reporterName') : t('customSource') }}</span>
             <input
               type="text"
               name="sourceCustomValue"
               [(ngModel)]="sourceCustomValue"
               (ngModelChange)="onSourceCustomValueChange($event)"
-              [placeholder]="sourceMode === 'Reporter Name' ? 'Enter reporter name' : 'Enter custom source'"
+              [placeholder]="sourceMode === 'Reporter Name' ? t('enterReporterName') : t('enterCustomSource')"
             >
           </label>
         }

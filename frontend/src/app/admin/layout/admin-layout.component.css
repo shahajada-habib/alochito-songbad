@@ -1,6 +1,6 @@
 .admin-shell {
   display: grid;
-  grid-template-columns: 292px minmax(0, 1fr);
+  grid-template-columns: 276px minmax(0, 1fr);
   width: 100%;
   max-width: 100%;
   min-height: 100vh;
@@ -8,6 +8,8 @@
   background: #0f172a;
   color: var(--color-text);
   font-family: var(--font-admin);
+  font-size: 14px;
+  letter-spacing: 0;
 }
 
 .admin-sidebar {
@@ -18,7 +20,7 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--space-4) var(--space-3);
+  padding: 20px 15px;
   border-right: 1px solid rgba(148, 163, 184, 0.16);
   background:
     radial-gradient(circle at top left, rgba(220, 38, 38, 0.18), transparent 34%),
@@ -29,14 +31,14 @@
 .cms-brand {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-1) var(--space-4);
+  gap: 13px;
+  padding: 0 4px 18px;
   border-bottom: 1px solid rgba(220, 38, 38, 0.72);
 }
 
 .cms-brand span {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -51,7 +53,7 @@
 .cms-brand h1 {
   margin: 0;
   color: #ffffff;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.25;
   font-weight: 800;
   letter-spacing: 0;
@@ -60,27 +62,28 @@
 .cms-brand p {
   margin: 4px 0 0;
   color: #94a3b8;
-  font-size: 13px;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
 .admin-menu {
   display: grid;
-  gap: 4px;
-  margin-top: var(--space-4);
+  gap: 7px;
+  margin-top: 20px;
   min-width: 0;
 }
 
 .admin-menu a {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 0 12px;
   border: 1px solid transparent;
   border-left: 3px solid transparent;
   border-radius: 8px;
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: 13.25px;
   font-weight: 600;
   position: relative;
   cursor: pointer;
@@ -103,7 +106,7 @@
 
 .admin-menu a.active {
   border-left-color: #dc2626;
-  background: rgba(220, 38, 38, 0.1);
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.18), rgba(255, 255, 255, 0.055));
   color: #ffffff;
   font-weight: 700;
 }
@@ -149,16 +152,16 @@
   background:
     linear-gradient(90deg, rgba(15, 23, 42, 0.055) 0, rgba(15, 23, 42, 0) 54px),
     radial-gradient(circle at top right, rgba(220, 38, 38, 0.055), transparent 30%),
-    #f7f4ef;
+    #f6f2eb;
 }
 
 .admin-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 20px;
   min-width: 0;
-  padding: 12px clamp(16px, 2vw, 24px);
+  padding: 13px clamp(18px, 2vw, 26px);
   border-bottom: 1px solid #e5e7eb;
   background: #ffffff;
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.055);
@@ -169,7 +172,7 @@
 
 .topbar-title {
   min-width: 0;
-  flex: 0 1 220px;
+  flex: 0 1 300px;
 }
 
 .topbar-title > span {
@@ -181,12 +184,10 @@
 .admin-topbar h2 {
   margin: 4px 0 0;
   color: #111827;
-  font-size: 22px;
+  font-size: 21px;
   line-height: 1.25;
   font-weight: 800;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .topbar-actions {
@@ -204,13 +205,13 @@
 
 .topbar-search {
   width: auto;
-  flex: 1 1 150px;
-  max-width: 260px;
-  min-width: 112px;
+  flex: 1 1 300px;
+  max-width: 420px;
+  min-width: 240px;
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  height: 34px;
+  height: 36px;
   padding: 0 11px;
   border: 1px solid #d1d5db;
   border-radius: 999px;
@@ -244,16 +245,16 @@
 .language-switch {
   display: inline-flex;
   flex: 0 0 auto;
-  padding: 3px;
+  padding: 4px;
   border: 1px solid #d1d5db;
   border-radius: 999px;
   background: #f9fafb;
 }
 
 .language-switch button {
-  min-width: 58px;
+  min-width: 54px;
   border: 0;
-  padding: 5px 9px;
+  padding: 5px 10px;
   border-radius: 999px;
   background: transparent;
   color: #6b7280;
@@ -272,8 +273,8 @@
 }
 
 .icon-button {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
   padding: 0;
@@ -281,13 +282,17 @@
 }
 
 .profile-button {
-  min-width: 72px;
+  min-width: 76px;
+}
+
+.theme-toggle {
+  min-width: 92px;
 }
 
 .role-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 10px;
   border-radius: 999px;
   border: 1px solid #fecaca;
@@ -299,9 +304,9 @@
 
 .topbar-actions > .admin-btn {
   flex: 0 0 auto;
-  min-height: 34px;
+  min-height: 36px;
   border-radius: 999px;
-  padding: 7px 11px;
+  padding: 7px 10px;
   background: #111827;
   color: #ffffff;
   box-shadow: none;
@@ -326,10 +331,12 @@
 }
 
 .topbar-actions time {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
+  min-width: 150px;
   color: #6b7280;
   font-size: 12px;
   font-weight: 700;
+  text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -342,13 +349,13 @@
   background:
     linear-gradient(90deg, rgba(15, 23, 42, 0.04) 0, rgba(15, 23, 42, 0) 30px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(247, 244, 239, 0) 210px),
-    #f7f4ef;
+    #f6f2eb;
   overflow-x: hidden;
 }
 
 :host ::ng-deep .cms-page {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   min-width: 0;
   width: 100%;
   max-width: 1480px;
@@ -360,13 +367,13 @@
 :host ::ng-deep .cms-stats article {
   min-width: 0;
   border: 1px solid #e5e7eb;
-  border-radius: 14px;
+  border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.065);
 }
 
 :host ::ng-deep .cms-heading {
-  padding: 20px;
+  padding: 22px 24px;
   position: relative;
   overflow: hidden;
   border-left: 4px solid #dc2626;
@@ -384,7 +391,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: 14px;
   min-width: 0;
   flex-wrap: wrap;
 }
@@ -398,9 +405,9 @@
 }
 
 :host ::ng-deep .cms-heading h2 {
-  margin: 6px 0;
+  margin: 7px 0 5px;
   color: #111827;
-  font-size: 26px;
+  font-size: 25px;
   font-weight: 800;
   line-height: 1.25;
   word-break: normal;
@@ -410,8 +417,8 @@
 :host ::ng-deep .panel-heading p {
   margin: 0;
   color: #6b7280;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13.5px;
+  line-height: 1.65;
 }
 
 :host ::ng-deep .cms-stats {
@@ -425,7 +432,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 16px;
+  padding: 17px;
   background: linear-gradient(180deg, #ffffff 0%, #fbfaf8 100%);
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
@@ -437,8 +444,8 @@
 }
 
 :host ::ng-deep .stat-icon {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -453,7 +460,7 @@
 :host ::ng-deep .cms-stats strong {
   display: block;
   color: #111827;
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 800;
   line-height: 1;
 }
@@ -476,7 +483,7 @@
 }
 
 :host ::ng-deep .cms-panel {
-  padding: 18px;
+  padding: 19px;
   position: relative;
 }
 
@@ -495,7 +502,7 @@
 :host ::ng-deep .panel-heading h3 {
   margin: 0 0 6px;
   color: #1f2937;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   line-height: 1.25;
 }
@@ -557,8 +564,8 @@
   display: grid;
   grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(160px, 220px);
   align-items: end;
-  gap: 12px;
-  padding: 16px;
+  gap: 14px;
+  padding: 17px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   background:
@@ -743,11 +750,11 @@
 
 :host ::ng-deep .admin-btn {
   border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 10px 16px;
+  border-radius: 7px;
+  padding: 9px 15px;
   background: #111827;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 800;
   cursor: pointer;
   transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
@@ -823,7 +830,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
-  padding: 10px;
+  padding: 12px;
   border-radius: 12px;
   background:
     linear-gradient(180deg, #ffffff 0%, #fffdfb 100%);
@@ -843,7 +850,7 @@
 
 :host ::ng-deep th,
 :host ::ng-deep td {
-  padding: 8px 11px;
+  padding: 10px 12px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
   vertical-align: middle;
@@ -852,7 +859,7 @@
 :host ::ng-deep th {
   background: #f9fafb;
   color: #6b7280;
-  font-size: 11px;
+  font-size: 10.75px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -873,7 +880,7 @@
 :host ::ng-deep .empty-state {
   display: none;
   margin-top: var(--space-4);
-  padding: var(--space-5);
+  padding: 34px 28px;
   border: 1px dashed #d1d5db;
   border-radius: 12px;
   text-align: center;
@@ -933,6 +940,53 @@
   font-weight: 800;
 }
 
+:host ::ng-deep .settings-logo-preview {
+  width: 74px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+:host ::ng-deep .settings-success,
+:host ::ng-deep .settings-error {
+  margin: 14px 0 0;
+  font-weight: 800;
+}
+
+:host ::ng-deep .settings-success {
+  color: #137047;
+}
+
+:host ::ng-deep .settings-error {
+  color: #991b1b;
+}
+
+:host ::ng-deep .settings-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 7px;
+}
+
+:host ::ng-deep .settings-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+:host ::ng-deep .settings-checkbox span {
+  line-height: 1.35;
+}
+
+:host ::ng-deep .settings-checkbox input {
+  width: 16px;
+  min-height: 16px;
+}
+
 :host ::ng-deep .logo-preview strong,
 :host ::ng-deep .logo-preview small {
   display: block;
@@ -958,7 +1012,7 @@
   min-height: 24px;
   padding: 3px 8px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10.75px;
   font-weight: 700;
 }
 
@@ -985,8 +1039,8 @@
 :host ::ng-deep .news-table strong {
   display: block;
   color: #111827;
-  font-size: 12.5px;
-  line-height: 1.3;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 :host ::ng-deep .news-table small {
@@ -1053,7 +1107,7 @@
   display: -webkit-box;
   overflow: hidden;
   color: #111827;
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.35;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -1090,6 +1144,192 @@
   min-height: 40px;
 }
 
+:host ::ng-deep .settings-panel {
+  max-width: 760px;
+}
+
+:host ::ng-deep .settings-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #f9fafb;
+}
+
+:host ::ng-deep .settings-segmented button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+:host ::ng-deep .settings-segmented button.active,
+:host ::ng-deep .settings-segmented button:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.admin-theme-dark {
+  background: #020617;
+  color: #e5e7eb;
+}
+
+.admin-theme-dark .admin-sidebar {
+  border-right-color: #1f2937;
+  background:
+    radial-gradient(circle at top left, rgba(220, 38, 38, 0.2), transparent 34%),
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+}
+
+.admin-theme-dark .admin-main,
+.admin-theme-dark .admin-content {
+  background:
+    radial-gradient(circle at top right, rgba(220, 38, 38, 0.08), transparent 32%),
+    #0b1120;
+}
+
+.admin-theme-dark .admin-topbar {
+  border-bottom-color: #1f2937;
+  background: #111827;
+  box-shadow: none;
+}
+
+.admin-theme-dark .admin-topbar h2 {
+  color: #f8fafc;
+}
+
+.admin-theme-dark .topbar-title > span,
+.admin-theme-dark .topbar-actions time {
+  color: #cbd5e1;
+}
+
+.admin-theme-dark .topbar-search,
+.admin-theme-dark .language-switch {
+  border-color: #334155;
+  background: #0f172a;
+}
+
+.admin-theme-dark .topbar-search input,
+.admin-theme-dark .language-switch button {
+  color: #e5e7eb;
+}
+
+.admin-theme-dark .role-badge {
+  border-color: rgba(248, 113, 113, 0.32);
+  background: rgba(127, 29, 29, 0.36);
+  color: #fecaca;
+}
+
+.admin-theme-dark .topbar-actions > .admin-btn.secondary {
+  border-color: #334155;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.admin-theme-dark .topbar-actions > .admin-btn.secondary:hover {
+  border-color: #f87171;
+  background: rgba(127, 29, 29, 0.36);
+  color: #fecaca;
+}
+
+:host ::ng-deep .admin-theme-dark .cms-heading,
+:host ::ng-deep .admin-theme-dark .cms-panel,
+:host ::ng-deep .admin-theme-dark .cms-stats article,
+:host ::ng-deep .admin-theme-dark .config-card,
+:host ::ng-deep .admin-theme-dark .table-panel,
+:host ::ng-deep .admin-theme-dark .task-list li,
+:host ::ng-deep .admin-theme-dark .activity-list li,
+:host ::ng-deep .admin-theme-dark .logo-preview,
+:host ::ng-deep .admin-theme-dark .social-links-section,
+:host ::ng-deep .admin-theme-dark .profile-photo-preview,
+:host ::ng-deep .admin-theme-dark .media-grid > *,
+:host ::ng-deep .admin-theme-dark .empty-state,
+:host ::ng-deep .admin-theme-dark .settings-checkbox {
+  border-color: #334155;
+  background: #111827;
+  color: #e5e7eb;
+  box-shadow: none;
+}
+
+:host ::ng-deep .admin-theme-dark .cms-heading h2,
+:host ::ng-deep .admin-theme-dark .panel-heading h3,
+:host ::ng-deep .admin-theme-dark .cms-stats strong,
+:host ::ng-deep .admin-theme-dark .news-table strong,
+:host ::ng-deep .admin-theme-dark .media-grid strong,
+:host ::ng-deep .admin-theme-dark .profile-photo-preview strong,
+:host ::ng-deep .admin-theme-dark .logo-preview strong {
+  color: #f8fafc;
+}
+
+:host ::ng-deep .admin-theme-dark .cms-heading p,
+:host ::ng-deep .admin-theme-dark .panel-heading p,
+:host ::ng-deep .admin-theme-dark .activity-list span,
+:host ::ng-deep .admin-theme-dark .logo-preview small,
+:host ::ng-deep .admin-theme-dark label small {
+  color: #94a3b8;
+}
+
+:host ::ng-deep .admin-theme-dark .cms-form span,
+:host ::ng-deep .admin-theme-dark .inline-form span,
+:host ::ng-deep .admin-theme-dark .config-card span {
+  color: #dbe4ef;
+}
+
+:host ::ng-deep .admin-theme-dark input,
+:host ::ng-deep .admin-theme-dark select,
+:host ::ng-deep .admin-theme-dark textarea,
+:host ::ng-deep .admin-theme-dark .news-rich-editor {
+  border-color: #334155;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+:host ::ng-deep .admin-theme-dark input::placeholder,
+:host ::ng-deep .admin-theme-dark textarea::placeholder {
+  color: #64748b;
+}
+
+:host ::ng-deep .admin-theme-dark th {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+:host ::ng-deep .admin-theme-dark td {
+  border-bottom-color: #1f2937;
+}
+
+:host ::ng-deep .admin-theme-dark tbody tr:hover {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+:host ::ng-deep .admin-theme-dark .admin-btn.secondary {
+  border-color: #334155;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+:host ::ng-deep .admin-theme-dark .admin-btn.secondary:hover {
+  border-color: #f87171;
+  background: rgba(127, 29, 29, 0.36);
+  color: #fecaca;
+}
+
+:host ::ng-deep .admin-theme-dark .settings-segmented {
+  border-color: #334155;
+  background: #0f172a;
+}
+
+:host ::ng-deep .admin-theme-dark .settings-segmented button {
+  color: #cbd5e1;
+}
+
 @media (max-width: 1100px) {
   .admin-topbar {
     align-items: flex-start;
@@ -1106,6 +1346,7 @@
   .topbar-search {
     flex: 1 1 220px;
     max-width: none;
+    min-width: 220px;
   }
 
   :host ::ng-deep .cms-stats {

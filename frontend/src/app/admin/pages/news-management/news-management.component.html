@@ -68,12 +68,12 @@
               }
             </div>
           </td>
-          <td [attr.data-label]="t('publishTime')">{{ item.createdAt | banglaDate }}</td>
-          <td [attr.data-label]="t('publishDate')">{{ (item.publishDate || item.scheduledAt) | banglaDate }}</td>
+          <td [attr.data-label]="t('publishTime')">{{ formattedCreatedDate(item) }}</td>
+          <td [attr.data-label]="t('publishDate')">{{ formattedPublishDate(item) }}</td>
           <td [attr.data-label]="t('viewCount')">{{ formattedViewCount(item) }}</td>
           <td [attr.data-label]="t('actions')">
             <div class="table-actions">
-              <a class="admin-btn secondary" [routerLink]="['/news', publicNewsSlug(item)]" target="_blank" rel="noopener noreferrer">লাইভ দেখুন</a>
+              <a class="admin-btn secondary" [routerLink]="['/news', publicNewsSlug(item)]" target="_blank" rel="noopener noreferrer">{{ t('viewLive') }}</a>
               @if (canEditItem(item)) {
                 <button type="button" class="admin-btn secondary" [routerLink]="['/admin/news/edit', item.id]">{{ t('edit') }}</button>
               }
@@ -99,7 +99,7 @@
     @if (filteredNews().length === 0) {
     <div class="empty-state visible">
       <span>0</span>
-      <h3>সংবাদ পাওয়া যায়নি</h3>
+      <h3>{{ t('noNewsFound') }}</h3>
     </div>
     }
   </section>

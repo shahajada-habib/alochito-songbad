@@ -46,10 +46,31 @@ export class TeamComponent {
     'নির্বাহী সম্পাদক'
   ];
 
+  private readonly designationEnglish = new Map<string, string>([
+    ['স্টাফ রিপোর্টার', 'Staff Reporter'],
+    ['সিনিয়র রিপোর্টার', 'Senior Reporter'],
+    ['প্রধান প্রতিবেদক', 'Chief Reporter'],
+    ['বিশেষ প্রতিনিধি', 'Special Correspondent'],
+    ['আন্তর্জাতিক ডেস্ক', 'International Desk'],
+    ['জাতীয় ডেস্ক', 'National Desk'],
+    ['খেলাধুলা ডেস্ক', 'Sports Desk'],
+    ['বিনোদন ডেস্ক', 'Entertainment Desk'],
+    ['প্রযুক্তি ডেস্ক', 'Technology Desk'],
+    ['অর্থনীতি ডেস্ক', 'Economy Desk'],
+    ['সংবাদদাতা', 'Correspondent'],
+    ['আলোকচিত্র সাংবাদিক', 'Photo Journalist'],
+    ['সম্পাদক', 'Editor'],
+    ['নির্বাহী সম্পাদক', 'Executive Editor']
+  ]);
+
   constructor(protected readonly i18n: AdminTranslationService) {}
 
   protected t(key: TranslationKey): string {
     return this.i18n.t(key);
+  }
+
+  protected designationLabel(designation: string): string {
+    return this.i18n.language() === 'bn' ? designation : (this.designationEnglish.get(designation) || designation);
   }
 
   protected create(): void {
@@ -142,7 +163,7 @@ export class TeamComponent {
     }
 
     if (!this.isSupportedImage(file)) {
-      this.toast.error('Only JPG, PNG, WebP, or GIF images are allowed');
+      this.toast.error(this.t('imageTypeError'));
       return;
     }
 

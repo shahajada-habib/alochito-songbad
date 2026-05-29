@@ -42,20 +42,20 @@ type ReporterSelection = number | typeof CUSTOM_REPORTER_SELECTION | null;
 export class NewsFormComponent {
   @ViewChild('inlineImageInput') private inlineImageInput?: ElementRef<HTMLInputElement>;
   protected readonly sourceOptions = [
-    { value: 'International Desk', label: 'আন্তর্জাতিক ডেস্ক' },
-    { value: 'National Desk', label: 'জাতীয় ডেস্ক' },
-    { value: 'Political Desk', label: 'রাজনীতি ডেস্ক' },
-    { value: 'Sports Desk', label: 'খেলাধুলা ডেস্ক' },
-    { value: 'Entertainment Desk', label: 'বিনোদন ডেস্ক' },
-    { value: 'Economy Desk', label: 'অর্থনীতি ডেস্ক' },
-    { value: 'Technology Desk', label: 'প্রযুক্তি ডেস্ক' },
-    { value: 'Staff Reporter', label: 'স্টাফ রিপোর্টার' },
-    { value: 'Senior Reporter', label: 'সিনিয়র রিপোর্টার' },
-    { value: 'Chief Reporter', label: 'প্রধান প্রতিবেদক' },
-    { value: 'Correspondent', label: 'সংবাদদাতা' },
-    { value: 'Photo Journalist', label: 'আলোকচিত্র সাংবাদিক' },
-    { value: 'Reporter Name', label: 'প্রতিবেদকের নাম' },
-    { value: 'Other', label: 'অন্যান্য' }
+    { value: 'International Desk', labelBn: 'আন্তর্জাতিক ডেস্ক', labelEn: 'International Desk' },
+    { value: 'National Desk', labelBn: 'জাতীয় ডেস্ক', labelEn: 'National Desk' },
+    { value: 'Political Desk', labelBn: 'রাজনীতি ডেস্ক', labelEn: 'Political Desk' },
+    { value: 'Sports Desk', labelBn: 'খেলাধুলা ডেস্ক', labelEn: 'Sports Desk' },
+    { value: 'Entertainment Desk', labelBn: 'বিনোদন ডেস্ক', labelEn: 'Entertainment Desk' },
+    { value: 'Economy Desk', labelBn: 'অর্থনীতি ডেস্ক', labelEn: 'Economy Desk' },
+    { value: 'Technology Desk', labelBn: 'প্রযুক্তি ডেস্ক', labelEn: 'Technology Desk' },
+    { value: 'Staff Reporter', labelBn: 'স্টাফ রিপোর্টার', labelEn: 'Staff Reporter' },
+    { value: 'Senior Reporter', labelBn: 'সিনিয়র রিপোর্টার', labelEn: 'Senior Reporter' },
+    { value: 'Chief Reporter', labelBn: 'প্রধান প্রতিবেদক', labelEn: 'Chief Reporter' },
+    { value: 'Correspondent', labelBn: 'সংবাদদাতা', labelEn: 'Correspondent' },
+    { value: 'Photo Journalist', labelBn: 'আলোকচিত্র সাংবাদিক', labelEn: 'Photo Journalist' },
+    { value: 'Reporter Name', labelBn: 'প্রতিবেদকের নাম', labelEn: 'Reporter Name' },
+    { value: 'Other', labelBn: 'অন্যান্য', labelEn: 'Other' }
   ];
 
   private readonly route = inject(ActivatedRoute);
@@ -77,12 +77,12 @@ export class NewsFormComponent {
   protected customReporterName = '';
   protected readonly customReporterSelection = CUSTOM_REPORTER_SELECTION;
   protected readonly quickReporterNames = [
-    'নিজস্ব প্রতিবেদক',
-    'ডেস্ক রিপোর্ট',
-    'অনলাইন ডেস্ক',
-    'বাসস',
-    'প্রতিনিধি',
-    'সংবাদদাতা'
+    { value: 'নিজস্ব প্রতিবেদক', labelBn: 'নিজস্ব প্রতিবেদক', labelEn: 'Staff Reporter' },
+    { value: 'ডেস্ক রিপোর্ট', labelBn: 'ডেস্ক রিপোর্ট', labelEn: 'Desk Report' },
+    { value: 'অনলাইন ডেস্ক', labelBn: 'অনলাইন ডেস্ক', labelEn: 'Online Desk' },
+    { value: 'বাসস', labelBn: 'বাসস', labelEn: 'BSS' },
+    { value: 'প্রতিনিধি', labelBn: 'প্রতিনিধি', labelEn: 'Correspondent' },
+    { value: 'সংবাদদাতা', labelBn: 'সংবাদদাতা', labelEn: 'Reporter' }
   ];
   protected tagInput = '';
   protected readonly reporters = this.teamService.reporters;
@@ -200,6 +200,14 @@ export class NewsFormComponent {
 
   protected t(key: TranslationKey): string {
     return this.i18n.t(key);
+  }
+
+  protected sourceOptionLabel(option: { labelBn: string; labelEn: string }): string {
+    return this.i18n.language() === 'bn' ? option.labelBn : option.labelEn;
+  }
+
+  protected localizedOptionLabel(option: { labelBn: string; labelEn: string }): string {
+    return this.i18n.language() === 'bn' ? option.labelBn : option.labelEn;
   }
 
   protected hasContent(): boolean {

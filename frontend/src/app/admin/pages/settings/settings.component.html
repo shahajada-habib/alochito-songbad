@@ -1,0 +1,41 @@
+<section class="cms-page">
+  <div class="cms-heading">
+    <span>{{ t('settings') }}</span>
+    <h2>{{ t('settings') }}</h2>
+    <p>{{ t('settingsHelp') }}</p>
+  </div>
+
+  <section class="cms-panel settings-panel">
+    <div class="panel-heading">
+      <h3>{{ t('theme') }}</h3>
+      <p>{{ t('themeHelp') }}</p>
+    </div>
+
+    <div class="settings-segmented" aria-label="Theme mode">
+      <button
+        type="button"
+        [class.active]="themeService.theme() === 'light'"
+        (click)="setTheme('light')">
+        {{ t('lightMode') }}
+      </button>
+      <button
+        type="button"
+        [class.active]="themeService.theme() === 'dark'"
+        (click)="setTheme('dark')">
+        {{ t('darkMode') }}
+      </button>
+    </div>
+  </section>
+
+  <section class="cms-panel settings-panel">
+    <div class="panel-heading">
+      <h3>{{ t('language') }}</h3>
+      <p>{{ t('languageHelp') }}</p>
+    </div>
+
+    <div class="settings-segmented" aria-label="Language">
+      <button type="button" [class.active]="i18n.language() === 'bn'" (click)="setLanguage('bn')">{{ t('bangla') }}</button>
+      <button type="button" [class.active]="i18n.language() === 'en'" (click)="setLanguage('en')">{{ t('english') }}</button>
+    </div>
+  </section>
+</section>

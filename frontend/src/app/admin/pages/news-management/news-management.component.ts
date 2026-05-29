@@ -12,12 +12,11 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { News, NewsService, NewsStatus } from '../../services/news.service';
 import { ToastService } from '../../services/toast.service';
 import { formatNewsDate, formatViewCount } from '../../../shared/news-format.util';
-import { BanglaDatePipe } from '../../../shared/pipes/bangla-date.pipe';
 
 @Component({
   selector: 'app-news-management',
   standalone: true,
-  imports: [FormsModule, RouterLink, BanglaDatePipe],
+  imports: [FormsModule, RouterLink],
   templateUrl: './news-management.component.html'
 })
 export class NewsManagementComponent {
@@ -65,7 +64,7 @@ export class NewsManagementComponent {
 
     return categoryNames.length > 0
       ? categoryNames
-      : ['জাতীয়', 'রাজনীতি', 'আন্তর্জাতিক', 'খেলাধুলা', 'বিনোদন'];
+      : ['national', 'politics', 'international', 'sports', 'entertainment'].map((key) => this.t(key as TranslationKey));
   }
 
   protected async deleteNews(news: News): Promise<void> {
@@ -186,6 +185,10 @@ export class NewsManagementComponent {
 
   protected formattedPublishDate(news: News): string {
     return formatNewsDate(news.publishDate || news.scheduledAt, this.i18n.language()) || '-';
+  }
+
+  protected formattedCreatedDate(news: News): string {
+    return formatNewsDate(news.createdAt, this.i18n.language()) || '-';
   }
 
   protected formattedViewCount(news: News): string {

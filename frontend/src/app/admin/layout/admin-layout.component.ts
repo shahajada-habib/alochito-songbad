@@ -6,6 +6,7 @@ import { AuthService } from '../../auth/auth.service';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 import { ToastContainerComponent } from '../components/toast-container/toast-container.component';
 import { AdminLanguage, AdminTranslationService, TranslationKey } from '../i18n/admin-translation.service';
+import { AdminThemeService } from '../services/admin-theme.service';
 import { ToastService } from '../services/toast.service';
 import { buildBanglaDate } from '../../shared/bangla-date.util';
 
@@ -26,7 +27,6 @@ type MenuItem = {
 })
 export class AdminLayoutComponent {
   protected adminSearchTerm = '';
-  protected readonly todayBangla = buildBanglaDate();
 
   protected readonly menuItems: MenuItem[] = [
     { link: '/admin', icon: 'D', label: 'dashboard', roles: ['admin', 'editor', 'reporter'], exact: true },
@@ -35,6 +35,9 @@ export class AdminLayoutComponent {
     { link: '/admin/media', icon: 'M', label: 'mediaLibrary', roles: ['admin', 'editor'], exact: true },
     { link: '/admin/comments', icon: 'C', label: 'comments', roles: ['admin', 'editor'], exact: true },
     { link: '/admin/breaking-news', icon: '!', label: 'breakingNews', roles: ['admin', 'editor'], exact: true },
+    { link: '/admin/homepage-customize', icon: 'H', label: 'homepageCustomize', roles: ['admin'], exact: true },
+    { link: '/admin/website-info', icon: 'W', label: 'websiteInfo', roles: ['admin'], exact: true },
+    { link: '/admin/settings', icon: 'S', label: 'settings', roles: ['admin'], exact: true },
     { link: '/admin/profile', icon: 'P', label: 'myProfile', roles: ['admin', 'editor', 'reporter'], exact: true },
     { link: '/admin/team', icon: 'T', label: 'team', roles: ['admin'], exact: true }
   ];
@@ -43,6 +46,7 @@ export class AdminLayoutComponent {
     private readonly router: Router,
     private readonly auth: AuthService,
     protected readonly i18n: AdminTranslationService,
+    protected readonly themeService: AdminThemeService,
     private readonly toast: ToastService
   ) {}
 
@@ -93,6 +97,10 @@ export class AdminLayoutComponent {
       return this.i18n.t('websiteInfo');
     }
 
+    if (url.includes('/admin/settings')) {
+      return this.i18n.t('settings');
+    }
+
     return this.i18n.t('dashboard');
   }
 
@@ -100,8 +108,16 @@ export class AdminLayoutComponent {
     return this.i18n.t(key);
   }
 
+  protected get todayDate(): string {
+    return this.i18n.language() === 'bn' ? buildBanglaDate() : this.buildEnglishDate();
+  }
+
   protected setLanguage(language: AdminLanguage): void {
     this.i18n.setLanguage(language);
+  }
+
+  protected toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   protected submitAdminSearch(): void {
@@ -113,7 +129,9 @@ export class AdminLayoutComponent {
   }
 
   protected openPublicSite(): void {
-    window.open('/', '_blank', 'noopener,noreferrer');
+    if (typeof window !== 'undefined') {
+      window.open('/', '_blank', 'noopener,noreferrer');
+    }
   }
 
   protected logout(): void {
@@ -141,5 +159,15 @@ export class AdminLayoutComponent {
   protected canShowMenuItem(item: MenuItem): boolean {
     const role = this.auth.role();
     return !!role && item.roles.includes(role);
+  }
+
+  private buildEnglishDate(date = new Date()): string {
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Dhaka',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
   }
 }

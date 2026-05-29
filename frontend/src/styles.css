@@ -24,7 +24,7 @@
   --font-public-heading: var(--font-headline);
   --font-public-body: var(--font-body);
   --font-public-meta: var(--font-ui);
-  --font-admin: var(--font-ui);
+  --font-admin: 'Hind Siliguri', 'Segoe UI', Arial, sans-serif;
   font-family: var(--font-ui);
   color: var(--color-text);
   background: var(--color-background);

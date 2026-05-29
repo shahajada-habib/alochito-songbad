@@ -38,6 +38,22 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server
   },
   {
+    path: 'about',
+    renderMode: RenderMode.Server
+  },
+  {
+    path: 'contact',
+    renderMode: RenderMode.Server
+  },
+  {
+    path: 'privacy-policy',
+    renderMode: RenderMode.Server
+  },
+  {
+    path: 'editorial-policy',
+    renderMode: RenderMode.Server
+  },
+  {
     path: '**',
     renderMode: RenderMode.Server
   }

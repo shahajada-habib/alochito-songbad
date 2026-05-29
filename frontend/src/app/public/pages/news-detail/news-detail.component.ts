@@ -7,6 +7,7 @@ import { map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ToastService } from '../../../admin/services/toast.service';
 import { News, NewsService, ReactionType } from '../../../admin/services/news.service';
+import { CommentService, PublicComment } from '../../services/comment.service';
 import { formatNewsDate, formatViewCount, getReadingTime, stripHtml } from '../../../shared/news-format.util';
 import { BanglaDatePipe } from '../../../shared/pipes/bangla-date.pipe';
 import { DeskLabelPipe } from '../../../shared/pipes/desk-label.pipe';
@@ -72,6 +73,7 @@ export class NewsDetailComponent {
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
   private readonly toast = inject(ToastService);
+  private readonly commentService = inject(CommentService);
   private countedSlug = '';
   private lastScrolledSlug = '';
   private progressFrame: number | null = null;
@@ -79,6 +81,13 @@ export class NewsDetailComponent {
   protected readonly readingProgress = signal(0);
   protected readonly isReacting = signal(false);
   protected readonly selectedReaction = signal<ReactionType | ''>('');
+  protected readonly comments = signal<PublicComment[]>([]);
+  protected readonly commentsLoading = signal(false);
+  protected readonly commentAuthor = signal('');
+  protected readonly commentContent = signal('');
+  protected readonly commentMessage = signal('');
+  protected readonly commentError = signal('');
+  protected readonly isSubmittingComment = signal(false);
   private readonly reactionCounts = signal<Record<number, { likeCount: number; dislikeCount: number }>>({});
 
   protected readonly slug = toSignal(
@@ -217,6 +226,7 @@ export class NewsDetailComponent {
       if (!article.isPreview && this.countedSlug !== article.slug) {
         this.countedSlug = article.slug;
         this.newsService.incrementViewCount(article.id);
+        this.loadComments(article.id);
       }
     });
   }
@@ -263,6 +273,46 @@ export class NewsDetailComponent {
       error: () => {
         this.toast.error('Reaction failed. Please try again.');
         this.isReacting.set(false);
+      }
+    });
+  }
+
+  protected submitComment(article: ArticleView): void {
+    const author = this.commentAuthor().trim();
+    const content = this.commentContent().trim();
+    this.commentMessage.set('');
+    this.commentError.set('');
+    if (!author || !content) {
+      this.commentError.set('নাম ও মন্তব্য লিখুন।');
+      return;
+    }
+
+    this.isSubmittingComment.set(true);
+    this.commentService.createComment(article.id, author, content).subscribe({
+      next: () => {
+        this.commentAuthor.set('');
+        this.commentContent.set('');
+        this.commentMessage.set('আপনার মন্তব্য জমা হয়েছে। অনুমোদনের পর প্রকাশিত হবে।');
+        this.isSubmittingComment.set(false);
+      },
+      error: () => {
+        this.commentError.set('মন্তব্য জমা দেওয়া যায়নি। আবার চেষ্টা করুন।');
+        this.isSubmittingComment.set(false);
+      }
+    });
+  }
+
+  private loadComments(newsId: number): void {
+    this.commentsLoading.set(true);
+    this.commentError.set('');
+    this.commentService.getApprovedComments(newsId).subscribe({
+      next: (comments) => {
+        this.comments.set(comments);
+        this.commentsLoading.set(false);
+      },
+      error: () => {
+        this.comments.set([]);
+        this.commentsLoading.set(false);
       }
     });
   }

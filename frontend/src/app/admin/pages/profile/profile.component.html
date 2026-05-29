@@ -1,34 +1,34 @@
 <section class="cms-page">
   <div class="cms-heading">
-    <span>আমার প্রোফাইল</span>
-    <h2>আমার প্রোফাইল</h2>
-    <p>পাবলিক পোর্টালে আপনার সাংবাদিক পরিচিতি কীভাবে দেখাবে তা নিয়ন্ত্রণ করুন।</p>
+    <span>{{ t('myProfile') }}</span>
+    <h2>{{ t('myProfile') }}</h2>
+    <p>{{ t('profileHelp') }}</p>
   </div>
 
   <section class="cms-panel">
     <form class="cms-form" (ngSubmit)="save()">
       <label>
-        <span>বাংলা নাম</span>
+        <span>{{ t('displayName') }}</span>
         <input type="text" name="displayName" [(ngModel)]="profileForm.displayName">
       </label>
       <label>
-        <span>পদবি</span>
+        <span>{{ t('designation') }}</span>
         <select name="designation" [(ngModel)]="profileForm.designation">
           @for (designation of designationOptions; track designation) {
-            <option [value]="designation">{{ designation }}</option>
+            <option [value]="designation">{{ designationLabel(designation) }}</option>
           }
         </select>
       </label>
       <label class="full-width">
-        <span>জীবনী</span>
+        <span>{{ t('bio') }}</span>
         <textarea name="bio" [(ngModel)]="profileForm.bio" rows="4" maxlength="500"></textarea>
       </label>
       <label>
-        <span>প্রোফাইল ছবি URL</span>
+        <span>{{ t('profileImageUrl') }}</span>
         <input type="url" name="profileImageUrl" [(ngModel)]="profileForm.profileImageUrl">
       </label>
       <label>
-        <span>Upload profile photo</span>
+        <span>{{ t('uploadProfilePhoto') }}</span>
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
@@ -37,33 +37,33 @@
       </label>
       <div class="profile-photo-preview full-width">
         @if (profilePreviewUrl()) {
-          <img [src]="profilePreviewUrl()" [alt]="profileForm.displayName || 'Profile photo'" (error)="markProfilePreviewFailed()">
+          <img [src]="profilePreviewUrl()" [alt]="profileForm.displayName || t('profilePhoto')" (error)="markProfilePreviewFailed()">
         } @else {
           <div class="profile-photo-fallback" aria-hidden="true">{{ profileInitials() }}</div>
         }
         <div>
-          <strong>Profile photo preview</strong>
-          <p>{{ isUploadingProfilePhoto ? 'Uploading photo...' : 'Upload a JPG, PNG, WebP, or GIF, or keep using a manual image URL.' }}</p>
+          <strong>{{ t('profilePhotoPreview') }}</strong>
+          <p>{{ isUploadingProfilePhoto ? t('uploadingPhoto') : t('profilePhotoHelp') }}</p>
         </div>
       </div>
       <label>
-        <span>Facebook URL</span>
+        <span>{{ t('facebookUrl') }}</span>
         <input type="url" name="facebookUrl" [(ngModel)]="profileForm.facebookUrl">
       </label>
       <label>
-        <span>Twitter/X URL</span>
+        <span>{{ t('twitterUrl') }}</span>
         <input type="url" name="twitterUrl" [(ngModel)]="profileForm.twitterUrl">
       </label>
       <label>
-        <span>Public Email</span>
+        <span>{{ t('publicEmail') }}</span>
         <input type="email" name="emailPublic" [(ngModel)]="profileForm.emailPublic">
       </label>
       <label>
-        <span>পোর্টালে দেখান</span>
+        <span>{{ t('showOnPortal') }}</span>
         <input type="checkbox" name="isPublic" [(ngModel)]="profileForm.isPublic">
       </label>
       <div class="form-actions full-width">
-        <button type="submit" class="admin-btn">সংরক্ষণ করুন</button>
+        <button type="submit" class="admin-btn">{{ t('save') }}</button>
       </div>
     </form>
   </section>

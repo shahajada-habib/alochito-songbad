@@ -36,9 +36,18 @@
         <div class="article-list">
           @for (article of articles(); track article.id) {
             <article class="article-card">
-              <h3><a [routerLink]="['/news', article.slug]">{{ article.title }}</a></h3>
-              <p>{{ excerpt(article) }}</p>
-              <time>{{ (article.publishDate || article.scheduledAt || article.createdAt) | banglaDate }}</time>
+              @if (article.imageUrl) {
+                <a class="article-card-thumb" [routerLink]="['/news', article.slug]" [attr.aria-label]="article.title">
+                  <img [src]="article.imageUrl" [alt]="article.imageAlt || article.title">
+                </a>
+              } @else {
+                <a class="article-card-thumb article-card-thumb-fallback" [routerLink]="['/news', article.slug]">{{ article.category || 'সংবাদ' }}</a>
+              }
+              <div class="article-card-content">
+                <h3><a [routerLink]="['/news', article.slug]">{{ article.title }}</a></h3>
+                <p>{{ excerpt(article) }}</p>
+                <time>{{ (article.publishDate || article.scheduledAt || article.createdAt) | banglaDate }}</time>
+              </div>
             </article>
           }
         </div>

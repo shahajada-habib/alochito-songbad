@@ -58,6 +58,26 @@ export const routes: Routes = [
     loadComponent: () => import('./public/pages/journalist-profile/journalist-profile.component').then((m) => m.JournalistProfileComponent)
   },
   {
+    path: 'about',
+    data: { pageType: 'about' },
+    loadComponent: () => import('./public/pages/trust-page/trust-page.component').then((m) => m.TrustPageComponent)
+  },
+  {
+    path: 'contact',
+    data: { pageType: 'contact' },
+    loadComponent: () => import('./public/pages/trust-page/trust-page.component').then((m) => m.TrustPageComponent)
+  },
+  {
+    path: 'privacy-policy',
+    data: { pageType: 'privacy' },
+    loadComponent: () => import('./public/pages/trust-page/trust-page.component').then((m) => m.TrustPageComponent)
+  },
+  {
+    path: 'editorial-policy',
+    data: { pageType: 'editorial' },
+    loadComponent: () => import('./public/pages/trust-page/trust-page.component').then((m) => m.TrustPageComponent)
+  },
+  {
     path: 'admin',
     canActivate: [authGuard],
     loadComponent: () => import('./admin/layout/admin-layout.component').then((m) => m.AdminLayoutComponent),
@@ -123,6 +143,11 @@ export const routes: Routes = [
         path: 'website-info',
         data: { roles: ['admin'] },
         loadComponent: () => import('./admin/pages/website-info/website-info.component').then((m) => m.WebsiteInfoComponent)
+      },
+      {
+        path: 'settings',
+        data: { roles: ['admin'] },
+        loadComponent: () => import('./admin/pages/settings/settings.component').then((m) => m.SettingsComponent)
       }
     ],
     canActivateChild: [roleGuard]

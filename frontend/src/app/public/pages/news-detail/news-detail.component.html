@@ -122,6 +122,49 @@
           </div>
         }
 
+        @if (!articleData.isPreview) {
+          <section class="article-comments" aria-label="Reader comments">
+            <div class="section-heading">
+              <h2>মন্তব্য</h2>
+            </div>
+
+            @if (commentsLoading()) {
+              <p class="comment-note">মন্তব্য লোড হচ্ছে...</p>
+            } @else if (comments().length > 0) {
+              <div class="comment-list">
+                @for (comment of comments(); track comment.id) {
+                  <article class="comment-card">
+                    <strong>{{ comment.author }}</strong>
+                    <p>{{ comment.content }}</p>
+                  </article>
+                }
+              </div>
+            } @else {
+              <p class="comment-note">এখনো কোনো মন্তব্য নেই।</p>
+            }
+
+            <form class="comment-form" (ngSubmit)="submitComment(articleData)">
+              <label>
+                <span>নাম</span>
+                <input type="text" name="commentAuthor" [value]="commentAuthor()" (input)="commentAuthor.set($any($event.target).value)">
+              </label>
+              <label>
+                <span>মন্তব্য</span>
+                <textarea name="commentContent" rows="4" [value]="commentContent()" (input)="commentContent.set($any($event.target).value)"></textarea>
+              </label>
+              @if (commentMessage()) {
+                <p class="comment-success">{{ commentMessage() }}</p>
+              }
+              @if (commentError()) {
+                <p class="comment-error">{{ commentError() }}</p>
+              }
+              <button type="submit" class="comment-submit" [disabled]="isSubmittingComment()">
+                {{ isSubmittingComment() ? 'জমা হচ্ছে...' : 'মন্তব্য জমা দিন' }}
+              </button>
+            </form>
+          </section>
+        }
+
         <div class="post-article-sections">
           @if (relatedNews().length > 0) {
             <section class="post-section">

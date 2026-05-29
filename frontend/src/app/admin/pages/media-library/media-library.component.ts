@@ -13,7 +13,6 @@ const SELECTED_MEDIA_STORAGE_KEY = 'alochito_selected_article_image';
 const IMAGE_ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif';
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-const IMAGE_TYPE_ERROR = 'শুধুমাত্র JPG, PNG, WebP, GIF ছবি আপলোড করুন।';
 
 @Component({
   selector: 'app-media-library',
@@ -51,7 +50,7 @@ export class MediaLibraryComponent {
       input.value = '';
       this.previewUrl = '';
       this.selectedFile = null;
-      this.uploadError = IMAGE_TYPE_ERROR;
+      this.uploadError = this.t('imageTypeError');
       return;
     }
 
@@ -67,7 +66,7 @@ export class MediaLibraryComponent {
 
   protected addMedia(): void {
     if (!this.selectedFile) {
-      this.uploadError = IMAGE_TYPE_ERROR;
+      this.uploadError = this.t('imageTypeError');
       return;
     }
 
@@ -81,7 +80,7 @@ export class MediaLibraryComponent {
       },
       error: (error: unknown) => {
         console.error('Media upload failed', error);
-        this.uploadError = IMAGE_TYPE_ERROR;
+        this.uploadError = this.t('imageTypeError');
         this.toast.error(this.errorMessage(error));
       }
     });

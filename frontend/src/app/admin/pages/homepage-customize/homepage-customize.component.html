@@ -5,51 +5,98 @@
     <p>{{ t('homepageHelp') }}</p>
   </div>
 
-  <section class="cms-panel">
-    <div class="panel-heading">
-      <h3>{{ t('sectionConfig') }}</h3>
-      <p>{{ t('sectionConfigHelp') }}</p>
-    </div>
+  @if (isLoading()) {
+    <section class="cms-panel">
+      <p>লোড হচ্ছে...</p>
+    </section>
+  } @else {
+    <form class="cms-panel cms-form" (ngSubmit)="saveSettings()">
+      <div class="panel-heading full-width">
+        <h3>{{ t('homepageCustomize') }}</h3>
+        <p>{{ t('homepageSettingsHelp') }}</p>
+      </div>
 
-    <div class="section-config-grid premium-config-grid">
-      @for (section of sectionConfig; track section.category) {
-        <article class="config-card premium-config-card">
-          <div class="config-card-head">
-            <span class="preview-badge">{{ section.layout === 'grid' ? 'Grid' : 'List' }}</span>
-            <strong>{{ section.category }}</strong>
-          </div>
-
-          <label>
-            <span>{{ t('category') }}</span>
-            <select>
-              <option [selected]="section.category === 'জাতীয়'">{{ t('national') }}</option>
-              <option [selected]="section.category === 'রাজনীতি'">{{ t('politics') }}</option>
-              <option [selected]="section.category === 'খেলাধুলা'">{{ t('sports') }}</option>
-              <option [selected]="section.category === 'বিনোদন'">{{ t('entertainment') }}</option>
-            </select>
-          </label>
-          <label>
-            <span>{{ t('postCount') }}</span>
-            <select>
-              <option [selected]="section.postCount === 5">5</option>
-              <option [selected]="section.postCount === 10">10</option>
-            </select>
-          </label>
-          <label>
-            <span>{{ t('layout') }}</span>
-            <select>
-              <option [selected]="section.layout === 'grid'">grid</option>
-              <option [selected]="section.layout === 'list'">list</option>
-            </select>
-          </label>
-          <label>
-            <span>{{ t('sortBy') }}</span>
-            <select>
-              <option>latest</option>
-            </select>
-          </label>
-        </article>
+      @if (successMessage()) {
+        <p class="settings-success full-width">{{ successMessage() }}</p>
       }
-    </div>
-  </section>
+      @if (errorMessage()) {
+        <p class="settings-error full-width">{{ errorMessage() }}</p>
+      }
+
+      <label>
+        <span>{{ t('leadStory') }}</span>
+        <select name="leadStoryId" [(ngModel)]="form.leadStoryId">
+          <option [ngValue]="null">{{ t('none') }}</option>
+          @for (item of publishedNews(); track item.id) {
+            <option [ngValue]="item.id">{{ item.title }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>{{ t('breakingNews') }}</span>
+        <select name="breakingTickerEnabled" [(ngModel)]="form.breakingTickerEnabled">
+          <option [ngValue]="true">{{ t('enabled') }}</option>
+          <option [ngValue]="false">{{ t('disabled') }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>{{ t('latestSection') }}</span>
+        <select name="latestSectionEnabled" [(ngModel)]="form.latestSectionEnabled">
+          <option [ngValue]="true">{{ t('show') }}</option>
+          <option [ngValue]="false">{{ t('hide') }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>{{ t('mostReadSection') }}</span>
+        <select name="mostReadEnabled" [(ngModel)]="form.mostReadEnabled">
+          <option [ngValue]="true">{{ t('show') }}</option>
+          <option [ngValue]="false">{{ t('hide') }}</option>
+        </select>
+      </label>
+
+      <div class="social-links-section full-width">
+        <div class="panel-heading">
+          <h3>{{ t('featuredNews') }}</h3>
+          <p>{{ t('featuredStoriesHelp') }}</p>
+        </div>
+        @for (_ of form.featuredStoryIds; track $index) {
+          <label>
+            <span>{{ t('featuredNews') }} {{ $index + 1 }}</span>
+            <select [name]="'featuredStory' + $index" [(ngModel)]="form.featuredStoryIds[$index]">
+              <option [ngValue]="0">{{ t('none') }}</option>
+              @for (item of publishedNews(); track item.id) {
+                <option [ngValue]="item.id">{{ item.title }}</option>
+              }
+            </select>
+          </label>
+        }
+      </div>
+
+      <div class="social-links-section full-width">
+        <div class="panel-heading">
+          <h3>{{ t('sectionConfig') }}</h3>
+          <p>{{ t('sectionConfigHelp') }}</p>
+        </div>
+        <div class="settings-checkbox-grid">
+          @for (category of categories(); track category) {
+            <label class="settings-checkbox">
+              <input
+                type="checkbox"
+                [checked]="isCategorySelected(category)"
+                (change)="toggleCategory(category, $any($event.target).checked)">
+              <span>{{ category }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="submit" class="admin-btn" [disabled]="isSaving()">{{ isSaving() ? t('saving') : t('save') }}</button>
+        <button type="button" class="admin-btn secondary" (click)="loadSettings()" [disabled]="isSaving()">{{ t('reset') }}</button>
+      </div>
+    </form>
+  }
 </section>

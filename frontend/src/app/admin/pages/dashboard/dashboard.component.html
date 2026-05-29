@@ -6,12 +6,12 @@
   </div>
 
   <div class="cms-stats">
-    @for (stat of stats(); track stat.label || stat.labelKey) {
+    @for (stat of stats(); track stat.labelKey) {
       <article>
-        <span class="stat-icon">◼</span>
+        <span class="stat-icon">▼</span>
         <div>
           <strong>{{ stat.count }}</strong>
-          <span>{{ stat.label || t(stat.labelKey!) }}</span>
+          <span>{{ t(stat.labelKey) }}</span>
           <small>{{ t(stat.trendKey) }}</small>
         </div>
       </article>
@@ -40,8 +40,8 @@
   <div class="dashboard-insight-grid">
     <section class="cms-panel">
       <div class="panel-heading">
-        <h3>Recently published</h3>
-        <p>Last 5 published articles.</p>
+        <h3>{{ t('recentlyPublished') }}</h3>
+        <p>{{ t('recentlyPublishedHelp') }}</p>
       </div>
 
       @if (recentlyPublished().length > 0) {
@@ -49,62 +49,35 @@
           @for (item of recentlyPublished(); track item.id) {
             <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
               <strong>{{ item.title }}</strong>
-              <span>{{ item.publishDate || 'No date' }}</span>
-              <small>{{ item.viewCount }} views | {{ item.likeCount }} likes</small>
+              <span>{{ item.publishDate || t('noDate') }}</span>
+              <small>{{ formatNumber(item.viewCount) }} {{ t('views') }} | {{ formatNumber(item.likeCount) }} {{ t('likes') }}</small>
             </a>
           }
         </div>
       } @else {
         <div class="empty-state visible">
-          <span>âˆ…</span>
-          <h3>No published articles</h3>
-          <p>Published articles will appear here.</p>
+          <span>∅</span>
+          <h3>{{ t('noPublishedArticles') }}</h3>
+          <p>{{ t('publishedArticlesWillAppear') }}</p>
         </div>
       }
     </section>
 
     <section class="cms-panel">
       <div class="panel-heading">
-        <h3>সর্বাধিক পঠিত</h3>
-        <p>প্রকাশিত সংবাদের পাঠকসংখ্যা অনুযায়ী শীর্ষ তালিকা।</p>
+        <h3>{{ t('mostViewed') }}</h3>
+        <p>{{ t('mostViewedHelp') }}</p>
       </div>
 
       @if (topViewed().length > 0) {
         <div class="dashboard-ranked-list">
           @for (item of topViewed(); track item.id) {
             <article class="dashboard-ranked-item">
-              <span class="rank-number">{{ toBanglaDigits($index + 1) }}</span>
+              <span class="rank-number">{{ formatNumber($index + 1) }}</span>
               <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
                 <strong>{{ item.title }}</strong>
-                <span class="article-metric">{{ toBanglaDigits(item.viewCount) }} বার পড়া হয়েছে</span>
-                <small class="muted-date">{{ item.publishDate || 'তারিখ নেই' }}</small>
-              </a>
-            </article>
-          }
-        </div>
-      } @else {
-        <div class="empty-state visible">
-          <span>âˆ…</span>
-          <h3>No viewed articles</h3>
-          <p>View activity will appear here.</p>
-        </div>
-      }
-    </section>
-
-    <section class="cms-panel">
-      <div class="panel-heading">
-        <h3>সর্বাধিক প্রতিক্রিয়া</h3>
-        <p>লাইক ও ডিসলাইক অনুযায়ী শীর্ষ সংবাদ।</p>
-      </div>
-
-      @if (topReacted().length > 0) {
-        <div class="dashboard-ranked-list">
-          @for (item of topReacted(); track item.id) {
-            <article class="dashboard-ranked-item">
-              <span class="rank-number">{{ toBanglaDigits($index + 1) }}</span>
-              <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
-                <strong>{{ item.title }}</strong>
-                <span class="article-metric">{{ toBanglaDigits(item.likeCount) }} লাইক | {{ toBanglaDigits(item.dislikeCount) }} ডিসলাইক</span>
+                <span class="article-metric">{{ formatNumber(item.viewCount) }} {{ t('timesRead') }}</span>
+                <small class="muted-date">{{ item.publishDate || t('noDate') }}</small>
               </a>
             </article>
           }
@@ -112,8 +85,35 @@
       } @else {
         <div class="empty-state visible">
           <span>∅</span>
-          <h3>এখনো প্রতিক্রিয়া নেই</h3>
-          <p>পাঠকের প্রতিক্রিয়া পাওয়া গেলে এখানে দেখা যাবে।</p>
+          <h3>{{ t('noViewedArticles') }}</h3>
+          <p>{{ t('viewActivityWillAppear') }}</p>
+        </div>
+      }
+    </section>
+
+    <section class="cms-panel">
+      <div class="panel-heading">
+        <h3>{{ t('mostReacted') }}</h3>
+        <p>{{ t('mostReactedHelp') }}</p>
+      </div>
+
+      @if (topReacted().length > 0) {
+        <div class="dashboard-ranked-list">
+          @for (item of topReacted(); track item.id) {
+            <article class="dashboard-ranked-item">
+              <span class="rank-number">{{ formatNumber($index + 1) }}</span>
+              <a [href]="publicArticleUrl(item)" target="_blank" rel="noopener noreferrer">
+                <strong>{{ item.title }}</strong>
+                <span class="article-metric">{{ formatNumber(item.likeCount) }} {{ t('likes') }} | {{ formatNumber(item.dislikeCount) }} {{ t('dislikes') }}</span>
+              </a>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state visible">
+          <span>∅</span>
+          <h3>{{ t('noReactionsYet') }}</h3>
+          <p>{{ t('reactionsWillAppear') }}</p>
         </div>
       }
     </section>
@@ -169,8 +169,8 @@
 
     <section class="cms-panel">
       <div class="panel-heading">
-        <h3>বিভাগ অনুযায়ী সংবাদ</h3>
-        <p>প্রকাশিত সংবাদ বিভাগভিত্তিক হিসাব।</p>
+        <h3>{{ t('categoryBreakdown') }}</h3>
+        <p>{{ t('categoryBreakdownHelp') }}</p>
       </div>
 
       @if (categoryBreakdown().length > 0) {
@@ -181,27 +181,24 @@
               <div class="chart-bar-bg">
                 <i class="chart-bar-fill" [style.width.%]="categoryWidth(item)"></i>
               </div>
-              <strong>{{ toBanglaDigits(item.publishedCount) }}</strong>
+              <strong>{{ formatNumber(item.publishedCount) }}</strong>
             </div>
           }
         </div>
       } @else {
         <div class="empty-state visible">
-          <span>âˆ…</span>
-          <h3>No category data</h3>
-          <p>Published category counts will appear here.</p>
+          <span>∅</span>
+          <h3>{{ t('noCategoryData') }}</h3>
+          <p>{{ t('categoryDataWillAppear') }}</p>
         </div>
       }
     </section>
 
     <section class="cms-panel region-placeholder-card">
       <div class="panel-heading">
-        <h3>অঞ্চলভিত্তিক বিশ্লেষণ</h3>
+        <h3>{{ t('regionalAnalysis') }}</h3>
       </div>
-      <p>
-        এই ফিচারটি পরবর্তী সংস্করণে আসবে। বাস্তবায়নের জন্য ভিজিটরের IP/অবস্থান
-        ট্র্যাকিং প্রয়োজন।
-      </p>
+      <p>{{ t('regionalAnalysisHelp') }}</p>
     </section>
   </div>
 </section>

@@ -1,4 +1,4 @@
-<section class="admin-shell">
+<section class="admin-shell" [class.admin-theme-dark]="themeService.theme() === 'dark'">
   <aside class="admin-sidebar">
     <div class="cms-brand">
       <span>আ</span>
@@ -30,7 +30,7 @@
       </div>
 
       <div class="topbar-actions">
-        <button type="button" class="admin-btn secondary" (click)="openPublicSite()">ওয়েবসাইট দেখুন ↗</button>
+        <button type="button" class="admin-btn secondary" (click)="openPublicSite()">{{ t('viewWebsite') }} ↗</button>
         <form class="topbar-search" (ngSubmit)="submitAdminSearch()">
           <span>S</span>
           <input type="search" name="adminTopbarSearch" [(ngModel)]="adminSearchTerm" [placeholder]="t('searchNews')">
@@ -39,11 +39,14 @@
           <button type="button" [class.active]="i18n.language() === 'bn'" (click)="setLanguage('bn')">{{ t('bangla') }}</button>
           <button type="button" [class.active]="i18n.language() === 'en'" (click)="setLanguage('en')">{{ t('english') }}</button>
         </div>
+        <button type="button" class="admin-btn secondary theme-toggle" (click)="toggleTheme()">
+          {{ themeService.theme() === 'dark' ? t('lightMode') : t('darkMode') }}
+        </button>
         <button type="button" class="admin-btn icon-button" [attr.aria-label]="t('notifications')">!</button>
-        <time>{{ todayBangla }}</time>
+        <time>{{ todayDate }}</time>
         <span class="role-badge">{{ roleLabel }}</span>
         <!-- visible-profile-button -->
-        <button type="button" class="admin-btn profile-button">Profile</button>
+        <button type="button" class="admin-btn profile-button">{{ t('profile') }}</button>
         <button type="button" class="admin-btn secondary" (click)="logout()">{{ t('logout') }}</button>
       </div>
     </header>
