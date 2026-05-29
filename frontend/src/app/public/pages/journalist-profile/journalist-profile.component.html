@@ -1,14 +1,28 @@
 <section class="page journalist-profile-page">
+  <a class="back-link" routerLink="/journalists">← আমাদের টিমে ফিরুন</a>
+
   @if (notFound()) {
-    <div class="profile-empty">সাংবাদিক পাওয়া যায়নি</div>
+    <div class="profile-empty">সাংবাদিক পাওয়া যায়নি</div>
+  } @else if (isProfileLoading()) {
+    <header class="profile-card profile-skeleton">
+      <div class="profile-initials"></div>
+      <div class="profile-copy">
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line"></div>
+      </div>
+    </header>
   } @else if (profile(); as journalist) {
     <header class="profile-card">
-      @if (hasProfileImage(journalist)) {
-        <img [src]="journalist.profileImageUrl" [alt]="displayName()" (error)="markProfileImageFailed()">
-      } @else {
-        <div class="profile-initials">{{ initials() }}</div>
-      }
-      <div>
+      <div class="profile-media">
+        @if (hasProfileImage(journalist)) {
+          <img [src]="journalist.profileImageUrl" [alt]="displayName()" decoding="async" (error)="markProfileImageFailed()">
+        } @else {
+          <div class="profile-initials">{{ initials() }}</div>
+        }
+      </div>
+      <div class="profile-copy">
+        <span class="beat-chip">{{ beatLabel(journalist) }}</span>
         <h1>{{ displayName() }}</h1>
         @if (journalist.designation) {
           <span class="designation">{{ journalist.designation }}</span>
@@ -17,33 +31,70 @@
           <p>{{ journalist.bio }}</p>
         }
         <nav class="profile-links" aria-label="Journalist links">
-          @if (journalist.facebookUrl) {
+          @if (hasContactLink(journalist.facebookUrl)) {
             <a [href]="journalist.facebookUrl" target="_blank" rel="noopener noreferrer">Facebook</a>
           }
-          @if (journalist.twitterUrl) {
+          @if (hasContactLink(journalist.twitterUrl)) {
             <a [href]="journalist.twitterUrl" target="_blank" rel="noopener noreferrer">X</a>
           }
-          @if (journalist.emailPublic) {
+          @if (hasContactLink(journalist.emailPublic)) {
             <a [href]="'mailto:' + journalist.emailPublic">Email</a>
           }
         </nav>
       </div>
+      <aside class="profile-stats" aria-label="Journalist summary">
+        <div>
+          <strong>{{ articles().length }}</strong>
+          <span>প্রকাশিত সংবাদ</span>
+        </div>
+        @if (latestArticleDate()) {
+          <div>
+            <strong>{{ latestArticleDate() | banglaDate }}</strong>
+            <span>সর্বশেষ প্রকাশ</span>
+          </div>
+        }
+      </aside>
     </header>
 
     <section class="journalist-articles">
-      <h2>এই সাংবাদিকের সংবাদ</h2>
-      @if (articles().length > 0) {
+      <div class="section-heading">
+        <h2>এই সাংবাদিকের সংবাদ</h2>
+        <span>{{ articles().length }}টি প্রকাশিত সংবাদ</span>
+      </div>
+
+      @if (isArticlesLoading()) {
+        <div class="article-list">
+          @for (item of [1, 2, 3]; track item) {
+            <article class="article-card skeleton-article">
+              <div class="article-card-thumb"></div>
+              <div class="article-card-content">
+                <div class="skeleton-line title"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line short"></div>
+              </div>
+            </article>
+          }
+        </div>
+      } @else if (articlesError()) {
+        <div class="profile-empty">
+          <strong>সংবাদ লোড করা যায়নি</strong>
+          <button type="button" (click)="loadArticles(page)">আবার চেষ্টা করুন</button>
+        </div>
+      } @else if (articles().length > 0) {
         <div class="article-list">
           @for (article of articles(); track article.id) {
             <article class="article-card">
               @if (article.imageUrl) {
                 <a class="article-card-thumb" [routerLink]="['/news', article.slug]" [attr.aria-label]="article.title">
-                  <img [src]="article.imageUrl" [alt]="article.imageAlt || article.title">
+                  <img [src]="article.imageUrl" [alt]="article.imageAlt || article.title" loading="lazy" decoding="async">
                 </a>
               } @else {
                 <a class="article-card-thumb article-card-thumb-fallback" [routerLink]="['/news', article.slug]">{{ article.category || 'সংবাদ' }}</a>
               }
               <div class="article-card-content">
+                @if (article.category) {
+                  <a class="category-link" [routerLink]="['/category', article.category]">{{ article.category }}</a>
+                }
                 <h3><a [routerLink]="['/news', article.slug]">{{ article.title }}</a></h3>
                 <p>{{ excerpt(article) }}</p>
                 <time>{{ (article.publishDate || article.scheduledAt || article.createdAt) | banglaDate }}</time>

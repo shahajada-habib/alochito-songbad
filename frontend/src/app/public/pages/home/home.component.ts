@@ -1,9 +1,11 @@
 import { Component, effect, inject, signal } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { BreakingNewsService } from '../../../admin/services/breaking-news.service';
 import { CategoryService } from '../../../admin/services/category.service';
 import { News, NewsService } from '../../../admin/services/news.service';
 import { HomepageSettingsService } from '../../services/homepage-settings.service';
+import { PublicJournalist, PublicJournalistService } from '../../services/public-journalist.service';
 import { createExcerpt, formatNewsDate, formatViewCount, getReadingTime } from '../../../shared/news-format.util';
 
 const LOCAL_PLACEHOLDER_IMAGE = '/assets/news-placeholder.svg';
@@ -28,13 +30,6 @@ type CategorySection = {
   stories: NewsItem[];
 };
 
-type StaffMember = {
-  name: string;
-  role: string;
-  image: string;
-  bio?: string;
-};
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -47,6 +42,9 @@ export class HomeComponent {
   private readonly breakingNewsService = inject(BreakingNewsService);
   private readonly categoryService = inject(CategoryService);
   private readonly homepageSettingsService = inject(HomepageSettingsService);
+  private readonly journalistService = inject(PublicJournalistService);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
 
   protected breakingNews: string[] = ['এই মুহূর্তে কোনো সংবাদ নেই'];
   protected leadStory: NewsItem | null = null;
@@ -60,30 +58,17 @@ export class HomeComponent {
   protected readonly heroSkeletonCards = Array.from({ length: 4 });
   private readonly failedImages = signal<Set<string>>(new Set());
 
-  protected readonly team: StaffMember[] = [
-    {
-      name: 'সাদিয়া রহমান',
-      role: 'সম্পাদক',
-      image: LOCAL_PLACEHOLDER_IMAGE
-    },
-    {
-      name: 'আরিফুল ইসলাম',
-      role: 'স্টাফ রিপোর্টার',
-      image: LOCAL_PLACEHOLDER_IMAGE
-    },
-    {
-      name: 'নুসরাত জাহান',
-      role: 'ডিজিটাল প্রডিউসার',
-      image: LOCAL_PLACEHOLDER_IMAGE
-    }
-  ];
+  protected readonly team = signal<PublicJournalist[]>([]);
+  protected readonly failedTeamImages = signal<Set<string>>(new Set());
 
-  protected get meaningfulTeam(): StaffMember[] {
-    return this.team.filter((member) => this.hasMeaningfulProfile(member));
+  protected get meaningfulTeam(): PublicJournalist[] {
+    return this.team().filter((member) => this.hasMeaningfulProfile(member)).slice(0, 4);
   }
 
   constructor() {
+    this.setHomeSeo();
     this.homepageSettingsService.loadPublicSettings().subscribe();
+    this.loadTeam();
     setTimeout(() => this.isLoading.set(false), 850);
 
     effect(() => {
@@ -262,17 +247,50 @@ export class HomeComponent {
     this.failedImages.update((items) => new Set(items).add(story.slug));
   }
 
+  protected displayTeamName(member: PublicJournalist): string {
+    return member.displayName || member.username;
+  }
+
+  protected teamInitials(member: PublicJournalist): string {
+    return this.displayTeamName(member).trim().slice(0, 1) || 'আ';
+  }
+
+  protected hasTeamImage(member: PublicJournalist): boolean {
+    return !!member.profileImageUrl && !this.failedTeamImages().has(member.username);
+  }
+
+  protected markTeamImageFailed(member: PublicJournalist): void {
+    this.failedTeamImages.update((items) => new Set(items).add(member.username));
+  }
+
+  private setHomeSeo(): void {
+    const title = 'আলোচিত সংবাদ - সবার আগে সত্য খবর';
+    const description = 'বাংলাদেশ ও বিশ্বের সর্বশেষ সংবাদ, রাজনীতি, অর্থনীতি, খেলাধুলা, বিনোদন, শিক্ষা, প্রযুক্তি ও মতামত পড়ুন আলোচিত সংবাদে।';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+  }
+
   protected categoryGradient(category: string): string {
     const color = this.categoryColor(category);
     return `linear-gradient(135deg, ${color} 0%, #111827 100%)`;
   }
 
-  private hasMeaningfulProfile(member: StaffMember): boolean {
-    const hasDisplayName = !!member.name.trim();
+  private hasMeaningfulProfile(member: PublicJournalist): boolean {
+    const hasDisplayName = !!this.displayTeamName(member).trim();
     const hasBio = !!member.bio?.trim();
-    const hasProfileImage = !!member.image && member.image !== LOCAL_PLACEHOLDER_IMAGE;
+    const hasProfileImage = !!member.profileImageUrl?.trim();
 
     return hasDisplayName && (hasBio || hasProfileImage);
+  }
+
+  private loadTeam(): void {
+    this.journalistService.getJournalists().subscribe({
+      next: (items) => this.team.set(items || []),
+      error: () => this.team.set([])
+    });
   }
 
   private categoryColor(category: string): string {

@@ -99,6 +99,11 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/news-form/news-form.component').then((m) => m.NewsFormComponent)
       },
       {
+        path: 'news/new',
+        redirectTo: 'news/create',
+        pathMatch: 'full'
+      },
+      {
         path: 'news/edit/:id',
         data: { roles: ['admin', 'editor', 'reporter'] },
         canDeactivate: [unsavedChangesGuard],
@@ -113,6 +118,11 @@ export const routes: Routes = [
         path: 'media',
         data: { roles: ['admin', 'editor'] },
         loadComponent: () => import('./admin/pages/media-library/media-library.component').then((m) => m.MediaLibraryComponent)
+      },
+      {
+        path: 'media-library',
+        redirectTo: 'media',
+        pathMatch: 'full'
       },
       {
         path: 'comments',

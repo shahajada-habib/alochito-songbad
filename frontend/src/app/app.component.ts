@@ -1,10 +1,11 @@
-import { Component, HostListener, OnInit, computed, inject } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ToastContainerComponent } from './admin/components/toast-container/toast-container.component';
 import { AuthService } from './auth/auth.service';
 import { buildPublicDateLine } from './shared/bangla-date.util';
 import { SiteSettingsService } from './public/services/site-settings.service';
+import { PublicCategory, PublicCategoryService } from './public/services/public-category.service';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +16,13 @@ import { SiteSettingsService } from './public/services/site-settings.service';
 })
 export class AppComponent implements OnInit {
   private readonly siteSettingsService = inject(SiteSettingsService);
+  private readonly publicCategoryService = inject(PublicCategoryService);
   protected searchTerm = '';
   protected isHeaderScrolled = false;
+  protected isMobileMenuOpen = false;
   protected readonly publicDate = buildPublicDateLine();
   protected readonly siteSettings = this.siteSettingsService.settings;
+  protected readonly navCategories = signal<PublicCategory[]>([]);
   protected readonly socialLinks = computed(() => {
     const settings = this.siteSettings();
     return [
@@ -33,6 +37,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.siteSettingsService.loadPublicSettings().subscribe();
+    this.publicCategoryService.getActiveCategories().subscribe((categories) => this.navCategories.set(categories));
   }
 
   protected isAdminRoute(): boolean {
@@ -46,10 +51,23 @@ export class AppComponent implements OnInit {
 
   protected submitSearch(): void {
     const query = this.searchTerm.trim();
+    this.closeMobileMenu();
 
     void this.router.navigate(['/search'], {
       queryParams: query ? { q: query } : {}
     });
+  }
+
+  protected toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  protected closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
+  protected categoryRoute(category: PublicCategory): string[] {
+    return ['/category', category.slug || category.name];
   }
 
   protected hasLogo(value: string): boolean {

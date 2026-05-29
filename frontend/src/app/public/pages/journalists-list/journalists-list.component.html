@@ -1,18 +1,72 @@
 <section class="page journalists-page">
-  <header class="journalists-header">
-    <span>নিউজরুম</span>
-    <h1>আমাদের সাংবাদিক দল</h1>
+  <header class="journalists-hero">
+    <div>
+      <span class="eyebrow">নিউজরুম</span>
+      <h1>আমাদের টিম</h1>
+      <p>সম্পাদকীয় নেতৃত্ব, রিপোর্টিং ডেস্ক ও ভিজ্যুয়াল টিমের অভিজ্ঞতায় আলোচিত সংবাদ প্রতিদিন নির্ভরযোগ্য খবর পৌঁছে দেয়।</p>
+    </div>
+    <div class="journalists-stats" aria-label="Newsroom summary">
+      <div>
+        <strong>{{ activeCount() }}</strong>
+        <span>সক্রিয় সদস্য</span>
+      </div>
+      <div>
+        <strong>{{ beatCount() }}</strong>
+        <span>বিট/ডেস্ক</span>
+      </div>
+    </div>
   </header>
 
-  @if (journalists().length > 0) {
+  <section class="journalists-toolbar" aria-label="Journalist filters">
+    <label>
+      <span>নাম বা পদবি খুঁজুন</span>
+      <input
+        type="search"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+        placeholder="যেমন: সম্পাদক, ক্রীড়া, আন্তর্জাতিক">
+    </label>
+    <div class="beat-filter" role="list" aria-label="Beat filters">
+      @for (filter of filters; track filter.label) {
+        <button
+          type="button"
+          [class.active]="activeBeat() === filter.label"
+          (click)="activeBeat.set(filter.label)">
+          {{ filter.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+  @if (isLoading()) {
+    <div class="journalists-grid" aria-label="Loading journalists">
+      @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+        <article class="journalist-card skeleton-card">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-line wide"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+        </article>
+      }
+    </div>
+  } @else if (hasError()) {
+    <div class="journalists-empty">
+      <strong>টিম তথ্য লোড করা যায়নি</strong>
+      <p>অনুগ্রহ করে আবার চেষ্টা করুন।</p>
+      <button type="button" (click)="loadJournalists()">আবার চেষ্টা করুন</button>
+    </div>
+  } @else if (filteredJournalists().length > 0) {
     <div class="journalists-grid">
-      @for (journalist of journalists(); track journalist.username) {
+      @for (journalist of filteredJournalists(); track journalist.username) {
         <article class="journalist-card">
-          @if (hasProfileImage(journalist)) {
-            <img [src]="journalist.profileImageUrl" [alt]="displayName(journalist)" (error)="markImageBroken(journalist)">
-          } @else {
-            <div class="journalist-initials">{{ initials(journalist) }}</div>
-          }
+          <div class="avatar-wrap">
+            @if (hasProfileImage(journalist)) {
+              <img [src]="journalist.profileImageUrl" [alt]="displayName(journalist)" loading="lazy" decoding="async" (error)="markImageBroken(journalist)">
+            } @else {
+              <div class="journalist-initials">{{ initials(journalist) }}</div>
+            }
+          </div>
+          <span class="beat-chip">{{ beatLabel(journalist) }}</span>
           <h2>{{ displayName(journalist) }}</h2>
           @if (journalist.designation) {
             <span class="designation">{{ journalist.designation }}</span>
@@ -20,11 +74,14 @@
           @if (journalist.bio) {
             <p>{{ bioPreview(journalist) }}</p>
           }
-          <a [routerLink]="['/journalist', journalist.username]">আরও পড়ুন →</a>
+          <a [routerLink]="['/journalist', journalist.username]">প্রোফাইল দেখুন</a>
         </article>
       }
     </div>
   } @else {
-    <div class="journalists-empty">শীঘ্রই আসছে</div>
+    <div class="journalists-empty">
+      <strong>কোনো সাংবাদিক পাওয়া যায়নি</strong>
+      <p>ফিল্টার পরিবর্তন করে আবার চেষ্টা করুন।</p>
+    </div>
   }
 </section>

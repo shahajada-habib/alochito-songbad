@@ -1,9 +1,11 @@
 import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { News, NewsService } from '../../../admin/services/news.service';
 import { createExcerpt, formatNewsDate, formatViewCount, getReadingTime } from '../../../shared/news-format.util';
+import { PublicCategory, PublicCategoryService } from '../../services/public-category.service';
 
 const LOCAL_PLACEHOLDER_IMAGE = '/assets/news-placeholder.svg';
 const PAGE_SIZE = 12;
@@ -29,8 +31,12 @@ type CategoryCard = {
 export class CategoryComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly newsService = inject(NewsService);
+  private readonly publicCategoryService = inject(PublicCategoryService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   private readonly apiResults = signal<News[]>([]);
+  private readonly categories = signal<PublicCategory[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly isLoadingMore = signal(false);
   protected readonly errorMessage = signal('');
@@ -43,7 +49,11 @@ export class CategoryComponent {
     { initialValue: '' }
   );
 
-  protected readonly categoryTitle = computed(() => this.name() || 'সংবাদ বিভাগ');
+  protected readonly routeCategoryParam = computed(() => this.decodeCategoryParam(this.name()));
+  protected readonly resolvedCategory = computed(() => this.findCategory(this.routeCategoryParam()));
+  protected readonly categoryTitle = computed(() =>
+    this.resolvedCategory()?.name || this.routeCategoryParam() || 'সংবাদ বিভাগ'
+  );
 
   protected readonly news = computed<CategoryCard[]>(() => {
     return this.apiResults().map((item) => this.mapCard(item));
@@ -52,8 +62,15 @@ export class CategoryComponent {
   protected readonly hasNews = computed(() => this.news().length > 0);
 
   constructor() {
+    this.publicCategoryService
+      .getActiveCategories(20)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((categories) => this.categories.set(categories));
+
     effect(() => {
-      this.loadPage(this.name(), 0, false);
+      const categoryName = this.name();
+      this.updateSeo(this.categoryTitle());
+      this.loadPage(categoryName, 0, false);
     });
   }
 
@@ -128,5 +145,37 @@ export class CategoryComponent {
       .toLowerCase()
       .replace(/[^a-z0-9\u0980-\u09ff]+/g, '-')
       .replace(/^-+|-+$/g, '');
+  }
+
+  private decodeCategoryParam(value: string): string {
+    try {
+      return decodeURIComponent(value || '').trim();
+    } catch {
+      return (value || '').trim();
+    }
+  }
+
+  private findCategory(routeParam: string): PublicCategory | undefined {
+    const normalizedParam = this.normalizeSlug(routeParam);
+    return this.categories().find((category) =>
+      this.normalizeSlug(category.slug || '') === normalizedParam ||
+      this.normalizeSlug(category.name || '') === normalizedParam ||
+      (category.name || '').trim() === routeParam
+    );
+  }
+
+  private normalizeSlug(value: string): string {
+    return this.decodeCategoryParam(value).toLowerCase();
+  }
+
+  private updateSeo(categoryName: string): void {
+    const name = categoryName || 'সংবাদ বিভাগ';
+    const pageTitle = `${name} সংবাদ | আলোচিত সংবাদ`;
+    const description = `${name} বিভাগের সর্বশেষ সংবাদ, বিশ্লেষণ ও আপডেট পড়ুন আলোচিত সংবাদে।`;
+    this.title.setTitle(pageTitle);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: pageTitle });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
   }
 }

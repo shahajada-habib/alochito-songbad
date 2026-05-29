@@ -45,7 +45,7 @@
       <article class="lead-card story-card">
         <a class="story-image-link" [routerLink]="['/news', story.slug]" [attr.aria-label]="story.title">
           @if (hasDisplayImage(story)) {
-            <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+            <img [src]="story.image" [alt]="story.title" decoding="async" (error)="markImageFailed(story)">
           } @else {
             <div class="story-image-fallback" [style.background]="categoryGradient(story.category)">
               <strong>{{ story.category }}</strong>
@@ -83,7 +83,7 @@
           <article class="small-card story-card">
             <a class="story-image-link" [routerLink]="['/news', story.slug]" [attr.aria-label]="story.title">
               @if (hasDisplayImage(story)) {
-                <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+                <img [src]="story.image" [alt]="story.title" loading="lazy" decoding="async" (error)="markImageFailed(story)">
               } @else {
                 <div class="story-image-fallback" [style.background]="categoryGradient(story.category)">
                   <strong>{{ story.category }}</strong>
@@ -121,7 +121,7 @@
           <article class="editor-pick-card">
             <a [routerLink]="['/news', story.slug]">
               @if (hasDisplayImage(story)) {
-                <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+                <img [src]="story.image" [alt]="story.title" loading="lazy" decoding="async" (error)="markImageFailed(story)">
               } @else {
                 <div class="story-image-fallback" [style.background]="categoryGradient(story.category)">
                   <strong>{{ story.category }}</strong>
@@ -165,7 +165,7 @@
         @for (story of latestNews; track story.slug) {
           <article class="news-list-card">
             @if (hasDisplayImage(story)) {
-              <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+              <img [src]="story.image" [alt]="story.title" loading="lazy" decoding="async" (error)="markImageFailed(story)">
             } @else {
               <div class="story-image-fallback list-fallback" [style.background]="categoryGradient(story.category)">
                 <strong>{{ story.category }}</strong>
@@ -203,7 +203,7 @@
       @for (story of trendingNews; track story.slug) {
         <article class="news-list-card">
             @if (hasDisplayImage(story)) {
-              <img [src]="story.image" [alt]="story.title" (error)="markImageFailed(story)">
+              <img [src]="story.image" [alt]="story.title" loading="lazy" decoding="async" (error)="markImageFailed(story)">
             } @else {
               <div class="story-image-fallback list-fallback" [style.background]="categoryGradient(story.category)">
                 <strong>{{ story.category }}</strong>
@@ -241,7 +241,7 @@
             <article class="category-lead-story">
               <a class="category-lead-image" [routerLink]="['/news', category.lead.slug]" [attr.aria-label]="category.lead.title">
                 @if (hasDisplayImage(category.lead)) {
-                  <img [src]="category.lead.image" [alt]="category.lead.title" (error)="markImageFailed(category.lead)">
+                  <img [src]="category.lead.image" [alt]="category.lead.title" loading="lazy" decoding="async" (error)="markImageFailed(category.lead)">
                 } @else {
                   <div class="story-image-fallback" [style.background]="categoryGradient(category.lead.category)">
                     <strong>{{ category.lead.category }}</strong>
@@ -285,15 +285,27 @@
   @if (meaningfulTeam.length > 0) {
     <section class="content-section team-section">
       <div class="section-heading">
-        <h2>আমাদের টিম</h2>
+        <div>
+          <span>নিউজরুম</span>
+          <h2>নিউজরুম টিম</h2>
+          <p>আলোচিত সংবাদের সম্পাদকীয় নেতৃত্ব ও রিপোর্টিং টিম।</p>
+        </div>
+        <a routerLink="/journalists">সবাইকে দেখুন →</a>
       </div>
 
       <div class="team-grid">
-        @for (member of meaningfulTeam; track member.name) {
+        @for (member of meaningfulTeam; track member.username) {
           <article class="team-card">
-            <img [src]="member.image" [alt]="member.name">
-            <h3>{{ member.name }}</h3>
-            <p>{{ member.role }}</p>
+            @if (hasTeamImage(member)) {
+              <img [src]="member.profileImageUrl" [alt]="displayTeamName(member)" loading="lazy" decoding="async" (error)="markTeamImageFailed(member)">
+            } @else {
+              <div class="team-initials">{{ teamInitials(member) }}</div>
+            }
+            <h3>{{ displayTeamName(member) }}</h3>
+            @if (member.designation) {
+              <p>{{ member.designation }}</p>
+            }
+            <a [routerLink]="['/journalist', member.username]">প্রোফাইল</a>
           </article>
         }
       </div>

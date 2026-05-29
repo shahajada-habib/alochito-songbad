@@ -696,6 +696,65 @@
   line-height: 1.5;
 }
 
+:host ::ng-deep .team-create-panel .inline-form {
+  grid-template-columns: minmax(180px, 1.2fr) minmax(150px, 1fr) minmax(140px, 0.8fr) minmax(130px, 0.7fr) auto;
+}
+
+:host ::ng-deep .team-table th,
+:host ::ng-deep .team-table td {
+  vertical-align: middle;
+}
+
+:host ::ng-deep .team-member-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+:host ::ng-deep .team-member-cell img,
+:host ::ng-deep .team-member-cell > span {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+:host ::ng-deep .team-member-cell img {
+  object-fit: cover;
+  border: 2px solid #fff7f5;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+:host ::ng-deep .team-member-cell > span {
+  display: grid;
+  place-items: center;
+  border: 1px solid #ead9d2;
+  background: linear-gradient(145deg, #fff7f5, #f0d6ce);
+  color: #991b1b;
+  font-weight: 800;
+}
+
+:host ::ng-deep .team-member-cell strong,
+:host ::ng-deep .team-member-cell small {
+  display: block;
+}
+
+:host ::ng-deep .team-member-cell strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+:host ::ng-deep .team-member-cell small {
+  max-width: 260px;
+  overflow: hidden;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 :host ::ng-deep .publish-button {
   background: var(--color-primary);
 }
@@ -1262,6 +1321,7 @@
 :host ::ng-deep .admin-theme-dark .panel-heading h3,
 :host ::ng-deep .admin-theme-dark .cms-stats strong,
 :host ::ng-deep .admin-theme-dark .news-table strong,
+:host ::ng-deep .admin-theme-dark .team-member-cell strong,
 :host ::ng-deep .admin-theme-dark .media-grid strong,
 :host ::ng-deep .admin-theme-dark .profile-photo-preview strong,
 :host ::ng-deep .admin-theme-dark .logo-preview strong {
@@ -1272,6 +1332,7 @@
 :host ::ng-deep .admin-theme-dark .panel-heading p,
 :host ::ng-deep .admin-theme-dark .activity-list span,
 :host ::ng-deep .admin-theme-dark .logo-preview small,
+:host ::ng-deep .admin-theme-dark .team-member-cell small,
 :host ::ng-deep .admin-theme-dark label small {
   color: #94a3b8;
 }

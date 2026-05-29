@@ -24,13 +24,6 @@
     <a class="back-link" routerLink="/news">সর্বশেষে ফিরুন</a>
 
     <div class="article-layout" [class.has-sidebar]="relatedNews().length > 0">
-      <aside class="floating-share-bar" aria-label="Share article">
-        <span class="floating-share-label">শেয়ার</span>
-        <a class="floating-share-button facebook" [href]="facebookShareUrl(articleData)" target="_blank" rel="noopener noreferrer">Facebook</a>
-        <a class="floating-share-button x" [href]="twitterShareUrl(articleData)" target="_blank" rel="noopener noreferrer">X</a>
-        <button class="floating-share-button copy" type="button" (click)="copyArticleLink(articleData)">Copy</button>
-      </aside>
-
       <div class="article-main">
         <header class="article-header">
           <a class="article-category" [routerLink]="['/category', articleData.category]">{{ articleData.category }}</a>
@@ -41,7 +34,7 @@
           <div class="byline">
             <span class="byline-reporter">
               @if (articleData.authorProfileImageUrl) {
-                <img class="byline-avatar image-avatar" [src]="articleData.authorProfileImageUrl" [alt]="articleData.reporter">
+                <img class="byline-avatar image-avatar" [src]="articleData.authorProfileImageUrl" [alt]="articleData.reporter" decoding="async">
               } @else {
                 <span class="byline-avatar" aria-hidden="true">{{ articleData.authorInitials }}</span>
               }
@@ -71,12 +64,13 @@
           <span>শেয়ার</span>
           <a class="share-button" [href]="facebookShareUrl(articleData)" target="_blank" rel="noopener noreferrer">Facebook</a>
           <a class="share-button" [href]="twitterShareUrl(articleData)" target="_blank" rel="noopener noreferrer">X</a>
+          <a class="share-button whatsapp" [href]="whatsappShareUrl(articleData)" target="_blank" rel="noopener noreferrer">WhatsApp</a>
           <button class="share-button" type="button" (click)="copyArticleLink(articleData)">Copy link</button>
         </div>
 
         @if (articleData.image) {
           <figure class="article-media">
-            <img class="article-image" [src]="articleData.image" [alt]="articleData.imageAlt || articleData.title">
+            <img class="article-image" [src]="articleData.image" [alt]="articleData.imageAlt || articleData.title" decoding="async">
             @if (articleData.imageCaption || articleData.imageSource) {
               <figcaption>
                 @if (articleData.imageCaption) {
@@ -175,7 +169,7 @@
               <div class="post-list">
                 @for (item of relatedNews(); track item.slug) {
                   <article class="post-card">
-                    <img [src]="item.image" [alt]="item.title">
+                    <img [src]="item.image" [alt]="item.title" loading="lazy" decoding="async">
                     <div class="post-card-content">
                       <a class="post-card-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
                       <h3>
@@ -198,7 +192,7 @@
               <div class="post-list">
                 @for (item of latestNews(); track item.slug) {
                   <article class="post-card">
-                    <img [src]="item.image" [alt]="item.title">
+                    <img [src]="item.image" [alt]="item.title" loading="lazy" decoding="async">
                     <div class="post-card-content">
                       <a class="post-card-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
                       <h3>
@@ -221,7 +215,7 @@
               <div class="post-list">
                 @for (item of trendingNews(); track item.slug) {
                   <article class="post-card">
-                    <img [src]="item.image" [alt]="item.title">
+                    <img [src]="item.image" [alt]="item.title" loading="lazy" decoding="async">
                     <div class="post-card-content">
                       <a class="post-card-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
                       <h3>
@@ -246,7 +240,7 @@
           <div class="related-grid">
             @for (item of relatedNews(); track item.slug) {
               <article class="related-card">
-                <img [src]="item.image" [alt]="item.title">
+                <img [src]="item.image" [alt]="item.title" loading="lazy" decoding="async">
                 <div class="related-card-content">
                   <a class="related-category" [routerLink]="['/category', item.category]">{{ item.category }}</a>
                   <h3>

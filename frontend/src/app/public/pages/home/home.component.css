@@ -870,33 +870,92 @@ time {
   padding: var(--space-4);
   border: 1px solid #e0d8cc;
   border-radius: var(--space-2);
-  background: linear-gradient(180deg, #f1ece4 0%, #ebe5da 100%);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 245, 0.78)),
+    linear-gradient(180deg, #f1ece4 0%, #ebe5da 100%);
+}
+
+.team-section .section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.team-section .section-heading span {
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.team-section .section-heading p {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+}
+
+.team-section .section-heading a,
+.team-card a {
+  color: var(--color-primary);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.team-section .section-heading a:hover,
+.team-card a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .team-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .team-card {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  min-width: 0;
   padding: var(--space-4) var(--space-3);
   text-align: center;
 }
 
-.team-card img {
+.team-card img,
+.team-initials {
   width: 112px;
   height: 112px;
   border-radius: 50%;
+}
+
+.team-card img {
   border: 4px solid var(--color-background);
+  object-fit: cover;
   box-shadow: 0 8px 18px rgba(23, 32, 38, 0.12);
+}
+
+.team-initials {
+  display: grid;
+  place-items: center;
+  border: 1px solid #ead9d2;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.92), transparent 24%),
+    linear-gradient(145deg, #f7e9df 0%, #b42318 100%);
+  color: #7a1d14;
+  font-size: 34px;
+  font-weight: 800;
 }
 
 .team-card h3 {
   margin: var(--space-2) 0 var(--space-1);
+  font-size: 20px;
+  line-height: 1.28;
 }
 
 .team-card p {
   margin: 0;
   color: var(--color-muted);
+  font-weight: 700;
 }
 
 .news-empty-state {
@@ -970,6 +1029,10 @@ time {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .category-feature-grid {
     grid-template-columns: 1fr;
   }
@@ -1004,6 +1067,11 @@ time {
   .category-grid,
   .team-grid {
     grid-template-columns: 1fr;
+  }
+
+  .team-section .section-heading {
+    align-items: start;
+    flex-direction: column;
   }
 
   .hero-grid {

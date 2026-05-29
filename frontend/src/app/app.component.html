@@ -13,6 +13,19 @@
       </span>
     </a>
 
+    <button
+      type="button"
+      class="mobile-menu-toggle"
+      [attr.aria-expanded]="isMobileMenuOpen"
+      aria-controls="publicCategoryNav"
+      [attr.aria-label]="isMobileMenuOpen ? 'মেনু বন্ধ করুন' : 'মেনু খুলুন'"
+      (click)="toggleMobileMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <div class="header-actions">
       <form class="site-search" (ngSubmit)="submitSearch()">
         <input type="search" name="publicSearch" [(ngModel)]="searchTerm" placeholder="সংবাদ খুঁজুন">
@@ -39,15 +52,13 @@
     </div>
   </div>
 
-  <nav class="category-nav" aria-label="Top news categories">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">প্রচ্ছদ</a>
-    <a routerLink="/news" routerLinkActive="active">সর্বশেষ</a>
-    <a routerLink="/category/জাতীয়" routerLinkActive="active">জাতীয়</a>
-    <a routerLink="/category/রাজনীতি" routerLinkActive="active">রাজনীতি</a>
-    <a routerLink="/category/আন্তর্জাতিক" routerLinkActive="active">আন্তর্জাতিক</a>
-    <a routerLink="/category/খেলাধুলা" routerLinkActive="active">খেলাধুলা</a>
-    <a routerLink="/category/বিনোদন" routerLinkActive="active">বিনোদন</a>
-    <a routerLink="/journalists" routerLinkActive="active">আমাদের টিম</a>
+  <nav id="publicCategoryNav" class="category-nav" [class.open]="isMobileMenuOpen" aria-label="Top news categories">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">প্রচ্ছদ</a>
+    <a routerLink="/news" routerLinkActive="active" (click)="closeMobileMenu()">সর্বশেষ</a>
+    @for (category of navCategories(); track category.slug || category.name) {
+      <a [routerLink]="categoryRoute(category)" routerLinkActive="active" (click)="closeMobileMenu()">{{ category.name }}</a>
+    }
+    <a routerLink="/journalists" routerLinkActive="active" (click)="closeMobileMenu()">আমাদের টিম</a>
   </nav>
 </header>
 }
@@ -73,9 +84,9 @@
       <h3>বিভাগ</h3>
       <nav class="footer-links" aria-label="Footer categories">
         <a routerLink="/news">সর্বশেষ</a>
-        <a routerLink="/category/জাতীয়">জাতীয়</a>
-        <a routerLink="/category/রাজনীতি">রাজনীতি</a>
-        <a routerLink="/category/খেলাধুলা">খেলাধুলা</a>
+        @for (category of navCategories().slice(0, 4); track category.slug || category.name) {
+          <a [routerLink]="categoryRoute(category)">{{ category.name }}</a>
+        }
         <a routerLink="/journalists">আমাদের টিম</a>
         <a routerLink="/about">আমাদের সম্পর্কে</a>
         <a routerLink="/contact">যোগাযোগ</a>

@@ -247,6 +247,11 @@ export class NewsDetailComponent {
     return `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
   }
 
+  protected whatsappShareUrl(article: ArticleView): string {
+    const text = encodeURIComponent(`${article.title} ${this.currentArticleUrl(article)}`);
+    return `https://wa.me/?text=${text}`;
+  }
+
   protected copyArticleLink(article: ArticleView): void {
     this.copyToClipboard(this.currentArticleUrl(article));
     this.toast.success('লিংক কপি হয়েছে');

@@ -73,6 +73,14 @@ export class TeamComponent {
     return this.i18n.language() === 'bn' ? designation : (this.designationEnglish.get(designation) || designation);
   }
 
+  protected roleLabel(role: TeamMember['role']): string {
+    if (role === 'Admin') {
+      return this.t('roleAdmin');
+    }
+
+    return role === 'Editor' ? this.t('roleEditor') : this.t('roleReporter');
+  }
+
   protected create(): void {
     if (!this.form.name.trim() || !this.form.password?.trim()) {
       return;
