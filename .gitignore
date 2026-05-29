@@ -12,3 +12,6 @@ backend/target/
 *.iml
 .DS_Store
 Thumbs.db
+
+# Runtime uploads
+backend/uploads/
