@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { AdminTranslationService, TranslationKey } from '../../i18n/admin-translation.service';
 import {
@@ -9,13 +10,14 @@ import {
   AssignmentStatus,
   InvoicePaymentStatus,
   ActivityActionType,
+  NotificationType,
   MediaOperationsService
 } from '../../services/media-operations.service';
 
 @Component({
   selector: 'app-media-operations-dashboard',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './media-operations-dashboard.component.html',
   styleUrl: './media-operations-dashboard.component.css'
 })
@@ -205,6 +207,11 @@ export class MediaOperationsDashboardComponent {
 
   protected adPublishStatusClass(status: AdPublishStatus): string {
     return `ad-publish-${status.toLowerCase()}`;
+  }
+
+  protected notificationTypeLabel(type: NotificationType): string {
+    const key = `notificationType${this.toTitleCase(type)}` as TranslationKey;
+    return this.t(key);
   }
 
   protected invoicePaymentStatusLabel(status: InvoicePaymentStatus): string {

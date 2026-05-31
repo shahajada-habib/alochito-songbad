@@ -16,6 +16,12 @@
     </div>
   </div>
 
+  @if (error()) {
+    <div class="operations-alert overview-alert">{{ t('operationsLoadError') }}</div>
+  } @else if (loading()) {
+    <div class="operations-muted overview-alert">{{ t('operationsLoading') }}</div>
+  }
+
   <section class="overview-block">
     <div class="block-head">
       <span>{{ t('overview') }}</span>
@@ -46,6 +52,39 @@
         <div><strong>{{ formatMoney(monthlyExpenseTotal()) }}</strong><span>{{ t('monthlyExpenses') }}</span></div>
         <i>◎</i>
       </article>
+    </div>
+  </section>
+
+  <section class="overview-block quick-actions-block">
+    <div class="block-head">
+      <span>{{ t('commandCenter') }}</span>
+      <h3>{{ t('quickActions') }}</h3>
+    </div>
+    <div class="quick-action-grid">
+      <a routerLink="/admin/media-operations/staff" class="quick-action-card">
+        <span>{{ t('addStaff') }}</span>
+        <small>{{ t('staffManagement') }}</small>
+      </a>
+      <a routerLink="/admin/media-operations/assignments" class="quick-action-card">
+        <span>{{ t('addAssignment') }}</span>
+        <small>{{ t('assignmentManagement') }}</small>
+      </a>
+      <a routerLink="/admin/media-operations/expenses" class="quick-action-card">
+        <span>{{ t('addExpense') }}</span>
+        <small>{{ t('expenseTracking') }}</small>
+      </a>
+      <a routerLink="/admin/media-operations/invoices" class="quick-action-card">
+        <span>{{ t('addInvoice') }}</span>
+        <small>{{ t('invoicePaymentStatus') }}</small>
+      </a>
+      <a routerLink="/admin/media-operations/vendors" class="quick-action-card">
+        <span>{{ t('addVendor') }}</span>
+        <small>{{ t('vendorsSuppliers') }}</small>
+      </a>
+      <a routerLink="/admin/media-operations/purchase-requests" class="quick-action-card">
+        <span>{{ t('addPurchaseRequest') }}</span>
+        <small>{{ t('purchaseRequests') }}</small>
+      </a>
     </div>
   </section>
 
@@ -174,7 +213,7 @@
         @if (recentNotifications().length > 0) {
           <div class="snapshot-list">
             @for (notification of recentNotifications().slice(0, 5); track notification.id) {
-              <div><strong>{{ notification.title }}</strong><span>{{ notification.notificationType }}</span></div>
+              <div><strong>{{ notification.title }}</strong><span>{{ notificationTypeLabel(notification.notificationType) }}</span></div>
             }
           </div>
         } @else {

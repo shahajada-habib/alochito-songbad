@@ -26,6 +26,7 @@ export class MediaOperationsReportsComponent {
   protected readonly vendors = this.operations.vendors;
   protected readonly purchaseRequests = this.operations.purchaseRequests;
   protected readonly purchaseOrders = this.operations.purchaseOrders;
+  protected readonly approvalQueue = this.operations.approvalQueue;
   protected readonly loading = this.operations.loading;
 
   protected readonly staffCount = computed(() => this.staff().length);
@@ -90,6 +91,7 @@ export class MediaOperationsReportsComponent {
   protected readonly placedPurchaseOrders = computed(() =>
     this.purchaseOrders().filter((item) => ['PLACED', 'RECEIVED'].includes(item.orderStatus)).length
   );
+  protected readonly approvalQueueCount = computed(() => this.approvalQueue().length);
 
   constructor(protected readonly i18n: AdminTranslationService) {}
 

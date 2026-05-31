@@ -158,8 +158,9 @@
     <div class="reports-grid">
       <article class="report-card urgent">
         <span>{{ t('approvalQueue') }}</span>
-        <strong>{{ openPurchaseRequests() + pendingLeaveRequests() + unpaidInvoices() }}</strong>
+        <strong>{{ approvalQueueCount() }}</strong>
         <small class="report-hint">{{ t('approvalQueueHint') }}</small>
+        @if (sectionError('approvalQueue')) { <small class="report-error">{{ t('operationsSectionLoadError') }}</small> }
       </article>
       <article class="report-card urgent">
         <span>{{ t('pendingPaymentAmount') }}</span>

@@ -116,6 +116,29 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
+.overview-alert {
+  margin: 0 clamp(14px, 2vw, 18px);
+}
+
+.operations-alert,
+.operations-muted {
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-weight: 800;
+}
+
+.operations-alert {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.operations-muted {
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #6b7280;
+}
+
 .block-head {
   margin-bottom: 16px;
 }
@@ -349,6 +372,57 @@
 
 .pill-blue {
   background: #2563eb;
+}
+
+.quick-actions-block {
+  padding-bottom: 18px;
+}
+
+.quick-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+}
+
+.quick-action-card {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  min-height: 78px;
+  align-content: center;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #dc2626;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
+  text-decoration: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.quick-action-card:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+  transform: translateY(-1px);
+}
+
+.quick-action-card span {
+  overflow: hidden;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-action-card small {
+  overflow: hidden;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .snapshot-panel {
